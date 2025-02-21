@@ -1,4 +1,9 @@
 package bg.softuni.servicescheduler.liquid.service.impl;
 
-public class TransmissionOilService {
+import bg.softuni.servicescheduler.liquid.service.LiquidService;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TransmissionOilService implements LiquidService {
+
 }

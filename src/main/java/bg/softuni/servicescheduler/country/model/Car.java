@@ -1,4 +1,4 @@
-package bg.softuni.servicescheduler.car.model;
+package bg.softuni.servicescheduler.country.model;
 
 import bg.softuni.servicescheduler.engine.model.Engine;
 import bg.softuni.servicescheduler.user.model.User;

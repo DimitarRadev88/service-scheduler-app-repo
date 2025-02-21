@@ -1,7 +1,7 @@
-package bg.softuni.servicescheduler.country;
+package bg.softuni.servicescheduler.country.model;
 
-import bg.softuni.servicescheduler.car.CarBrand;
-import bg.softuni.servicescheduler.liquid.manufacturer.Manufacturer;
+import bg.softuni.servicescheduler.car.model.CarBrand;
+import bg.softuni.servicescheduler.liquid.model.manufacturer.Manufacturer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

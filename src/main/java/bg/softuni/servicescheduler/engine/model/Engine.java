@@ -1,14 +1,18 @@
-package bg.softuni.servicescheduler.engine;
+package bg.softuni.servicescheduler.engine.model;
 
-import bg.softuni.servicescheduler.car.Car;
+import bg.softuni.servicescheduler.car.model.Car;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "engines")
+@Getter
+@Setter
 public class Engine {
 
     @Id

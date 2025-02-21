@@ -1,6 +1,5 @@
-package bg.softuni.servicescheduler.car.model;
+package bg.softuni.servicescheduler.country.model;
 
-import bg.softuni.servicescheduler.country.model.Country;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

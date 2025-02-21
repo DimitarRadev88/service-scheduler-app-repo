@@ -1,6 +1,7 @@
-package bg.softuni.servicescheduler.liquid.oil;
+package bg.softuni.servicescheduler.liquid.model.oil;
 
 public enum EngineOilViscosity {
+
     _5W60,
     _5W50,
     _5W40,

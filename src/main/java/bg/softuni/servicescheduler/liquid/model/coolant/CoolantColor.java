@@ -1,4 +1,4 @@
-package bg.softuni.servicescheduler.liquid.coolant;
+package bg.softuni.servicescheduler.liquid.model.coolant;
 
 public enum CoolantColor {
 

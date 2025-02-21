@@ -1,4 +1,4 @@
-package bg.softuni.servicescheduler.liquid.coolant;
+package bg.softuni.servicescheduler.liquid.model.coolant;
 
 public enum CoolantSpecification {
 
@@ -6,4 +6,5 @@ public enum CoolantSpecification {
     G12,
     G12PLUS,
     G13
+
 }

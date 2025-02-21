@@ -1,8 +1,8 @@
-package bg.softuni.servicescheduler.liquid.manufacturer;
+package bg.softuni.servicescheduler.liquid.model.manufacturer;
 
-import bg.softuni.servicescheduler.country.Country;
-import bg.softuni.servicescheduler.liquid.coolant.Coolant;
-import bg.softuni.servicescheduler.liquid.oil.EngineOil;
+import bg.softuni.servicescheduler.country.model.Country;
+import bg.softuni.servicescheduler.liquid.model.coolant.Coolant;
+import bg.softuni.servicescheduler.liquid.model.oil.EngineOil;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
