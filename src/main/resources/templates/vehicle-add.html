@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
+
+<body id="page-top">
+<div th:include="~{commons/fragments.html :: navbar}" id="wrapper">
+
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+                <div class="container-fluid">
+                <h3 class="text-center text-dark mb-4">We'll need some information about your vehicle, so we can keep
+                    you in check about your future service schedules</h3>
+                <div class="row mb-3">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="row mb-3 d-none">
+                            <div class="col">
+                                <div class="card text-white bg-primary shadow">
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <p class="m-0">Peformance</p>
+                                                <p class="m-0"><strong>65.2%</strong></p>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                        </div>
+                                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since
+                                            last month</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card text-white bg-success shadow">
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <p class="m-0">Peformance</p>
+                                                <p class="m-0"><strong>65.2%</strong></p>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                        </div>
+                                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since
+                                            last month</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card shadow mb-3">
+                                    <div class="card-header py-3">
+                                        <p class="text-primary m-0 fw-bold">Vehicle Info</p>
+                                    </div>
+                                    <div class="card-body">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="make"><strong>Make</strong></label><select
+                                                            class="form-select" name="make">
+                                                        <optgroup id="make" label="Fuel type">
+                                                            <option value="Audi" selected="">Audi</option>
+                                                            <option value="BMW">BMW</option>
+                                                            <option value="VW">VW</option>
+                                                        </optgroup>
+                                                    </select></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label" for="model"><strong>Model</strong></label><select
+                                                            class="form-select" name="model">
+                                                        <optgroup id="model" label="Fuel type">
+                                                            <option value="A4" selected="">A4</option>
+                                                            <option value="A5">A5</option>
+                                                            <option value="S6">S6</option>
+                                                        </optgroup>
+                                                    </select></div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="trim"><strong>Trim</strong></label><input
+                                                            class="form-control" type="text" id="trim"
+                                                            placeholder="S-line" name="trim"></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="year"><strong>Year</strong></label><input
+                                                            class="form-control" type="number" id="year" name="year"
+                                                            placeholder="2000" value="2000" step="1" min="1930"
+                                                            max="2025"></div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="VIN"><strong>VIN</strong></label><input
+                                                            class="form-control" type="text" id="VIN"
+                                                            placeholder="WAUZZZ***********" name="VIN"></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="registration"><strong>Registration</strong></label><input
+                                                            class="form-control" type="text" id="registration"
+                                                            placeholder="CB0123**" name="registration"></div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label" for="category"><strong>Category</strong></label><select
+                                                            class="form-select" name="fuelType">
+                                                        <optgroup label="Category" id="category">
+                                                            <option value="B" selected="">B</option>
+                                                            <option value="C">C</option>
+                                                            <option value="D">D</option>
+                                                            <option value="Electric">E</option>
+                                                        </optgroup>
+                                                    </select></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label" for="fuelType"><strong>Fuel
+                                                        type</strong></label><select class="form-select"
+                                                                                     name="fuelType">
+                                                        <optgroup label="Fuel type" id="fuelType">
+                                                            <option value="Petrol" selected="">Petrol</option>
+                                                            <option value="Diesel">Diesel</option>
+                                                            <option value="Hybrid">Hybrid</option>
+                                                            <option value="Electric">Electric</option>
+                                                        </optgroup>
+                                                    </select></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="displacement"><strong>Displacement</strong></label><input
+                                                            class="form-control" type="number" id="displacement"
+                                                            name="displacement" min="600" max="8000" value="1600"
+                                                            step="50"></div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="oilCapacity"><strong>Oil
+                                                        capacity</strong></label><input class="form-control"
+                                                                                        type="number" id="oilCapacity"
+                                                                                        name="oilCapacity" value="4.0"
+                                                                                        step="0.1" max="8" min="1">
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label" for="mileage"><strong>Mileage</strong></label><input
+                                                            class="form-control" type="number" id="mileage"
+                                                            name="oilChangeInterval" step="10000" value="123000"></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label" for="oilChangeInterval"><strong>Change
+                                                        interval</strong></label><input class="form-control"
+                                                                                        id="oilChangeInterval"
+                                                                                        type="number"
+                                                                                        name="oilChangeInterval"
+                                                                                        step="1000" value="10000"></div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="insuranceExpiration"><strong>Insurance
+                                                        expiration</strong></label><input class="form-control"
+                                                                                          type="date"
+                                                                                          id="insuranceExpiration"
+                                                                                          name="insuranceExpirationDate">
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="mb-3"><label class="form-label"
+                                                                             for="vignetteExpirationDate"><strong>Vignette
+                                                        expiration</strong></label><input class="form-control"
+                                                                                          type="date"
+                                                                                          id="vignetteExpirationDate"
+                                                                                          name="vignetteExpirationDate">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <button class="btn btn-primary btn-sm" type="submit">Save Settings
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Brand 2025</span></div>
+            </div>
+        </footer>
+    </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/theme.js"></script>
+</body>
+
+</html>

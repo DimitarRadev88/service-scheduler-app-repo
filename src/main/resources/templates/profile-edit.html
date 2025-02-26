@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
+
+<body id="page-top">
+<div th:include="~{commons/fragments.html :: navbar}" id="wrapper">
+
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+                <div class="container-fluid">
+                    <h3 class="text-center text-dark mb-4">Profile</h3>
+                    <div class="row mb-3">
+                        <div class="col-lg-4 col-xxl-10 d-xxl-flex flex-grow-1 justify-content-xxl-center align-items-xxl-start">
+                            <div class="card mb-3">
+                                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" alt="ai generated, mouse, racing car, car, helmet, cute, humor, car, car, car, car, car" src="assets/img/g5c33c717dda73ec933295f6cdfd51c5def7b84de84ce011fbaaf9b5d91e82c91550181546ffb0627af9f25e16f332a78e0f7191b96bac5e9d5b58b0da9e28bcb_640.png" width="160" height="160"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow mb-3">
+                                <div class="card-header py-3">
+                                    <p class="text-primary m-0 fw-bold">User Settings</p>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="mb-3"><label class="form-label" for="username"><strong>Username</strong></label><input class="form-control" type="text" id="username" placeholder="user.name" name="username"></div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="mb-3"><label class="form-label" for="email"><strong>Email Address</strong></label><input class="form-control" type="email" id="email" placeholder="user@example.com" name="email"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="mb-3"><label class="form-label" for="firstName"><strong>First Name</strong></label><input class="form-control" type="text" id="first_name" placeholder="John" name="firstName"></div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="mb-3"><label class="form-label" for="lastName"><strong>Last Name</strong></label><input class="form-control" type="text" id="last_name" placeholder="Doe" name="lastName"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="mb-3"><label class="form-label" for="profilePictureURL"><strong>Profile Picture</strong></label><input class="form-control" type="text" id="first_name-1" placeholder="https://www.example.com/picture.jpg" name="profilePictureURL"></div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit">Save Settings</button></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Copyright © Brand 2025</span></div>
+                </div>
+            </footer>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/theme.js"></script>
+</body>
+
+</html>

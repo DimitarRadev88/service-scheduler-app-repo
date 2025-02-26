@@ -27,7 +27,8 @@ public class Vignette {
     @Column(nullable = false)
     private LocalDate startDate;
     @Column(nullable = false)
-    private LocalDate endDate;
+    @Enumerated(EnumType.STRING)
+    private VignetteValidity validity;
     @Column(nullable = false)
     private BigDecimal cost;
     @Column(nullable = false)

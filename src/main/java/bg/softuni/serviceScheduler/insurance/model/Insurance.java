@@ -27,7 +27,8 @@ public class Insurance {
     @Column(nullable = false)
     private LocalDate startDate;
     @Column(nullable = false)
-    private LocalDate endDate;
+    @Enumerated(EnumType.STRING)
+    private InsuranceValidity validity;
     @Column(nullable = false)
     private BigDecimal cost;
     @Column(nullable = false)

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
+
+<body class="bg-gradient-primary">
+    <div class="container">
+        <div class="card shadow-lg d-xxl-flex justify-content-xxl-end o-hidden border-0 my-5">
+            <div class="card-body p-0">
+                <div class="col-auto col-lg-7 align-self-center mx-auto">
+                    <div class="p-5">
+                        <div class="text-center">
+                            <h4 class="text-dark mb-4">Create an Account!</h4>
+                        </div>
+                        <form class="user" th:action="@{/register}" th:object="${userRegister}" method="post">
+                            <div class="row mb-3">
+                                <div class="col-sm-6 col-xxl-6 offset-xxl-0 mb-3 mb-sm-0">
+                                    <label for="firstName" th:if="${#fields.hasErrors('firstName')}" class="form-label text-danger">First Name cannot be blank</label>
+                                    <label for="firstName" th:unless="${#fields.hasErrors('firstName')}" class="form-label">First Name</label>
+                                    <input class="form-control form-control-user" type="text" id="firstName" placeholder="First Name" name="firstName" th:field="*{firstName}"></div>
+                                <div class="col-sm-6">
+                                    <label for="lastName" th:if="${#fields.hasErrors('lastName')}" class="form-label text-danger">Last Name cannot be blank</label>
+                                    <label for="lastName" th:unless="${#fields.hasErrors('lastName')}" class="form-label">Last Name</label>
+                                    <input class="form-control form-control-user" type="text" id="lastName" placeholder="Last Name" name="lastName" th:field="*{lastName}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" th:if="${#fields.hasErrors('email')}" class="form-label text-danger">Email cannot be blank</label>
+                                <label for="email" th:unless="${#fields.hasErrors('email')}" class="form-label">Last Name</label>
+                                <input class="form-control form-control-user" type="email" id="email" aria-describedby="emailHelp" placeholder="Email Address" name="email" th:field="*{email}"></div>
+                            <div class="row mb-3">
+                                <div class="col-sm-6 mb-3 mb-sm-0">
+                                    <label for="password" th:if="${#fields.hasErrors('password')}" class="form-label text-danger">Password must be between 6 and 20 characters</label>
+                                    <label for="password" th:unless="${#fields.hasErrors('password')}" class="form-label">Password</label>
+                                    <input class="form-control form-control-user" type="password" id="password" placeholder="Password" name="password" th:field="*{password}"></div>
+                                <div class="col-sm-6">
+                                    <label for="confirmPassword" th:if="${#fields.hasErrors('confirmPassword')}" class="form-label text-danger">Password must be between 6 and 20 characters</label>
+                                    <label for="confirmPassword" th:unless="${#fields.hasErrors('confirmPassword')}" class="form-label">Password</label>
+                                    <input class="form-control form-control-user" type="password" id="confirmPassword" placeholder="Confirm password" name="confirmPassword" th:field="*{confirmPassword}"></div>
+                            </div><button class="btn btn-primary d-block btn-user w-100" type="submit">Register Account</button>
+                            <hr>
+                            <hr>
+                        </form>
+                        <div class="text-center"><a class="small" href="/forgot-password">Forgot Password?</a></div>
+                        <div class="text-center"><a class="small" href="/login">Already have an account? Login!</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/theme.js"></script>
+</body>
+
+</html>
