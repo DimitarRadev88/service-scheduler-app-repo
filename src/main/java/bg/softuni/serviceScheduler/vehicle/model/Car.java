@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.car.model;
+package bg.softuni.serviceScheduler.vehicle.model;
 
 import bg.softuni.serviceScheduler.engine.model.Engine;
 import bg.softuni.serviceScheduler.insurance.model.Insurance;
@@ -31,7 +31,12 @@ public class Car {
     @OneToOne
     private Engine engine;
     @Column(nullable = false)
+    private String vin;
+    @Column(nullable = false)
     private Year yearOfProduction;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private VehicleCategory category;
     @ManyToOne
     @JoinColumn(nullable = false)
     private User user;

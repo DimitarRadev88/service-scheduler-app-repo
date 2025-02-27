@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head th:replace="~{common/fragments.html :: header}"><title>Vehicle information</title></head>
+
+<body id="page-top">
+<div th:insert="~{common/fragments.html :: sidebar}" id="wrapper">
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+            <div class="container-fluid">
+                <div class="text-center d-sm-flex justify-content-between align-items-center mb-4">
+                    <h3 class="text-dark mb-0">Make Model</h3><a class="btn btn-primary btn-sm d-none d-sm-inline-block"
+                                                                 role="button" href="#"><i
+                        class="fas fa-download fa-sm text-white-50"></i>&nbsp;Generate Report</a>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="text-primary fw-bold m-0">Service state</h6>
+                            </div>
+                            <div class="card-body">
+                                <h4 class="small fw-bold">Engine oil life<span class="float-end">20%</span></h4>
+                                <div class="progress mb-4">
+                                    <div class="progress-bar bg-danger" aria-valuenow="20" aria-valuemin="0"
+                                         aria-valuemax="100" style="width: 20%;"><span
+                                            class="visually-hidden">20%</span></div>
+                                </div>
+                                <h4 class="small fw-bold">Vignette due<span class="float-end">80%</span></h4>
+                                <div class="progress mb-4">
+                                    <div class="progress-bar bg-info" aria-valuenow="80" aria-valuemin="0"
+                                         aria-valuemax="100" style="width: 80%;"><span
+                                            class="visually-hidden">80%</span></div>
+                                </div>
+                                <h4 class="small fw-bold">Insurance due<span class="float-end">Complete!</span></h4>
+                                <div class="progress mb-4">
+                                    <div class="progress-bar bg-success" aria-valuenow="100" aria-valuemin="0"
+                                         aria-valuemax="100" style="width: 100%;"><span
+                                            class="visually-hidden">100%</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="text-primary fw-bold m-0">History</h6>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <div class="row g-0 align-items-center">
+                                        <div class="col me-2">
+                                            <h6 class="mb-0"><strong>Last oil change</strong></h6><span class="text-xs">10:30 AM</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                           id="formCheck-1"><label
+                                                    class="form-check-label" for="formCheck-1"></label></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row g-0 align-items-center">
+                                        <div class="col me-2">
+                                            <h6 class="mb-0"><strong>Last insurance payment</strong></h6><span
+                                                class="text-xs">12:30 AM</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                           id="formCheck-5"><label
+                                                    class="form-check-label" for="formCheck-5"></label></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row g-0 align-items-center">
+                                        <div class="col me-2">
+                                            <h6 class="mb-0"><strong>Last e-vignette</strong></h6><span class="text-xs">12:30 AM</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                           id="formCheck-4"><label
+                                                    class="form-check-label" for="formCheck-4"></label></div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col d-flex flex-row flex-grow-1 flex-shrink-1 align-content-around flex-wrap justify-content-xl-start align-items-xl-start justify-content-xxl-start align-items-xxl-start">
+                        <div class="row pb-0 mb-0" style="width: 100%;">
+                            <div class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 mb-sm-5 ms-sm-0 ps-sm-0"
+                                 style="width: auto;height: auto;"><a
+                                    class="text-truncate text-decoration-none link-light text-bg-success border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                    href="change-oil.html" style="width: auto;height: auto;">New oil change</a></div>
+                            <div class="col-auto col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                 style="width: auto;"><a
+                                    class="text-truncate text-decoration-none link-light text-bg-success bg-warning border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                    href="change-oil.html">Your oil replacement mileage is close</a></div>
+                            <div class="col-auto col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5">
+                                <a class="text-truncate text-decoration-none link-light text-bg-success bg-danger border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                   href="change-oil.html" style="width: auto;height: auto;">Oil mileage exceeded, please
+                                    change oil soon</a></div>
+                        </div>
+                        <div class="row d-flex flex-row flex-grow-1 flex-shrink-1 flex-nowrap pb-0 mb-0"
+                             style="width: 100%;">
+                            <div class="col-auto col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5">
+                                <a class="text-truncate text-decoration-none link-light text-bg-success border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                   href="insurance-add.html" style="width: auto;height: auto;">New insurance</a></div>
+                            <div class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                 style="width: auto;height: auto;"><a
+                                    class="text-truncate text-decoration-none link-light text-bg-success bg-warning border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                    href="insurance-add.html">Insurance expiration date is close</a></div>
+                            <div class="col-auto col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5">
+                                <a class="text-truncate text-decoration-none link-light text-bg-success bg-danger border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                   href="insurance-add.html" style="width: auto;height: auto;">Vehicle insurance
+                                    expired!</a></div>
+                        </div>
+                        <div class="row d-flex flex-row flex-grow-1 flex-shrink-1 flex-nowrap pb-0 mb-0"
+                             style="width: 100%;">
+                            <div class="col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                 style="width: 100%;"><a
+                                    class="text-truncate text-decoration-none link-light text-bg-success border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                    href="change-oil.html" style="width: auto;height: auto;">New vignette</a></div>
+                            <div class="col-auto col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                 style="width: auto;"><a
+                                    class="text-truncate text-decoration-none link-light text-bg-success bg-warning border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                    href="change-oil.html">Your vignette expiration date is nearing</a></div>
+                            <div class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                 style="width: auto;height: auto;"><a
+                                    class="text-truncate text-decoration-none link-light text-bg-success bg-danger border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
+                                    href="change-oil.html" style="width: auto;height: auto;margin: a;">Vehicle vignette
+                                expired!</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{common/fragments.html :: footer}"></footer>
+    </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/theme.js"></script>
+</body>
+
+</html>

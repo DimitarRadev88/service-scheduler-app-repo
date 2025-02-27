@@ -1,11 +1,10 @@
 package bg.softuni.serviceScheduler.user.model;
 
-import bg.softuni.serviceScheduler.car.model.Car;
+import bg.softuni.serviceScheduler.vehicle.model.Car;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

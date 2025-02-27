@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.car.model;
+package bg.softuni.serviceScheduler.vehicle.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -33,5 +33,7 @@ public class OilChange {
     private Integer mileage;
     @Column(nullable = false)
     private Integer changeInterval;
+    @Column(nullable = false)
+    private LocalDate changeDate;
 
 }

@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.vignette.model;
 
-import bg.softuni.serviceScheduler.car.model.Car;
+import bg.softuni.serviceScheduler.vehicle.model.Car;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +27,8 @@ public class Vignette {
     @Column(nullable = false)
     private LocalDate startDate;
     @Column(nullable = false)
+    private LocalDate endDate;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private VignetteValidity validity;
     @Column(nullable = false)
@@ -36,5 +38,7 @@ public class Vignette {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Car car;
+    @Column(nullable = false)
+    private LocalDate addedAt;
 
 }

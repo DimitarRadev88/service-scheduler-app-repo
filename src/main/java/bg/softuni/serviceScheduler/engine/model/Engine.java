@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.engine.model;
 
-import bg.softuni.serviceScheduler.car.model.Car;
+import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.oilChange.model.OilChange;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,6 +20,9 @@ public class Engine {
     private UUID id;
     @Column(nullable = false)
     private Integer displacement;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FuelType fuelType;
     @Column(nullable = false)
     private Double oilCapacity;
     @Column(nullable = false)

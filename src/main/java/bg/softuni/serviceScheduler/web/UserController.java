@@ -52,7 +52,7 @@ public class UserController {
             modelAndView.setViewName("redirect:/login");
         } else {
             UUID userId = userService.doLogin(userLogin);
-            modelAndView.setViewName("redirect:/home");
+            modelAndView.setViewName("redirect:/");
             session.setAttribute("user_id", userId);
         }
 
@@ -86,10 +86,9 @@ public class UserController {
             modelAndView.setViewName("redirect:/register");
         } else {
             String email = userService.doRegister(userRegister);
-            modelAndView.setViewName("redirect:/");
+            modelAndView.setViewName("redirect:/login");
             redirectAttributes.addFlashAttribute("email", email);
         }
-
 
         return modelAndView;
     }

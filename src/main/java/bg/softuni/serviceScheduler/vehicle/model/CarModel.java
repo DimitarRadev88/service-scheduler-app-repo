@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.car.model;
+package bg.softuni.serviceScheduler.vehicle.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class CarModel {
     private UUID id;
     @Column(nullable = false, unique = true)
     private String name;
-    @Column(nullable = false)
+    @Basic
     private String trim;
     @ManyToOne
     @JoinColumn(nullable = false)
