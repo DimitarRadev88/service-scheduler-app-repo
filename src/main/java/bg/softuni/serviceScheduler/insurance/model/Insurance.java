@@ -35,7 +35,6 @@ public class Insurance {
     @Column(nullable = false)
     private Boolean isValid;
     @ManyToOne
-    @JoinColumn(nullable = false)
     private Car car;
     @Column(nullable = false)
     private LocalDate addedAt;

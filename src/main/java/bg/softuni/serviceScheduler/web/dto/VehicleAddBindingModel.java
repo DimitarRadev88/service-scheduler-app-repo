@@ -6,12 +6,11 @@ import bg.softuni.serviceScheduler.vehicle.model.CarModelEnum;
 import bg.softuni.serviceScheduler.vehicle.model.VehicleCategory;
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDate;
 import java.time.Year;
 
 public record VehicleAddBindingModel(
         @NotNull(message = "You must select vehicle make")
-        CarMakeEnum make,
+        String make,
         @NotNull(message = "You must select vehicle model")
         CarModelEnum model,
         @Size(max = 15, message = "Max 15 characters for Trim")
@@ -39,15 +38,14 @@ public record VehicleAddBindingModel(
         @PositiveOrZero(message = "Vehicle mileage must be equal or greater than 0")
         Integer mileage,
         @Size(max = 20, message = "Oil filter number must be under 20 characters")
-        String oilFilterNumber,
-        @NotNull(message = "Please enter insurance expiration date")
-        @FutureOrPresent(message = "You must have a valid insurance to add vehicle")
-        LocalDate insuranceExpirationDate,
-        @FutureOrPresent(message = "You must enter a valid vignette")
-        LocalDate vignetteExpirationDate
+        String oilFilterNumber
 ) {
 
     public VehicleAddBindingModel() {
-        this(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, null, null, null, null);
+    }
+
+    public VehicleAddBindingModel(String brand) {
+        this(brand, null, null, null, null, null, null, null, null, null, null, null);
     }
 }

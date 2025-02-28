@@ -22,7 +22,7 @@ public class CarBrand {
     private UUID id;
     @Column(nullable = false, unique = true)
     private String name;
-    @OneToMany(mappedBy = "brand")
+    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL)
     List<CarModel> models;
 
 }

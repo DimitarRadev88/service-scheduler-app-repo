@@ -19,10 +19,8 @@ public class CarModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
-    @Basic
-    private String trim;
     @ManyToOne
     @JoinColumn(nullable = false)
     private CarBrand brand;

@@ -3,7 +3,9 @@ package bg.softuni.serviceScheduler.engine.model;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.oilChange.model.OilChange;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.UUID;
 @Table(name = "engines")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Engine {
 
     @Id

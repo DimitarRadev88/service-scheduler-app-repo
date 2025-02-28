@@ -35,9 +35,8 @@
                                                                 name="make">
                                                             <option th:value="${null}" selected="">Select vehicle make
                                                             </option>
-                                                            <option th:each="make : ${T (bg.softuni.serviceScheduler.vehicle.model.CarMakeEnum).values()}"
-                                                                    th:value="${make}" th:text="${make}">Audi
-                                                            </option>
+                                                            <option th:each="make : ${brands.keySet()}"
+                                                                    th:value="${make}" th:text="${make}"></option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -52,7 +51,7 @@
                                                         <select id="model" class="form-select" th:field="*{model}"
                                                                 name="model">
                                                             <option th:value="${null}" selected="">Select vehicle model</option>
-                                                            <option th:each="model : ${T (bg.softuni.serviceScheduler.vehicle.model.CarModelEnum).values()}"
+                                                            <option th:each="model : ${models}"
                                                                     th:value="${model}" th:text="${model}">A3
                                                             </option>
                                                         </select>
@@ -200,32 +199,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="insuranceExpirationDate">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('insuranceExpirationDate')}"
-                                                                    th:errors="*{insuranceExpirationDate}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('insuranceExpirationDate')}">Insurance expiration*</strong>
-                                                        </label>
-                                                        <input class="form-control" type="date" id="insuranceExpirationDate"
-                                                               name="insuranceExpirationDate" th:value="${null}" th:field="*{insuranceExpirationDate}">
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="vignetteExpirationDate">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('vignetteExpirationDate')}"
-                                                                    th:errors="*{vignetteExpirationDate}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('vignetteExpirationDate')}">Vignette expiration</strong>
-                                                        </label>
-                                                        <input class="form-control" type="date" id="vignetteExpirationDate"
-                                                               name="vignetteExpirationDate" th:value="${null}" th:field="*{vignetteExpirationDate}">
-                                                    </div>
-                                                </div>
-                                            </div>
                                             <div class="mb-3">
                                                 <button class="btn btn-primary btn-sm" type="submit">
                                                     Add Vehicle
@@ -246,6 +219,7 @@
 </div>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/theme.js"></script>
+<script src="/js/scrypt.js"></script>
 </body>
 
 </html>

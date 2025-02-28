@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface CarService {
@@ -17,4 +18,7 @@ public interface CarService {
     List<CarServicesDoneViewServiceModel> getAllServices();
 
     void doAdd(@Valid VehicleAddBindingModel vehicleAdd, UUID userId);
+
+    Map<String, List<String>> getAllBrandsWithModels();
+
 }
