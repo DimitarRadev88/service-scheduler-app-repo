@@ -28,9 +28,9 @@ public class Car {
     @ManyToOne
     @JoinColumn(nullable = false)
     private CarModel model;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Engine engine;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String vin;
     @Column(nullable = false)
     private Year yearOfProduction;
@@ -40,6 +40,8 @@ public class Car {
     @ManyToOne
     @JoinColumn(nullable = false)
     private User user;
+    @Column(nullable = false, unique = true)
+    private String registration;
     @OneToMany(mappedBy = "car")
     private List<Insurance> insurances;
     @OneToMany(mappedBy = "car")

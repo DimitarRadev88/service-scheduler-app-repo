@@ -1,6 +1,7 @@
 package bg.softuni.serviceScheduler.insurance.model;
 
 import bg.softuni.serviceScheduler.vehicle.model.Car;
+import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,15 +17,15 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+    @AllArgsConstructor
 public class Insurance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false)
-    private String companyName;
     @Basic
+    private String companyName;
+    @Column(nullable = false)
     private LocalDate startDate;
     @Column(nullable = false)
     private LocalDate endDate;

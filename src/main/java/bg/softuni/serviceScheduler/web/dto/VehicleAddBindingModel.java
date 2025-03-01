@@ -12,7 +12,7 @@ public record VehicleAddBindingModel(
         @NotNull(message = "You must select vehicle make")
         String make,
         @NotNull(message = "You must select vehicle model")
-        CarModelEnum model,
+        String model,
         @Size(max = 15, message = "Max 15 characters for Trim")
         String trim,
         @NotNull(message = "Please select model year")

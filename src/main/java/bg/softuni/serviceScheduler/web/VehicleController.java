@@ -1,6 +1,7 @@
 package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
+import bg.softuni.serviceScheduler.vehicle.service.dto.CarInfoServiceViewModel;
 import bg.softuni.serviceScheduler.web.dto.VehicleAddBindingModel;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -64,7 +65,9 @@ public class VehicleController {
                                       RedirectAttributes redirectAttributes,
                                       HttpSession session) {
 
-        if (bindingResult.hasErrors()) {
+        if (session.getAttribute("user_id") == null) {
+            modelAndView.setViewName("redirect:/login");
+        } else if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("vehicleAdd", vehicleAdd);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.vehicleAdd", bindingResult);
             modelAndView.setViewName("redirect:/vehicles/add");
@@ -94,6 +97,16 @@ public class VehicleController {
         }
 
         return modelAndView;
+    }
+
+    @GetMapping("/{id}")
+    public String getVehicleDetails(@PathVariable UUID id, Model model) {
+
+        CarInfoServiceViewModel carInfo = carService.getCarInfoServiceViewModel(id);
+
+        model.addAttribute("carInfo", carInfo);
+
+        return "vehicle-info";
     }
 
 }

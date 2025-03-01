@@ -1,6 +1,7 @@
 package bg.softuni.serviceScheduler.user.service;
 
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
+import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInsuranceAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.UserLoginBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 
@@ -12,4 +13,6 @@ public interface UserService {
     String doRegister(UserRegisterBindingModel userRegister);
 
     UserDashboardServiceModelView getUser(UUID id);
+
+    UserWithCarsInsuranceAddServiceView getUserWithCarsInsuranceAddServiceView(UUID id);
 }

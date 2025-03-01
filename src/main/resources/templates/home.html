@@ -6,158 +6,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Dashboard - Brand</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
     <link rel="stylesheet" href="/fonts/fontawesome-all.min.css">
 </head>
 
 <body id="page-top">
-    <div id="wrapper" th:object="${user}">
-        <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
-        <div class="d-flex flex-column" id="content-wrapper">
-            <div id="content">
-                <nav th:replace="~{common/fragments.html :: navigation}"></nav>
-                <div class="container-fluid">
-                    <div class="text-center d-sm-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark mb-0">Dashboard</h3><a class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button" href="#"><i class="fas fa-download fa-sm text-white-50"></i>&nbsp;Generate Report</a>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-primary py-2">
-                                <div class="card-body">
-                                    <div class="row g-0 align-items-center">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Member since</span></div>
-                                            <div class="text-dark fw-bold h5 mb-0"><span th:text="*{registrationDate()}"></span></div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-calendar fa-2x text-gray-300"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-success py-2">
-                                <div class="card-body">
-                                    <div class="row g-0 align-items-center">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-info fw-bold text-xs mb-1"><span>Services done</span></div>
-                                            <div class="text-dark fw-bold h5 mb-0"><span th:text="*{servicesDone()}"></span></div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div id="wrapper" th:object="${user}">
+    <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+            <div class="container-fluid">
+                <div class="text-center d-sm-flex justify-content-between align-items-center mb-4">
+                    <h3 class="text-dark mb-0">Dashboard</h3><a class="btn btn-primary btn-sm d-none d-sm-inline-block"
+                                                                role="button" href="#"><i
+                        class="fas fa-download fa-sm text-white-50"></i>&nbsp;Generate Report</a>
                 </div>
-                <div class="container-fluid">
-                    <h3 class="text-center text-dark mb-4">My cars</h3>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Make</th>
-                                    <th>Model</th>
-                                    <th>VIN</th>
-                                    <th>SPENT</th>
-                                    <th style="width: 300px;">&nbsp;</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 29px;">
-                                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"></path>
-                                        </svg>
-                                        Audi</td>
-                                    <td>A4</td>
-                                    <td>WAUZZZ8H8420340</td>
-                                    <td>12000</td>
-                                    <td class="d-flex justify-content-evenly" style="width: 300px;">
-                                        <button class="btn btn-primary" type="button" style="width: 100px;">View</button>
-                                        <form th:method="delete" th:action="@{vehicles/delete/{id}(id=${id})}">
-                                            <button type="submit" class="btn btn-primary bg-danger border-danger" style="width: 100px;">Delete</button>
-                                        </form>
-
-                                    </td>
-                                </tr>
-                                <tr></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="container-fluid">
-                    <div class="card shadow">
-                        <div class="card-header py-3">
-                            <p class="text-center text-primary m-0 fw-bold">All Services</p>
+                <div class="row">
+                    <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="card shadow border-left-primary py-2">
+                            <div class="card-body">
+                                <div class="row g-0 align-items-center">
+                                    <div class="col me-2">
+                                        <div class="text-uppercase text-primary fw-bold text-xs mb-1">
+                                            <span>Member since</span></div>
+                                        <div class="text-dark fw-bold h5 mb-0"><span
+                                                th:text="*{registrationDate()}"></span></div>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-calendar fa-2x text-gray-300"></i></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><label class="form-label">Show&nbsp;<select class="d-inline-block form-select form-select-sm">
-                                                <option value="10" selected="">10</option>
-                                                <option value="25">25</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>&nbsp;</label></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="text-md-end dataTables_filter" id="dataTable_filter"><label class="form-label"><input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search"></label></div>
-                                </div>
-                            </div>
-                            <div class="table-responsive table mt-2" role="grid" aria-describedby="dataTable_info">
-                                <table class="table my-0" id="dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Service</th>
-                                            <th>Date</th>
-                                            <th>Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Oil change</td>
-                                            <td>2008/11/28</td>
-                                            <td>$2.30</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td><strong><br><strong>Service</strong><br><br></strong></td>
-                                            <td><strong><br><strong>Date</strong><br><br></strong></td>
-                                            <td><strong>Price</strong></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 align-self-center">
-                                    <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing 1 to 10 of 27</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
-                                        <ul class="pagination">
-                                            <li class="page-item disabled"><a class="page-link" aria-label="Previous" href="#"><span aria-hidden="true">«</span></a></li>
-                                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                            <li class="page-item"><a class="page-link" aria-label="Next" href="#"><span aria-hidden="true">»</span></a></li>
-                                        </ul>
-                                    </nav>
+                    </div>
+                    <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="card shadow border-left-success py-2">
+                            <div class="card-body">
+                                <div class="row g-0 align-items-center">
+                                    <div class="col me-2">
+                                        <div class="text-uppercase text-info fw-bold text-xs mb-1">
+                                            <span>Services done</span></div>
+                                        <div class="text-dark fw-bold h5 mb-0"><span th:text="*{servicesDone()}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <footer class="bg-white sticky-footer">
-                <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>Copyright © Brand 2025</span></div>
+            <div class="container-fluid">
+                <h3 class="text-center text-dark mb-4">My cars</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th>Make</th>
+                            <th>Model</th>
+                            <th>VIN</th>
+                            <th>SPENT</th>
+                            <th style="width: 300px;">&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="car : ${user.cars()}">
+                            <td th:if="${car.needsService()}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                                     height="1em" fill="currentColor" viewBox="0 0 16 16"
+                                     class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 29px;">
+                                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"></path>
+                                </svg>
+                            </td>
+                            <td th:text="${car.make}">
+                            </td>
+                            <td th:text="${car.model()}"></td>
+                            <td th:text="${car.vin()}"></td>
+                            <td th:text="${car.spent()}"></td>
+                            <td class="d-flex justify-content-evenly" style="width: 300px;">
+                                <form th:method="get" th:action="@{vehicles/{id}(id=${car.id})}">
+                                    <button type="submit" class="btn btn-primary"
+                                            style="width: 100px;">View
+                                    </button>
+                                </form>
+                                <form th:method="delete" th:action="@{vehicles/delete/{id}(id=${car.id})}">
+                                    <button type="submit" class="btn btn-primary bg-danger border-danger"
+                                            style="width: 100px;">Delete
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
+                        <tr></tr>
+                        </tbody>
+                    </table>
                 </div>
-            </footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+            </div>
+            <div class="container-fluid">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <p class="text-center text-primary m-0 fw-bold">All Services</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 text-nowrap">
+                                <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><label
+                                        class="form-label">Show&nbsp;<select
+                                        class="d-inline-block form-select form-select-sm">
+                                    <option value="10" selected="">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>&nbsp;</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-md-end dataTables_filter" id="dataTable_filter"><label
+                                        class="form-label"><input type="search" class="form-control form-control-sm"
+                                                                  aria-controls="dataTable"
+                                                                  placeholder="Search"></label></div>
+                            </div>
+                        </div>
+                        <div class="table-responsive table mt-2" role="grid" aria-describedby="dataTable_info">
+                            <table class="table my-0" id="dataTable">
+                                <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Price</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Oil change</td>
+                                    <td>2008/11/28</td>
+                                    <td>$2.30</td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td><strong><br><strong>Service</strong><br><br></strong></td>
+                                    <td><strong><br><strong>Date</strong><br><br></strong></td>
+                                    <td><strong>Price</strong></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 align-self-center">
+                                <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing
+                                    1 to 10 of 27</p>
+                            </div>
+                            <div class="col-md-6">
+                                <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                                    <ul class="pagination">
+                                        <li class="page-item disabled"><a class="page-link" aria-label="Previous"
+                                                                          href="#"><span aria-hidden="true">«</span></a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item"><a class="page-link" aria-label="Next" href="#"><span
+                                                aria-hidden="true">»</span></a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Brand 2025</span></div>
+            </div>
+        </footer>
     </div>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/theme.js"></script>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/theme.js"></script>
 </body>
 
 </html>

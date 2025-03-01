@@ -94,7 +94,7 @@
                                                             <strong class="text-danger"
                                                                     th:if="${#fields.hasErrors('vin')}"
                                                                     th:errors="*{vin}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('year')}">VIN*</strong>
+                                                            <strong th:unless="${#fields.hasErrors('vin')}">VIN*</strong>
                                                         </label>
                                                         <input class="form-control" th:field="*{vin}" type="text"
                                                                id="vin"
@@ -108,7 +108,7 @@
                                                             <strong class="text-danger"
                                                                     th:if="${#fields.hasErrors('registration')}"
                                                                     th:errors="*{registration}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('year')}">Registration*</strong>
+                                                            <strong th:unless="${#fields.hasErrors('registration')}">Registration*</strong>
                                                         </label>
                                                         <input class="form-control" th:field="*{registration}" type="text"
                                                             id="registration"
@@ -219,7 +219,7 @@
 </div>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/theme.js"></script>
-<script src="/js/scrypt.js"></script>
+<script src="/js/vehicle-add.js"></script>
 </body>
 
 </html>

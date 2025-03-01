@@ -1,7 +1,9 @@
 package bg.softuni.serviceScheduler.vehicle.service;
 
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardViewServiceModel;
-import bg.softuni.serviceScheduler.vehicle.service.dto.CarServicesDoneViewServiceModel;
+import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
+import bg.softuni.serviceScheduler.vehicle.service.dto.CarInfoServiceViewModel;
+import bg.softuni.serviceScheduler.vehicle.service.dto.CarInsuranceAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.VehicleAddBindingModel;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -12,13 +14,14 @@ import java.util.UUID;
 
 public interface CarService {
 
-    List<CarDashboardViewServiceModel> getCarDashboardServiceModels();
-
     @Transactional
-    List<CarServicesDoneViewServiceModel> getAllServices();
+    List<CarDashboardServicesDoneViewServiceModel> getAllServices();
 
-    void doAdd(@Valid VehicleAddBindingModel vehicleAdd, UUID userId);
+    void doAdd(VehicleAddBindingModel vehicleAdd, UUID userId);
 
     Map<String, List<String>> getAllBrandsWithModels();
 
+    CarInsuranceAddServiceView getCarInsuranceAddServiceView(UUID id);
+
+    CarInfoServiceViewModel getCarInfoServiceViewModel(UUID id);
 }

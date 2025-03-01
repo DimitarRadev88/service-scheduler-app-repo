@@ -30,7 +30,7 @@ public class User {
     private LocalDateTime registrationDate;
     @Column(nullable = false)
     private String profilePictureURL;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Car> cars;
 
 }

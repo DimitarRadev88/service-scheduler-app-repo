@@ -4,8 +4,9 @@
 <head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
 
 <body id="page-top">
-<div th:insert="~{common/fragments.html :: sidebar}" id="wrapper">
+<div id="wrapper">
 
+    <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
     <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
             <nav th:replace="~{common/fragments.html :: navigation}"></nav>
@@ -13,73 +14,62 @@
                 <h3 class="text-center text-dark mb-4">New Insurance</h3>
                 <div class="row mb-3">
                     <div class="col-lg-8 mx-auto">
-                        <div class="row mb-3 d-none">
-                            <div class="col">
-                                <div class="card text-white bg-primary shadow">
-                                    <div class="card-body">
-                                        <div class="row mb-2">
-                                            <div class="col">
-                                                <p class="m-0">Peformance</p>
-                                                <p class="m-0"><strong>65.2%</strong></p>
-                                            </div>
-                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
-                                        </div>
-                                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since
-                                            last month</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card text-white bg-success shadow">
-                                    <div class="card-body">
-                                        <div class="row mb-2">
-                                            <div class="col">
-                                                <p class="m-0">Peformance</p>
-                                                <p class="m-0"><strong>65.2%</strong></p>
-                                            </div>
-                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
-                                        </div>
-                                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since
-                                            last month</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="row">
                             <div class="col">
                                 <div class="card shadow mb-3">
                                     <div class="card-header py-3">
                                         <p class="text-primary m-0 fw-bold">Vehicle Information</p>
                                     </div>
-                                    <div class="card-body">
+                                    <div th:object="${carInfo}" class="card-body">
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">Make and model</p>
+                                                    <label class="form-label" for="car">
+                                                    </label>
+                                                    <select id="car" class="form-select"
+                                                            name="car">
+                                                        <option th:value="${null}" selected="">Select vehicle</option>
+                                                        <option th:each="car : ${user.cars()}"
+                                                                th:value="${car.id()}"
+                                                                th:text="${car.makeAndModel()}"></option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">Fuel type</p>
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-3">
-                                                    <p class="text-center">Displacement</p>
+                                                    <p class="text-center"><strong>Make and model</strong></p>
+                                                    <p th:text="*{makeAndModel()}" class="text-center">Make and
+                                                        model</p>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">VIN</p>
+                                                    <p class="text-center"><strong>Fuel type</strong></p>
+                                                    <p th:text="*{fuelType()}" class="text-center">Fuel type</p>
                                                 </div>
                                             </div>
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">Registration</p>
+                                                    <p class="text-center"><strong>Displacement</strong></p>
+                                                    <p th:text="*{displacement()}" class="text-center">Displacement</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="mb-3">
+                                                    <p class="text-center"><strong>VIN</strong></p>
+                                                    <p th:text="*{vin()}" class="text-center">VIN</p>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="mb-3">
+                                                    <p class="text-center"><strong>Registration</strong></p>
+                                                    <p th:text="*{registration()}" class="text-center">Registration</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -88,42 +78,51 @@
                                         <p class="text-primary m-0 fw-bold">Date and Validity</p>
                                     </div>
                                     <div class="card-body">
-                                        <form>
+                                        <form th:object="${insuranceAdd}" th:method="post"
+                                              th:action="@{/insurances/add/{id}(id=${carInfo.id()})}">
                                             <div class="row">
                                                 <div class="col">
-                                                    <div class="mb-3"><label class="form-label"
-                                                                             for="companyName"><strong>Company
-                                                        Name</strong></label><input class="form-control" type="text"
-                                                                                    name="companyName"
-                                                                                    placeholder="Alianz"></div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="companyName">
+                                                            <strong>Company Name</strong>
+                                                        </label>
+                                                        <input id="companyName" class="form-control" type="text"
+                                                               name="companyName" th:field="*{companyName}"
+                                                               placeholder="Company">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col">
-                                                    <div class="mb-3"><label class="form-label" for="fromDate"><strong>Valid
-                                                        From</strong></label><input class="form-control" type="date"
-                                                                                    name="fromDate"></div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="fromDate">
+                                                            <strong>Valid From</strong>
+                                                        </label>
+                                                        <input id="fromDate" class="form-control" type="date"
+                                                               th:field="*{startDate}" name="fromDate">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col">
-                                                    <div class="mb-3"><label class="form-label" for="validity"><strong>Type</strong></label><select
-                                                            class="form-select" name="validity">
-                                                        <optgroup label="validity">
-                                                            <option value="1 Month" selected="">1 Month</option>
-                                                            <option value="3 Months">3 Months</option>
-                                                            <option value="6 Months">6 Months</option>
-                                                            <option value="1 Year">1 Year</option>
-                                                        </optgroup>
+                                                    <div class="mb-3"><label class="form-label" for="validity"><strong>Type</strong></label>
+                                                        <select
+                                                            class="form-select" id="validity" name="validity" th:field="*{insuranceValidity}">
+                                                            <option th:value="${null}" selected="">Select validity</option>
+                                                            <option th:each="validity : ${T (bg.softuni.serviceScheduler.insurance.model.InsuranceValidity).values()}"
+                                                                    th:value="${validity}" th:text="${validity.getPeriodName()}"></option>
                                                     </select></div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="mb-3"><label class="form-label"
-                                                                             for="cost"><strong>Cost</strong></label><input
+                                                                             for="cost"><strong>Cost</strong></label>
+                                                        <input
+                                                                id="cost" th:field="*{price}"
                                                             class="form-control" type="number" name="cost" value="50"
-                                                            step="0.50" placeholder="50"></div>
+                                                            step="0.50" placeholder="50">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="mb-3">
@@ -145,6 +144,7 @@
 </div>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/theme.js"></script>
+<script src="/js/insurance-add.js"></script>
 </body>
 
 </html>

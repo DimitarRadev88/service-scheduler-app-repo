@@ -1,13 +1,18 @@
 package bg.softuni.serviceScheduler.user.service.impl;
 
+import bg.softuni.serviceScheduler.oilChange.model.OilChange;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.service.UserService;
+import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
+import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInsuranceAddServiceView;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
-import bg.softuni.serviceScheduler.vehicle.service.dto.CarServicesDoneViewServiceModel;
+import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardViewServiceModel;
+import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
 import bg.softuni.serviceScheduler.web.dto.UserLoginBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -78,17 +83,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDashboardServiceModelView getUser(UUID id) {
-        Optional<User> optionalUser = userRepository.findById(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
+        List<CarDashboardViewServiceModel> cars = user.getCars().stream().map(car -> new CarDashboardViewServiceModel(car.getId(),
+                car.getModel().getBrand().getName(),
+                car.getModel().getName(),
+                car.getVin(),
+                car
+                        .getEngine()
+                        .getOilChanges()
+                        .stream()
+                        .map(OilChange::getCost)
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO),
+                car
+//                        todo
+                        .getEngine().getMileage() > 0
+        )).toList();
 
-        User user = optionalUser.get();
+        List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServices();
 
-        List<CarServicesDoneViewServiceModel> services = carService.getAllServices();
+        return new UserDashboardServiceModelView(services.size(), user.getRegistrationDate().toLocalDate(), cars, services);
+    }
 
-        return new UserDashboardServiceModelView(services.size(), user.getRegistrationDate().toLocalDate(), carService.getCarDashboardServiceModels(), services);
+    @Override
+    @Transactional
+    public UserWithCarsInsuranceAddServiceView getUserWithCarsInsuranceAddServiceView(UUID id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        return new UserWithCarsInsuranceAddServiceView(
+                user.getId(),
+                user.getCars().stream().map(car -> new CarInsuranceAddSelectView(
+                        car.getId(),
+                        car.getModel().getBrand().getName() + " " + car.getModel().getName()
+                )).toList()
+        );
     }
 }
