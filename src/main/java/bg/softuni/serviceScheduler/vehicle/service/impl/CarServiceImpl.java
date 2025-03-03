@@ -1,19 +1,19 @@
 package bg.softuni.serviceScheduler.vehicle.service.impl;
 
-import bg.softuni.serviceScheduler.engine.model.Engine;
+
 import bg.softuni.serviceScheduler.insurance.model.Insurance;
-import bg.softuni.serviceScheduler.oilChange.model.OilChange;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
-import bg.softuni.serviceScheduler.vehicle.dao.CarBrandRepository;
-import bg.softuni.serviceScheduler.vehicle.dao.CarModelRepository;
-import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
+import bg.softuni.serviceScheduler.vehicle.dao.*;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.CarModel;
+import bg.softuni.serviceScheduler.vehicle.model.Engine;
+import bg.softuni.serviceScheduler.vehicle.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
 import bg.softuni.serviceScheduler.vignette.model.Vignette;
-import bg.softuni.serviceScheduler.web.dto.VehicleAddBindingModel;
+import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
+import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +32,17 @@ public class CarServiceImpl implements CarService {
     private final UserRepository userRepository;
     private final CarBrandRepository carBrandRepository;
     private final CarModelRepository carModelRepository;
+    private final OilChangeRepository oilChangeRepository;
+    private final EngineRepository engineRepository;
 
     @Autowired
-    public CarServiceImpl(CarRepository carRepository, UserRepository userRepository, CarBrandRepository carBrandRepository, CarModelRepository carModelRepository) {
+    public CarServiceImpl(CarRepository carRepository, UserRepository userRepository, CarBrandRepository carBrandRepository, CarModelRepository carModelRepository, OilChangeRepository oilChangeRepository, EngineRepository engineRepository) {
         this.carRepository = carRepository;
         this.userRepository = userRepository;
         this.carBrandRepository = carBrandRepository;
         this.carModelRepository = carModelRepository;
+        this.oilChangeRepository = oilChangeRepository;
+        this.engineRepository = engineRepository;
     }
 
     private static BigDecimal getOilChangesCost(Car car) {
@@ -125,7 +129,8 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public void doAdd(VehicleAddBindingModel vehicleAdd, UUID userId) {
+    @Transactional
+    public UUID doAdd(CarAddBindingModel vehicleAdd, UUID userId) {
         Car car = new Car();
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("No active user found"));
@@ -151,9 +156,14 @@ public class CarServiceImpl implements CarService {
         car.setYearOfProduction(vehicleAdd.year());
         car.setRegistration(vehicleAdd.registration());
 
-        carRepository.save(car);
+        Car save = carRepository.save(car);
+        Engine savedEngine = save.getEngine();
+        savedEngine.setCar(car);
+        engineRepository.save(savedEngine);
 
-        log.info("User {} added {}: ", user.getId(), car.getModel().getName());
+        log.info("User {} added {} with engine {}", user.getId(), car.getModel().getName(), savedEngine.getId());
+
+        return save.getId();
     }
 
     @Override
@@ -185,21 +195,22 @@ public class CarServiceImpl implements CarService {
     public CarInfoServiceViewModel getCarInfoServiceViewModel(UUID id) {
         Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
 
+        List<OilChange> oilChanges = car.getEngine().getOilChanges().stream().sorted(Comparator.comparingInt(OilChange::getMileage).reversed()).toList();
         return new CarInfoServiceViewModel(
                 car.getId(),
                 car.getModel().getBrand().getName() + " " + car.getModel().getName(),
-                car.getEngine().getOilChanges().isEmpty() ? 100 : 100 / car.getEngine().getOilChanges().getLast().getChangeInterval() / (car.getEngine().getOilChanges().getLast().getMileage() - car.getEngine().getMileage()),
+                oilChanges.isEmpty() ? 100 : oilChanges.getFirst().getMileage() - car.getEngine().getMileage() >= 0 ? 0 : Math.min((car.getEngine().getMileage() - oilChanges.getFirst().getMileage()) * 100 / oilChanges.getFirst().getChangeInterval(), 100),
                 new LastServicesServiceViewModel(
-                        car.getEngine().getOilChanges().isEmpty() ?
-                                new OilChangeDateAndIdServiceViewModel(null, null , true, true) :
-                                new OilChangeDateAndIdServiceViewModel(
-                                        car.getEngine().getOilChanges().getLast().getId(),
-                                        car.getEngine().getOilChanges().getLast().getChangeDate(),
-                                        car.getEngine().getMileage() + 1000 >= car.getEngine().getOilChanges().getLast().getMileage() + car.getEngine().getOilChanges().getLast().getChangeInterval(),
-                                        car.getEngine().getMileage() >= car.getEngine().getOilChanges().getLast().getMileage() + car.getEngine().getOilChanges().getLast().getChangeInterval()
-                                        ),
+                        oilChanges.isEmpty() ?
+                                new CarOilChangeDateAndIdServiceViewModel(null, null, true, true) :
+                                new CarOilChangeDateAndIdServiceViewModel(
+                                        oilChanges.getFirst().getId(),
+                                        oilChanges.getFirst().getChangeDate(),
+                                        car.getEngine().getMileage() + 1000 >= oilChanges.getFirst().getMileage() + oilChanges.getFirst().getChangeInterval(),
+                                        car.getEngine().getMileage() >= oilChanges.getFirst().getMileage() + oilChanges.getFirst().getChangeInterval()
+                                ),
                         car.getInsurances().isEmpty() ?
-                                new InsurancePaymentDateAndIdServiceViewModel(null, null , true, true) :
+                                new InsurancePaymentDateAndIdServiceViewModel(null, null, true, true) :
                                 new InsurancePaymentDateAndIdServiceViewModel(
                                         car.getInsurances().getLast().getId(),
                                         car.getInsurances().getLast().getAddedAt(),
@@ -207,14 +218,72 @@ public class CarServiceImpl implements CarService {
                                         car.getInsurances().getLast().getEndDate().isAfter(LocalDate.now())
                                 ),
                         car.getVignettes().isEmpty() ?
-                                new VignetteDateAndIdServiceViewModel(null, null , true, true) :
+                                new VignetteDateAndIdServiceViewModel(null, null, true, true) :
                                 new VignetteDateAndIdServiceViewModel(
                                         car.getVignettes().getLast().getId(),
                                         car.getVignettes().getLast().getAddedAt(),
                                         car.getVignettes().getLast().getEndDate().isAfter(LocalDate.now().plusDays(1)),
                                         car.getVignettes().getLast().getEndDate().isAfter(LocalDate.now())
                                 )
+                ),
+                new CarInfoEngineViewModel(
+                        car.getEngine().getId(),
+                        car.getEngine().getMileage()
                 )
         );
     }
+
+    @Override
+    public EngineOilChangeServiceViewModel getEngineOilChangeAddViewModel(UUID engineId) {
+        Engine engine = engineRepository.findById(engineId).orElseThrow(() -> new RuntimeException("Engine not found"));
+
+        Car car = engine.getCar();
+
+        return new EngineOilChangeServiceViewModel(
+                engine.getId(),
+                engine.getFuelType().name().charAt(0) + engine.getFuelType().name().substring(1).toLowerCase(),
+                engine.getDisplacement(),
+                engine.getOilCapacity(),
+                engine.getOilFilter(),
+                engine.getMileage(),
+                new CarOilChangeAddServiceViewModel(
+                        car.getId(),
+                        car.getModel().getBrand().getName() + " " + car.getModel().getName(),
+
+                        car.getVin()
+                )
+        );
+    }
+
+    @Override
+    @Transactional
+    public UUID doAdd(OilChangeAddBindingModel oilChangeAdd, UUID engineId) {
+        Engine engine = engineRepository.findById(engineId).orElseThrow(() -> new RuntimeException("Engine not found"));
+
+        OilChange oilChange = new OilChange(
+                null,
+                engine,
+                oilChangeAdd.cost(),
+                LocalDate.now(),
+                oilChangeAdd.changeMileage(),
+                oilChangeAdd.changeInterval(),
+                oilChangeAdd.changeDate()
+        );
+
+        OilChange save = oilChangeRepository.save(oilChange);
+        engine.getOilChanges().add(save);
+
+        engineRepository.save(engine);
+        return engine.getCar().getId();
+    }
+
+    @Override
+    public void doAddMileage(EngineMileageAddBindingModel engineMileageAdd, UUID id) {
+        Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
+
+        car.getEngine().setMileage(engineMileageAdd.mileage());
+
+        carRepository.save(car);
+    }
+
 }

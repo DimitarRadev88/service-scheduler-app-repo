@@ -1,6 +1,5 @@
 package bg.softuni.serviceScheduler.vehicle.model;
 
-import bg.softuni.serviceScheduler.engine.model.Engine;
 import bg.softuni.serviceScheduler.insurance.model.Insurance;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.vignette.model.Vignette;

@@ -1,17 +1,15 @@
 package bg.softuni.serviceScheduler.web.dto;
 
-import bg.softuni.serviceScheduler.engine.model.FuelType;
-import bg.softuni.serviceScheduler.vehicle.model.CarMakeEnum;
-import bg.softuni.serviceScheduler.vehicle.model.CarModelEnum;
+import bg.softuni.serviceScheduler.vehicle.model.FuelType;
 import bg.softuni.serviceScheduler.vehicle.model.VehicleCategory;
 import jakarta.validation.constraints.*;
 
 import java.time.Year;
 
-public record VehicleAddBindingModel(
-        @NotNull(message = "You must select vehicle make")
+public record CarAddBindingModel(
+        @NotBlank(message = "You must select vehicle make")
         String make,
-        @NotNull(message = "You must select vehicle model")
+        @NotBlank(message = "You must select vehicle model")
         String model,
         @Size(max = 15, message = "Max 15 characters for Trim")
         String trim,
@@ -41,11 +39,11 @@ public record VehicleAddBindingModel(
         String oilFilterNumber
 ) {
 
-    public VehicleAddBindingModel() {
+    public CarAddBindingModel() {
         this(null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    public VehicleAddBindingModel(String brand) {
+    public CarAddBindingModel(String brand) {
         this(brand, null, null, null, null, null, null, null, null, null, null, null);
     }
 }

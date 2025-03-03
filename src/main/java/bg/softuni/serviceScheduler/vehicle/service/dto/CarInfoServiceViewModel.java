@@ -6,6 +6,7 @@ public record CarInfoServiceViewModel(
         UUID id,
         String makeAndModel,
         Integer engineOilLifePercent,
-        LastServicesServiceViewModel lastServices
+        LastServicesServiceViewModel lastServices,
+        CarInfoEngineViewModel engine
 ) {
 }

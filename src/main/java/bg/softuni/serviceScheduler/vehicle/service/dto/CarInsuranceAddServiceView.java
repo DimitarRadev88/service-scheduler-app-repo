@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.vehicle.service.dto;
 
-import bg.softuni.serviceScheduler.engine.model.FuelType;
+import bg.softuni.serviceScheduler.vehicle.model.FuelType;
 
 import java.util.UUID;
 

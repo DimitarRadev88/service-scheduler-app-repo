@@ -1,12 +1,13 @@
 package bg.softuni.serviceScheduler.user.service.impl;
 
-import bg.softuni.serviceScheduler.oilChange.model.OilChange;
+import bg.softuni.serviceScheduler.insurance.model.Insurance;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInsuranceAddServiceView;
+import bg.softuni.serviceScheduler.vehicle.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardViewServiceModel;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
@@ -97,7 +98,8 @@ public class UserServiceImpl implements UserService {
                         .stream()
                         .map(OilChange::getCost)
                         .reduce(BigDecimal::add)
-                        .orElse(BigDecimal.ZERO),
+                        .orElse(BigDecimal.ZERO)
+                                .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
                 car
 //                        todo
                         .getEngine().getMileage() > 0

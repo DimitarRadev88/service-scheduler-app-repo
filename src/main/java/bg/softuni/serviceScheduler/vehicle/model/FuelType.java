@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.engine.model;
+package bg.softuni.serviceScheduler.vehicle.model;
 
 public enum FuelType {
     PETROL,

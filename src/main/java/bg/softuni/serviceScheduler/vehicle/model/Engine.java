@@ -1,7 +1,5 @@
-package bg.softuni.serviceScheduler.engine.model;
+package bg.softuni.serviceScheduler.vehicle.model;
 
-import bg.softuni.serviceScheduler.vehicle.model.Car;
-import bg.softuni.serviceScheduler.oilChange.model.OilChange;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,9 +29,11 @@ public class Engine {
     private Double oilCapacity;
     @Column(nullable = false)
     private Integer mileage;
+    @Basic
+    private String oilFilter;
     @OneToOne
     private Car car;
-    @OneToMany(mappedBy = "engine")
+    @OneToMany(mappedBy = "engine", cascade = CascadeType.ALL)
     private List<OilChange> oilChanges;
 
 }

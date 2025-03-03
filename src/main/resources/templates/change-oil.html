@@ -4,7 +4,9 @@
 <head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
 
 <body id="page-top">
-<div th:insert="~{common/fragments.html :: sidebar}" id="wrapper">
+<div id="wrapper">
+
+    <nav th:replace="~{common/fragments.html :: sidebar}" ></nav>
 
     <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
@@ -13,39 +15,7 @@
                 <h3 class="text-center text-dark mb-4">Oil Change</h3>
                 <div class="row mb-3">
                     <div class="col-lg-8 mx-auto">
-                        <div class="row mb-3 d-none">
-                            <div class="col">
-                                <div class="card text-white bg-primary shadow">
-                                    <div class="card-body">
-                                        <div class="row mb-2">
-                                            <div class="col">
-                                                <p class="m-0">Performance</p>
-                                                <p class="m-0"><strong>65.2%</strong></p>
-                                            </div>
-                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
-                                        </div>
-                                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since
-                                            last month</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card text-white bg-success shadow">
-                                    <div class="card-body">
-                                        <div class="row mb-2">
-                                            <div class="col">
-                                                <p class="m-0">Performance</p>
-                                                <p class="m-0"><strong>65.2%</strong></p>
-                                            </div>
-                                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
-                                        </div>
-                                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since
-                                            last month</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
+                        <div class="row" th:object="${engineView}">
                             <div class="col">
                                 <div class="card shadow mb-3">
                                     <div class="card-header py-3">
@@ -55,38 +25,44 @@
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">Make and model</p>
+                                                    <p class="text-center"><strong>Make and Model</strong></p>
+                                                    <p th:text="*{carView().makeAndModel()}" class="text-center"></p>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">Fuel type</p>
+                                                    <p class="text-center"><strong>Fuel Type</strong></p>
+                                                    <p th:text="*{fuelType()}" class="text-center"></p>
                                                 </div>
                                             </div>
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">Displacement</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="mb-3">
-                                                    <p class="text-center">VIN</p>
+                                                    <p class="text-center"><strong>Displacement</strong></p>
+                                                    <p th:text="*{displacement()}" class="text-center"></p>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">Oil capacity</p>
+                                                    <p class="text-center"><strong>VIN</strong></p>
+                                                    <p th:text="*{carView().vin()}" class="text-center"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="mb-3">
+                                                    <p class="text-center"><strong>Oil Capacity</strong></p>
+                                                    <p th:text="*{oilCapacity()}" class="text-center"></p>
                                                 </div>
                                             </div>
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p class="text-center">Filter number</p>
+                                                    <p class="text-center"><strong>Oil Filter Number</strong></p>
+                                                    <p th:text="*{oilFilter()}" class="text-center"></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -95,29 +71,34 @@
                                         <p class="text-primary m-0 fw-bold">Date and Mileage</p>
                                     </div>
                                     <div class="card-body">
-                                        <form>
+                                        <form th:action="@{/vehicles/engines/{id}/oil-changes/add(id=${engineView.id()})}" th:object="${oilChangeAdd}" method="post">
                                             <div class="row">
                                                 <div class="col">
-                                                    <div class="mb-3"><label class="form-label"
-                                                                             for="changeDate"><strong>Date</strong></label><input
-                                                            class="form-control" type="date" name="changeDate"></div>
+                                                    <div class="mb-3">
+                                                        <label th:unless="${#fields.hasErrors('changeDate')}" class="form-label" for="changeDate"><strong>Date</strong></label>
+                                                        <label th:if="${#fields.hasErrors('changeDate')}" class="form-label text-danger" th:errors="*{changeDate}" for="changeDate"><strong>Date</strong></label>
+                                                        <label class="form-label" for="changeDate"><strong>Date</strong></label>
+                                                        <input id="changeDate" th:value="*{changeDate()}" class="form-control" type="date" name="changeDate">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col">
-                                                    <div class="mb-3"><label class="form-label" for="oilChangeInterval"><strong>Mileage</strong></label><input
-                                                            class="form-control" type="number" name="oilChangeInterval"
-                                                            placeholder="156000"></div>
+                                                    <div class="mb-3"><label class="form-label" for="changeMileage"><strong>Mileage</strong></label>
+                                                        <input id="changeMileage"
+                                                               th:value="${engineView.mileage()}" class="form-control" type="number" name="changeMileage">
+                                                    </div>
                                                 </div>
                                                 <div class="col">
-                                                    <div class="mb-3"><label class="form-label" for="oilChangeInterval"><strong>Interval</strong></label><input
-                                                            class="form-control" type="number" name="oilChangeInterval"
-                                                            placeholder="10000"></div>
+                                                    <div class="mb-3"><label class="form-label" for="changeInterval"><strong>Interval</strong></label>
+                                                        <input value="10000" id="changeInterval"
+                                                            class="form-control" type="number" name="changeInterval" step="500" min="500" max="30000">
+                                                    </div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="mb-3"><label class="form-label"
-                                                                             for="cost"><strong>Cost</strong></label><input
-                                                            class="form-control" type="number" name="cost" value="50"
+                                                                             for="cost"><strong>Cost</strong></label>
+                                                        <input id="cost" class="form-control" type="number" name="cost" value="50"
                                                             step="0.50" placeholder="50"></div>
                                                 </div>
                                             </div>

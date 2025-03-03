@@ -1,6 +1,6 @@
-package bg.softuni.serviceScheduler.engine.dao;
+package bg.softuni.serviceScheduler.vehicle.dao;
 
-import bg.softuni.serviceScheduler.engine.model.Engine;
+import bg.softuni.serviceScheduler.vehicle.model.Engine;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

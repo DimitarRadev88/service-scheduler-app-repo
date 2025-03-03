@@ -21,7 +21,7 @@
                                         <p class="text-primary m-0 fw-bold">Vehicle Info</p>
                                     </div>
                                     <div class="card-body">
-                                        <form th:action="@{/vehicles/add}" th:object="${vehicleAdd}" method="post">
+                                        <form th:action="@{/vehicles/add/{brand}(brand=${vehicleAdd.make})}" th:object="${vehicleAdd}" method="post">
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="mb-3">
@@ -111,8 +111,8 @@
                                                             <strong th:unless="${#fields.hasErrors('registration')}">Registration*</strong>
                                                         </label>
                                                         <input class="form-control" th:field="*{registration}" type="text"
-                                                            id="registration"
-                                                            placeholder="CB0123**" name="registration">
+                                                               id="registration"
+                                                               placeholder="CB0123**" name="registration">
                                                     </div>
                                                 </div>
                                             </div>
@@ -182,8 +182,8 @@
                                                             <strong th:unless="${#fields.hasErrors('mileage')}">Mileage*</strong>
                                                         </label>
                                                         <input class="form-control" type="number" id="mileage"
-                                                                name="mileage" step="100" placeholder="123000"
-                                                                th:value="${null}" th:field="*{mileage}">
+                                                               name="mileage" step="100" placeholder="123000"
+                                                               th:value="${null}" th:field="*{mileage}">
                                                     </div>
                                                 </div>
                                                 <div class="col">
