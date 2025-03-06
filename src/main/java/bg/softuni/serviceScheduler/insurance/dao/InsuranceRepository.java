@@ -9,4 +9,6 @@ import java.util.UUID;
 @Repository
 public interface InsuranceRepository extends JpaRepository<Insurance, UUID> {
 
+    Boolean existsByIsValidTrueAndCarId(UUID carId);
+
 }

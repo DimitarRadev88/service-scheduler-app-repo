@@ -90,7 +90,7 @@
                                             style="width: 100px;">View
                                     </button>
                                 </form>
-                                <form th:method="delete" th:action="@{vehicles/delete/{id}(id=${car.id})}">
+                                <form th:method="delete" th:action="@{vehicles/{id}(id=${car.id})}">
                                     <button type="submit" class="btn btn-primary bg-danger border-danger"
                                             style="width: 100px;">Delete
                                     </button>

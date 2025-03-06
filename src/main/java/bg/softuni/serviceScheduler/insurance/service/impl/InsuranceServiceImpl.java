@@ -33,15 +33,20 @@ public class InsuranceServiceImpl implements InsuranceService {
         Insurance save = insuranceRepository.save(new Insurance(
                 null,
                 insuranceAdd.companyName(),
-                insuranceAdd.startDate(),
-                insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidity().getDays()),
-                insuranceAdd.insuranceValidity(),
-                insuranceAdd.price(),
-                insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidity().getDays()).isAfter(LocalDate.now()),
+                insuranceAdd.fromDate(),
+                insuranceAdd.fromDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()),
+                insuranceAdd.insuranceValidityPeriod(),
+                insuranceAdd.cost(),
+                insuranceAdd.fromDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()).isAfter(LocalDate.now()),
                 car,
                 LocalDate.now()
         ));
 
         log.info("Insurance expiring on {} for {} added", save.getEndDate(), car.getModel().getName());
+    }
+
+    @Override
+    public Boolean hasActiveInsurance(UUID carId) {
+        return insuranceRepository.existsByIsValidTrueAndCarId(carId);
     }
 }

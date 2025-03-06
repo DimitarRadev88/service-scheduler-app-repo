@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -34,10 +31,6 @@ public class VehicleController {
 
     @GetMapping("/add")
     public String getVehicleAddPage(Model model) {
-        if (!model.containsAttribute("vehicleAdd")) {
-            model.addAttribute("vehicleAdd", new CarAddBindingModel());
-        }
-
         if (!model.containsAttribute("brands")) {
             Map<String, List<String>> allBrandsWithModels = carService.getAllBrandsWithModels();
             model.addAttribute("brands", allBrandsWithModels);
@@ -46,26 +39,11 @@ public class VehicleController {
         return "vehicle-add";
     }
 
-    @PostMapping("/add")
-    public ModelAndView addNewVehicle(ModelAndView modelAndView,
-                                      @Valid CarAddBindingModel vehicleAdd,
-                                      BindingResult bindingResult,
-                                      RedirectAttributes redirectAttributes,
-                                      HttpSession session) {
-
-        if (session.getAttribute("user_id") == null) {
-            modelAndView.setViewName("redirect:/login");
-        } else if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("vehicleAdd", vehicleAdd);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.vehicleAdd", bindingResult);
-            modelAndView.setViewName("redirect:/vehicles/add");
-        }
-
-        return modelAndView;
-    }
-
     @GetMapping("/add/{brand}")
     public String getVehicleAddPageWithBrand(Model model, @PathVariable String brand) {
+        if (brand.isBlank()) {
+            return "redirect:/vehicles/add";
+        }
 
         if (!model.containsAttribute("vehicleAdd")) {
             CarAddBindingModel vehicleAdd = new CarAddBindingModel(brand);
@@ -154,7 +132,7 @@ public class VehicleController {
         return "change-oil";
     }
 
-    @PostMapping("engines/{id}/oil-changes/add")
+    @PostMapping("/engines/{id}/oil-changes/add")
     public String addOilChangePost(
             @PathVariable UUID id,
             @Valid OilChangeAddBindingModel oilChangeAdd,
@@ -175,7 +153,16 @@ public class VehicleController {
             UUID carId = carService.doAdd(oilChangeAdd, id);
             return "redirect:/vehicles/" + carId;
         }
+    }
 
+    @DeleteMapping("/{id}")
+    public String deleteVehicle(@PathVariable UUID id, HttpSession session) {
+        if (session.getAttribute("user_id") == null) {
+            return "redirect:/login";
+        }
+
+        carService.doDelete(id);
+        return "redirect:/";
     }
 
 }

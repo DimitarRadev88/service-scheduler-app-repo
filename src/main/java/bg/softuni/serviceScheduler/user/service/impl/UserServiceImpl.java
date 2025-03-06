@@ -1,19 +1,18 @@
 package bg.softuni.serviceScheduler.user.service.impl;
 
 import bg.softuni.serviceScheduler.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.service.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
-import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInsuranceAddServiceView;
-import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
-import bg.softuni.serviceScheduler.vehicle.model.Car;
+import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;
 import bg.softuni.serviceScheduler.vehicle.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardViewServiceModel;
-import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
+import bg.softuni.serviceScheduler.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.web.dto.UserLoginBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import jakarta.transaction.Transactional;
@@ -24,14 +23,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -41,14 +35,16 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private static final String BASIC_PROFILE_PICTURE_URL = "src/main/resources/static/img/avatars/basic-profile-pic.jpg";
     private final CarService carService;
-    private final CarRepository carRepository;
+    private final InsuranceService insuranceService;
+    private final VignetteService vignetteService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, CarRepository carRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, InsuranceService insuranceService, VignetteService vignetteService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.carService = carService;
-        this.carRepository = carRepository;
+        this.insuranceService = insuranceService;
+        this.vignetteService = vignetteService;
     }
 
     @Override
@@ -110,9 +106,10 @@ public class UserServiceImpl implements UserService {
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO)
                         .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
-                car
+                !insuranceService.hasActiveInsurance(car.getId())
+                || carService.needsOilChange(car.getId())
+//                || vignetteService.hasActiveVignette(car.getId())
 //                        todo
-                        .getEngine().getMileage() > 0
         )).toList();
 
         return new UserDashboardServiceModelView(user.getRegistrationDate().toLocalDate(), cars, carService.getAllServicesByUser(user.getId()));
@@ -120,10 +117,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserWithCarsInsuranceAddServiceView getUserWithCarsInsuranceAddServiceView(UUID id) {
+    public UserWithCarsInfoAddServiceView getUserWithCarsInfoAddServiceView(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
-        return new UserWithCarsInsuranceAddServiceView(
+        return new UserWithCarsInfoAddServiceView(
                 user.getId(),
                 user.getCars().stream().map(car -> new CarInsuranceAddSelectView(
                         car.getId(),

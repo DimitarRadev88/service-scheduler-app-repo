@@ -12,6 +12,7 @@ import bg.softuni.serviceScheduler.vehicle.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
 import bg.softuni.serviceScheduler.vignette.model.Vignette;
+import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import jakarta.transaction.Transactional;
@@ -175,10 +176,9 @@ public class CarServiceImpl implements CarService {
         return new CarInfoServiceViewModel(
                 car.getId(),
                 car.getModel().getBrand().getName() + " " + car.getModel().getName(),
-                optionalOilChange.map(oilChange -> oilChange.getMileage() - car.getEngine().getMileage() >= 0
-                        ? 0
-                        : Math.min((car.getEngine().getMileage() - oilChange.getMileage()) * 100 / oilChange.getChangeInterval(), 100))
-                        .orElse(100),
+                car.getVin(),
+                car.getRegistration(),
+
                 getLastServices(car),
                 mapToCarInfoEngineViewModel(car, optionalOilChange)
         );
@@ -187,9 +187,15 @@ public class CarServiceImpl implements CarService {
     private static CarInfoEngineViewModel mapToCarInfoEngineViewModel(Car car, Optional<OilChange> optionalOilChange) {
         return new CarInfoEngineViewModel(
                 car.getEngine().getId(),
+                car.getEngine().getFuelType(),
+                car.getEngine().getDisplacement(),
                 car.getEngine().getMileage(),
-                optionalOilChange.isEmpty() ? 0 : optionalOilChange.get().getChangeInterval(),
-                optionalOilChange.isEmpty() ? 0 : optionalOilChange.get().getMileage()
+                optionalOilChange.map(oilChange -> oilChange.getMileage() - car.getEngine().getMileage() >= 0
+                                ? 0
+                                : Math.min((car.getEngine().getMileage() - oilChange.getMileage()) * 100 / oilChange.getChangeInterval(), 100))
+                        .orElse(100),
+                optionalOilChange.map(OilChange::getChangeInterval).orElse(0),
+                optionalOilChange.map(OilChange::getMileage).orElse(0)
         );
     }
 
@@ -258,7 +264,6 @@ public class CarServiceImpl implements CarService {
         return new CarOilChangeAddServiceViewModel(
                 car.getId(),
                 car.getModel().getBrand().getName() + " " + car.getModel().getName(),
-
                 car.getVin()
         );
     }
@@ -297,6 +302,35 @@ public class CarServiceImpl implements CarService {
     @Override
     public Long getOilChangesCount() {
         return oilChangeRepository.count();
+    }
+
+    @Override
+    public boolean needsOilChange(UUID id) {
+        return oilChangeRepository.findFirstByEngineIdOrderByDateDesc(id)
+                .map(oilChange -> oilChange.getMileage() + oilChange.getChangeInterval() >= engineRepository.findByCarId(id)
+                        .orElseThrow(() -> new RuntimeException("Car not found"))
+                        .getMileage())
+                .orElse(false);
+    }
+
+    @Override
+    public void doDelete(UUID id) {
+        if (!carRepository.existsById(id)) {
+            throw new RuntimeException("Car not found");
+        }
+
+        carRepository.deleteById(id);
+    }
+
+    @Override
+    public CarVignetteAddServiceView getCarVignetteAddServiceView(UUID id) {
+        return carRepository.findById(id)
+                .map(car -> new CarVignetteAddServiceView(
+                        car.getId(),
+                        car.getModel().getBrand().getName() + " " + car.getModel().getName(),
+                        car.getRegistration())
+                )
+                .orElseThrow(() -> new RuntimeException("Car not found"));
     }
 
 }

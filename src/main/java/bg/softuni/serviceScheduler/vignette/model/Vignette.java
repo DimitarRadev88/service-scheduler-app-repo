@@ -23,8 +23,6 @@ public class Vignette {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false)
-    private String stickerNumber;
-    @Column(nullable = false)
     private LocalDate startDate;
     @Column(nullable = false)
     private LocalDate endDate;

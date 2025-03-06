@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head th:replace="~{common/fragments.html :: header}"><title>New Vignette</title></head>
+
+<body id="page-top">
+<div id="wrapper">
+
+  <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
+  <div class="d-flex flex-column" id="content-wrapper">
+    <div id="content">
+      <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+      <div class="container-fluid">
+        <h3 class="text-center text-dark mb-4">New Vignette</h3>
+        <div class="row mb-3">
+          <div class="col-lg-8 mx-auto">
+            <div class="row">
+              <div class="col">
+                <div class="card shadow mb-3">
+                  <div class="card-header py-3">
+                    <p class="text-primary m-0 fw-bold">Vehicle Information</p>
+                  </div>
+                  <div th:object="${carInfo}" class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <div class="mb-3">
+                          <label class="form-label" for="car">
+                          </label>
+                          <select id="car" class="form-select"
+                                  name="car">
+                            <option th:value="${null}" >
+                              Select vehicle
+                            </option>
+                            <option th:if="${car.id() == carInfo.id()}" th:each="car : ${user.cars()}"
+                                    th:value="${car.id()}"
+                                    th:text="${car.makeAndModel()}"
+                                    selected="">
+                            </option>
+                            <option th:unless="${car.id() == carInfo.id()}" th:each="car : ${user.cars()}"
+                                    th:value="${car.id()}"
+                                    th:text="${car.makeAndModel()}">
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div class="mb-3">
+                          <p class="text-center"><strong>Make and model</strong></p>
+                          <p th:text="*{makeAndModel()}" class="text-center">Make and
+                            model</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div class="mb-3">
+                          <p class="text-center"><strong>Registration</strong></p>
+                          <p th:text="*{registration()}" class="text-center">Registration</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-header py-3">
+                    <p class="text-primary m-0 fw-bold">Date and Validity</p>
+                  </div>
+                  <div class="card-body">
+                    <form th:object="${vignetteAdd}" th:method="post"
+                          th:action="@{/vignettes/add/{id}(id=${carInfo.id()})}">
+                      <div class="row">
+                        <div class="col">
+                          <div class="mb-3">
+                            <label th:unless="${#fields.hasErrors('fromDate')}" class="form-label" for="fromDate">
+                              <strong>Valid From*</strong>
+                            </label>
+                            <label th:if="${#fields.hasErrors('fromDate')}" class="form-label text-danger" for="fromDate">
+                              <strong th:errors="*{fromDate}"></strong>
+                            </label>
+                            <input id="fromDate" class="form-control" type="date"
+                                   th:field="*{fromDate}" name="fromDate">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col">
+                          <div class="mb-3">
+                            <label th:unless="${#fields.hasErrors('vignetteValidityPeriod')}" class="form-label" for="vignetteValidityPeriod">
+                              <strong>Validity*</strong>
+                            </label>
+                            <label th:if="${#fields.hasErrors('vignetteValidityPeriod')}" class="form-label text-danger" for="vignetteValidityPeriod">
+                              <strong th:errors="*{vignetteValidityPeriod}"></strong>
+                            </label>
+                            <select
+                                    class="form-select" id="vignetteValidityPeriod" name="validity"
+                                    th:field="*{vignetteValidityPeriod}">
+                              <option th:value="${null}" selected="">Select validity period
+                              </option>
+                              <option th:each="validity : ${T (bg.softuni.serviceScheduler.vignette.model.VignetteValidity).values()}"
+                                      th:value="${validity}"
+                                      th:text="${validity}"></option>
+                            </select></div>
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <button class="btn btn-primary btn-sm" type="submit">Add Vignette
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer th:replace="~{common/fragments.html :: footer}"></footer>
+  </div>
+  <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/vignette-add.js"></script>
+</body>
+
+</html>

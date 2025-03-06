@@ -21,18 +21,13 @@
                                         <p class="text-primary m-0 fw-bold">Vehicle Info</p>
                                     </div>
                                     <div class="card-body">
-                                        <form th:action="@{/vehicles/add}" th:object="${vehicleAdd}" method="post">
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="mb-3">
                                                         <label class="form-label" for="make">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('make')}"
-                                                                    th:errors="*{make}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('make')}">Make*</strong>
+                                                            <strong>Make*</strong>
                                                         </label>
-                                                        <select id="make" class="form-select" th:field="*{make}"
-                                                                name="make">
+                                                        <select id="make" class="form-select" name="make">
                                                             <option th:value="${null}" selected="">Select vehicle make
                                                             </option>
                                                             <option th:each="make : ${brands.keySet()}"
@@ -40,171 +35,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="model">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('model')}"
-                                                                    th:errors="*{model}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('model')}">Model*</strong>
-                                                        </label>
-                                                        <select id="model" class="form-select" th:field="*{model}"
-                                                                name="model">
-                                                            <option th:value="${null}" selected="">Select vehicle model</option>
-                                                            <option th:each="model : ${models}"
-                                                                    th:value="${model}" th:text="${model}">A3
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="trim">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('trim')}"
-                                                                    th:errors="*{trim}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('trim')}">Trim</strong>
-                                                        </label>
-                                                        <input class="form-control" type="text" id="trim"
-                                                               th:field="*{trim}" placeholder="S-line" name="trim">
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label"
-                                                               for="year">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('year')}"
-                                                                    th:errors="*{year}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('year')}">Year*</strong>
-                                                        </label>
-                                                        <input class="form-control" th:field="*{year}" type="number"
-                                                               id="year" name="year"
-                                                               placeholder="2000" value="" step="1" min="1960"
-                                                               max="2025">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="vin">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('vin')}"
-                                                                    th:errors="*{vin}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('vin')}">VIN*</strong>
-                                                        </label>
-                                                        <input class="form-control" th:field="*{vin}" type="text"
-                                                               id="vin"
-                                                               placeholder="17 character vehicle identification"
-                                                               name="vin">
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="registration">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('registration')}"
-                                                                    th:errors="*{registration}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('registration')}">Registration*</strong>
-                                                        </label>
-                                                        <input class="form-control" th:field="*{registration}" type="text"
-                                                            id="registration"
-                                                            placeholder="CB0123**" name="registration">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="category">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('category')}"
-                                                                    th:errors="*{category}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('category')}">Category*</strong>
-                                                        </label>
-                                                        <select class="form-select" th:field="*{category}" id="category" name="category">
-                                                            <option th:value="${null}" selected=selected>Select vehicle category class</option>
-                                                            <option th:each="cat : ${T (bg.softuni.serviceScheduler.vehicle.model.VehicleCategory).values()}" th:text="${cat}" th:value="${cat}"></option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="mb-3"><label class="form-label" for="fuelType">
-                                                        <strong class="text-danger"
-                                                                th:if="${#fields.hasErrors('fuelType')}"
-                                                                th:errors="*{fuelType}"></strong>
-                                                        <strong th:unless="${#fields.hasErrors('fuelType')}">Fuel Type*</strong>
-                                                    </label>
-                                                        <select th:field="*{fuelType}" class="form-select" id="fuelType" name="fuelType">
-                                                            <option th:value="${null}" selected="">Select engine fuel type</option>
-                                                            <option th:each="type : ${T (bg.softuni.serviceScheduler.vehicle.model.FuelType).values()}" th:value="${type}" th:text="${type}"></option>
-                                                        </select></div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="displacement">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('displacement')}"
-                                                                    th:errors="*{displacement}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('displacement')}">Displacement*</strong>
-                                                        </label>
-                                                        <input class="form-control" type="number" id="displacement"
-                                                               name="displacement" min="600" max="8000" step="50" placeholder="2000"
-                                                               th:value="${null}" th:field="*{displacement}">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="oilCapacity">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('oilCapacity')}"
-                                                                    th:errors="*{oilCapacity}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('oilCapacity')}">Oil capacity*</strong>
-                                                        </label>
-                                                        <input class="form-control"
-                                                               type="number" id="oilCapacity"
-                                                               name="oilCapacity" placeholder="4.3"  min="1" max="20" step="0.1"
-                                                               th:value="${null}" th:field="*{oilCapacity}">
-
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="mileage">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('mileage')}"
-                                                                    th:errors="*{mileage}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('mileage')}">Mileage*</strong>
-                                                        </label>
-                                                        <input class="form-control" type="number" id="mileage"
-                                                                name="mileage" step="100" placeholder="123000"
-                                                                th:value="${null}" th:field="*{mileage}">
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="oilFilterNumber">
-                                                            <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('oilFilterNumber')}"
-                                                                    th:errors="*{oilFilterNumber}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('oilFilterNumber')}">Oil filter number</strong>
-                                                        </label>
-                                                        <input class="form-control" id="oilFilterNumber" type="text"
-                                                               name="oilFilterNumber" th:value="${null}" th:field="*{oilFilterNumber}">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <button class="btn btn-primary btn-sm" type="submit">
-                                                    Add Vehicle
-                                                </button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
