@@ -4,6 +4,8 @@ import java.util.UUID;
 
 public record CarInfoEngineViewModel(
         UUID id,
-        Integer mileage
+        Integer mileage,
+        Integer changeInterval,
+        Integer oilChangeMileage
 ) {
 }

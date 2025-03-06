@@ -22,6 +22,7 @@ public class HomeController {
     @GetMapping("/")
     public String viewHome(HttpSession session, Model model) {
         if (session.getAttribute("user_id") == null) {
+            model.addAttribute("statistics", userService.getStatistics());
             return "index";
         }
 

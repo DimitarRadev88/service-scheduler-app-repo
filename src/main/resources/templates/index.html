@@ -7,7 +7,7 @@
     <div id="wrapper">
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <div class="container-fluid">
+                <div th:object="${statistics}" class="container-fluid">
                     <div class="row d-xxl-flex justify-content-xxl-center">
                         <div class="col">
                             <div class="text-center d-flex d-sm-flex justify-content-between align-items-center justify-content-xxl-center mb-4">
@@ -22,7 +22,7 @@
                                     <div class="row g-0 align-items-center">
                                         <div class="col me-2">
                                             <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Registered users</span></div>
-                                            <div class="text-dark fw-bold h5 mb-0"><span>40,000</span></div>
+                                            <div class="text-dark fw-bold h5 mb-0" th:text="*{registeredUsers()}"><span>40,000</span></div>
                                         </div>
                                         <div class="col-auto"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-person fa-2x text-gray-300">
                                                 <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664z"></path>
@@ -37,7 +37,7 @@
                                     <div class="row g-0 align-items-center">
                                         <div class="col me-2">
                                             <div class="text-uppercase text-success fw-bold text-xs mb-1"><span>oil changes</span></div>
-                                            <div class="text-dark fw-bold h5 mb-0"><span>215,000</span></div>
+                                            <div class="text-dark fw-bold h5 mb-0" th:text="*{oilChanges()}"><span>215,000</span></div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-oil-can fa-2x text-gray-300"></i></div>
                                     </div>

@@ -3,10 +3,13 @@ package bg.softuni.serviceScheduler.user.service.impl;
 import bg.softuni.serviceScheduler.insurance.model.Insurance;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
+import bg.softuni.serviceScheduler.user.service.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInsuranceAddServiceView;
+import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
+import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardViewServiceModel;
@@ -21,9 +24,14 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -33,12 +41,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private static final String BASIC_PROFILE_PICTURE_URL = "src/main/resources/static/img/avatars/basic-profile-pic.jpg";
     private final CarService carService;
+    private final CarRepository carRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, CarRepository carRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.carService = carService;
+        this.carRepository = carRepository;
     }
 
     @Override
@@ -99,15 +109,13 @@ public class UserServiceImpl implements UserService {
                         .map(OilChange::getCost)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO)
-                                .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
+                        .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
                 car
 //                        todo
                         .getEngine().getMileage() > 0
         )).toList();
 
-        List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServices();
-
-        return new UserDashboardServiceModelView(services.size(), user.getRegistrationDate().toLocalDate(), cars, services);
+        return new UserDashboardServiceModelView(user.getRegistrationDate().toLocalDate(), cars, carService.getAllServicesByUser(user.getId()));
     }
 
     @Override
@@ -122,5 +130,11 @@ public class UserServiceImpl implements UserService {
                         car.getModel().getBrand().getName() + " " + car.getModel().getName()
                 )).toList()
         );
+    }
+
+    @Override
+    public SiteStatisticsServiceModelView getStatistics() {
+        return new SiteStatisticsServiceModelView(userRepository.count(), carService.getOilChangesCount());
+
     }
 }

@@ -5,8 +5,6 @@ import java.util.UUID;
 
 public record CarOilChangeDateAndIdServiceViewModel(
         UUID id,
-        LocalDate date,
-        Boolean IsCloseToChange,
-        Boolean isInNeedOfChanging
+        LocalDate date
 ) {
 }

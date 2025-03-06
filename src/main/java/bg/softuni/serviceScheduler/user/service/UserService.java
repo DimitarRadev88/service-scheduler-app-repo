@@ -15,4 +15,6 @@ public interface UserService {
     UserDashboardServiceModelView getUser(UUID id);
 
     UserWithCarsInsuranceAddServiceView getUserWithCarsInsuranceAddServiceView(UUID id);
+
+    SiteStatisticsServiceModelView getStatistics();
 }

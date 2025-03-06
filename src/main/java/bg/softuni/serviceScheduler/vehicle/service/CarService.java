@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.vehicle.service;
 
+import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
@@ -12,7 +13,7 @@ import java.util.UUID;
 public interface CarService {
 
     @Transactional
-    List<CarDashboardServicesDoneViewServiceModel> getAllServices();
+    List<CarDashboardServicesDoneViewServiceModel> getAllServicesByUser(UUID userId);
 
     UUID doAdd(CarAddBindingModel vehicleAdd, UUID userId);
 
@@ -22,9 +23,13 @@ public interface CarService {
 
     CarInfoServiceViewModel getCarInfoServiceViewModel(UUID id);
 
+    LastServicesServiceViewModel getLastServices(Car car);
+
     EngineOilChangeServiceViewModel getEngineOilChangeAddViewModel(UUID engineId);
 
     UUID doAdd(OilChangeAddBindingModel oilChangeAdd, UUID engineId);
 
     void doAddMileage(EngineMileageAddBindingModel engineMileageAdd, UUID id);
+
+    Long getOilChangesCount();
 }
