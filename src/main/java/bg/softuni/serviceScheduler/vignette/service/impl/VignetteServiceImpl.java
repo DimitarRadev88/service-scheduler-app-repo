@@ -36,13 +36,13 @@ public class VignetteServiceImpl implements VignetteService {
     public void doAdd(VignetteAddBindingModel vignetteAdd, UUID carId) {
         Car car = carRepository.findById(carId).orElseThrow(() -> new RuntimeException("car not found"));
 
-        LocalDate endDate = vignetteAdd.fromDate().plusDays(vignetteAdd.vignetteValidityPeriod().getDays());
+        LocalDate endDate = vignetteAdd.fromDate().plusDays(vignetteAdd.validity().getDays());
         Vignette vignette = new Vignette(
                 null,
                 vignetteAdd.fromDate(),
                 endDate,
-                vignetteAdd.vignetteValidityPeriod(),
-                VignetteCost.valueOf(vignetteAdd.vignetteValidityPeriod().name()).getCost(),
+                vignetteAdd.validity(),
+                VignetteCost.valueOf(vignetteAdd.validity().name()).getCost(),
                 endDate.isAfter(LocalDate.now()),
                 car,
                 LocalDate.now()
@@ -53,5 +53,10 @@ public class VignetteServiceImpl implements VignetteService {
         carRepository.save(car);
 
         log.info("Vignette expiring on {} added for {}", vignette.getEndDate(), car.getModel().getName());
+    }
+
+    @Override
+    public boolean hasActiveVignette(UUID id) {
+        return vignetteRepository.existsByCarIdAndIsValidTrue(id);
     }
 }

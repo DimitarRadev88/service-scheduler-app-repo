@@ -85,15 +85,15 @@
                       <div class="row">
                         <div class="col">
                           <div class="mb-3">
-                            <label th:unless="${#fields.hasErrors('vignetteValidityPeriod')}" class="form-label" for="vignetteValidityPeriod">
+                            <label th:unless="${#fields.hasErrors('validity')}" class="form-label" for="validity">
                               <strong>Validity*</strong>
                             </label>
-                            <label th:if="${#fields.hasErrors('vignetteValidityPeriod')}" class="form-label text-danger" for="vignetteValidityPeriod">
-                              <strong th:errors="*{vignetteValidityPeriod}"></strong>
+                            <label th:if="${#fields.hasErrors('validity')}" class="form-label text-danger" for="validity">
+                              <strong th:errors="*{validity()}"></strong>
                             </label>
                             <select
-                                    class="form-select" id="vignetteValidityPeriod" name="validity"
-                                    th:field="*{vignetteValidityPeriod}">
+                                    class="form-select" id="validity" name="validity"
+                                    th:field="*{validity}">
                               <option th:value="${null}" selected="">Select validity period
                               </option>
                               <option th:each="validity : ${T (bg.softuni.serviceScheduler.vignette.model.VignetteValidity).values()}"

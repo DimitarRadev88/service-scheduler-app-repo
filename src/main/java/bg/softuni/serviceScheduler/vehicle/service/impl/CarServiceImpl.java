@@ -171,9 +171,9 @@ public class CarServiceImpl implements CarService {
 
     private CarInfoServiceViewModel mapToCarInfoServiceViewModel(Car car) {
 
-        Optional<OilChange> optionalOilChange = oilChangeRepository.findFirstByEngineIdOrderByDateDesc(car.getEngine().getId());
+        Optional<OilChange> optionalOilChange = oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(car.getEngine().getId());
 
-        return new CarInfoServiceViewModel(
+        CarInfoServiceViewModel carInfoServiceViewModel = new CarInfoServiceViewModel(
                 car.getId(),
                 car.getModel().getBrand().getName() + " " + car.getModel().getName(),
                 car.getVin(),
@@ -182,6 +182,7 @@ public class CarServiceImpl implements CarService {
                 getLastServices(car),
                 mapToCarInfoEngineViewModel(car, optionalOilChange)
         );
+        return carInfoServiceViewModel;
     }
 
     private static CarInfoEngineViewModel mapToCarInfoEngineViewModel(Car car, Optional<OilChange> optionalOilChange) {
@@ -203,7 +204,7 @@ public class CarServiceImpl implements CarService {
     public LastServicesServiceViewModel getLastServices(Car car) {
         return new LastServicesServiceViewModel(
                 getLastCarOilChangeDateAndIdServiceViewModel(car),
-                getLasttInsurancePaymentDateAndIdServiceVieModel(car),
+                getLastInsurancePaymentDateAndIdServiceVieModel(car),
                 getLastVignetteDateAndIdServiceViewModel(car)
         );
     }
@@ -214,19 +215,19 @@ public class CarServiceImpl implements CarService {
                 new VignetteDateAndIdServiceViewModel(
                         car.getVignettes().getLast().getId(),
                         car.getVignettes().getLast().getAddedAt(),
-                        car.getVignettes().getLast().getEndDate().isAfter(LocalDate.now().plusDays(1)),
-                        car.getVignettes().getLast().getEndDate().isAfter(LocalDate.now())
+                        car.getVignettes().getLast().getEndDate().isBefore(LocalDate.now().plusDays(1)),
+                        car.getVignettes().getLast().getEndDate().isBefore(LocalDate.now())
                 );
     }
 
-    private static InsurancePaymentDateAndIdServiceViewModel getLasttInsurancePaymentDateAndIdServiceVieModel(Car car) {
+    private static InsurancePaymentDateAndIdServiceViewModel getLastInsurancePaymentDateAndIdServiceVieModel(Car car) {
         return car.getInsurances().isEmpty() ?
                 new InsurancePaymentDateAndIdServiceViewModel(null, null, true, true) :
                 new InsurancePaymentDateAndIdServiceViewModel(
                         car.getInsurances().getLast().getId(),
                         car.getInsurances().getLast().getAddedAt(),
-                        car.getInsurances().getLast().getEndDate().isAfter(LocalDate.now().plusWeeks(1)),
-                        car.getInsurances().getLast().getEndDate().isAfter(LocalDate.now())
+                        car.getInsurances().getLast().getEndDate().isBefore(LocalDate.now().plusWeeks(1)),
+                        car.getInsurances().getLast().getEndDate().isBefore(LocalDate.now())
                 );
     }
 
@@ -305,12 +306,10 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public boolean needsOilChange(UUID id) {
-        return oilChangeRepository.findFirstByEngineIdOrderByDateDesc(id)
-                .map(oilChange -> oilChange.getMileage() + oilChange.getChangeInterval() >= engineRepository.findByCarId(id)
-                        .orElseThrow(() -> new RuntimeException("Car not found"))
-                        .getMileage())
-                .orElse(false);
+    public boolean needsOilChange(Engine engine) {
+        return oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(engine.getId())
+                .map(oilChange -> oilChange.getMileage() + oilChange.getChangeInterval() <= engine.getMileage())
+                .orElse(true);
     }
 
     @Override

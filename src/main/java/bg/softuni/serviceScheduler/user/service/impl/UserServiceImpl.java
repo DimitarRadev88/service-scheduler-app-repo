@@ -107,8 +107,8 @@ public class UserServiceImpl implements UserService {
                         .orElse(BigDecimal.ZERO)
                         .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
                 !insuranceService.hasActiveInsurance(car.getId())
-                || carService.needsOilChange(car.getId())
-//                || vignetteService.hasActiveVignette(car.getId())
+                || carService.needsOilChange(car.getEngine())
+                || vignetteService.hasActiveVignette(car.getId())
 //                        todo
         )).toList();
 

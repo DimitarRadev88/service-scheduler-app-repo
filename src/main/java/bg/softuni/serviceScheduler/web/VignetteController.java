@@ -42,7 +42,7 @@ public class VignetteController {
         }
 
         if (!model.containsAttribute("vignetteAdd")) {
-            model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null, null));
+            model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
         }
 
         UUID id = (UUID) session.getAttribute("user_id");
@@ -65,7 +65,7 @@ public class VignetteController {
         }
 
         if (!model.containsAttribute("vignetteAdd")) {
-            model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null, null));
+            model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
         }
 
         UUID userId = (UUID) session.getAttribute("user_id");

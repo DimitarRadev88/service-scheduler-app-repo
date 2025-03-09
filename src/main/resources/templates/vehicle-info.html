@@ -186,17 +186,17 @@
                             </div>
                             <div class="row d-flex flex-row flex-grow-1 flex-shrink-1 flex-nowrap pb-0 mb-0"
                                  style="width: 100%;">
-                                <div class="col-auto col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5">
+                                <div th:unless="*{lastServices().insurance().isInsuranceCloseToExpiring() || lastServices().insurance().isInsuranceExpired()}" class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5">
                                     <a class="text-truncate text-decoration-none link-light text-bg-success border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
                                        th:href="@{/insurances/add/{id}(id=${carInfo.id()})}"
                                        style="width: auto;height: auto;">New insurance</a>
                                 </div>
-                                <div class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                <div th:if="*{lastServices().insurance().isInsuranceCloseToExpiring() && !lastServices().insurance().isInsuranceExpired()}" class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
                                      style="width: auto;height: auto;"><a
                                         class="text-truncate text-decoration-none link-light text-bg-success bg-warning border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
                                         th:href="@{/insurances/add/{id}(id=${carInfo.id()})}">Insurance expiration date
                                     is close</a></div>
-                                <div class="col-auto col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5">
+                                <div th:if="*{lastServices().insurance().isInsuranceExpired()}" class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5">
                                     <a class="text-truncate text-decoration-none link-light text-bg-success bg-danger border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
                                        th:href="@{/insurances/add/{id}(id=${carInfo.id()})}"
                                        style="width: auto;height: auto;">Vehicle insurance
@@ -204,18 +204,18 @@
                             </div>
                             <div class="row d-flex flex-row flex-grow-1 flex-shrink-1 flex-nowrap pb-0 mb-0"
                                  style="width: 100%;">
-                                <div class="col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                <div th:unless="*{lastServices().vignette().isVignetteCloseToExpiring() || lastServices().vignette().isVignetteExpired()}" class="col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
                                      style="width: 100%;"><a
                                         class="text-truncate text-decoration-none link-light text-bg-success border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
-                                        href="change-oil.html" style="width: auto;height: auto;">New vignette</a></div>
-                                <div class="col-auto col-lg-6 text-start d-none flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                        th:href="@{/vignettes/add/{id}(id=${carInfo.id()})}" style="width: auto;height: auto;">New vignette</a></div>
+                                <div th:if="*{lastServices().vignette().isVignetteCloseToExpiring() && !lastServices().vignette().isVignetteExpired()}" class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
                                      style="width: auto;"><a
                                         class="text-truncate text-decoration-none link-light text-bg-success bg-warning border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
-                                        href="change-oil.html">Your vignette expiration date is nearing</a></div>
-                                <div class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
+                                        th:href="@{/vignettes/add/{id}(id=${carInfo.id()})}">Your vignette expiration date is nearing</a></div>
+                                <div th:if="*{lastServices().vignette().isVignetteExpired()}" class="col-auto col-lg-6 text-start flex-shrink-1 mb-4 mt-4 ps-0 pe-0 pt-0 ms-sm-0 mb-sm-5"
                                      style="width: auto;height: auto;"><a
                                         class="text-truncate text-decoration-none link-light text-bg-success bg-danger border rounded ps-4 pe-4 mb-0 pt-0 pb-0 mt-0 ms-0 pt-sm-4 pe-sm-5 ps-sm-5 pb-sm-4"
-                                        href="change-oil.html" style="width: auto;height: auto;margin: auto;">Vehicle
+                                        th:href="@{/vignettes/add/{id}(id=${carInfo.id()})}" style="width: auto;height: auto;margin: auto;">Vehicle
                                     vignette
                                     expired!</a></div>
                             </div>
@@ -227,6 +227,7 @@
         </div>
         <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+</div>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/theme.js"></script>
 </body>

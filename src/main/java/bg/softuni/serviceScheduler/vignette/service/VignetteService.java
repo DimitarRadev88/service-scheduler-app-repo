@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface VignetteService {
     void doAdd(VignetteAddBindingModel vignetteAdd, UUID carId);
+
+    boolean hasActiveVignette(UUID id);
 }

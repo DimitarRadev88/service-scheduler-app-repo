@@ -95,8 +95,7 @@ public class InsuranceController {
 
         insuranceService.doAdd(insuranceAdd, carId);
 
-
-        return "redirect:/insurances/" + carId;
+        return "redirect:/vehicles/" + carId;
     }
 
 }

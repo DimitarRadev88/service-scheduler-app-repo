@@ -1,6 +1,7 @@
 package bg.softuni.serviceScheduler.vehicle.service;
 
 import bg.softuni.serviceScheduler.vehicle.model.Car;
+import bg.softuni.serviceScheduler.vehicle.model.Engine;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
 import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
@@ -34,7 +35,7 @@ public interface CarService {
 
     Long getOilChangesCount();
 
-    boolean needsOilChange(UUID id);
+    boolean needsOilChange(Engine engine);
 
     void doDelete(UUID id);
 

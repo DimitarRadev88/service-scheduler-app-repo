@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface OilChangeRepository extends JpaRepository<OilChange, UUID> {
 
-    Optional<OilChange> findFirstByEngineIdOrderByDateDesc(UUID carId);
+    Optional<OilChange> findFirstByEngineIdOrderByMileageDesc(UUID carId);
 }

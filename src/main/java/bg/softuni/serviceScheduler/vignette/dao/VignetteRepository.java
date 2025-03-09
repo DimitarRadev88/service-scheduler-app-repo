@@ -9,4 +9,5 @@ import java.util.UUID;
 @Repository
 public interface VignetteRepository extends JpaRepository<Vignette, UUID> {
 
+    boolean existsByCarIdAndIsValidTrue(UUID id);
 }

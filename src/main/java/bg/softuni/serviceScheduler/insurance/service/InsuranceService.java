@@ -1,9 +1,8 @@
 package bg.softuni.serviceScheduler.insurance.service;
 
+import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
-import jakarta.validation.Valid;
 
-import javax.script.CompiledScript;
 import java.util.UUID;
 
 public interface InsuranceService {
