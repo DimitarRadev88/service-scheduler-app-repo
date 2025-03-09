@@ -108,8 +108,7 @@ public class UserServiceImpl implements UserService {
                         .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
                 !insuranceService.hasActiveInsurance(car.getId())
                 || carService.needsOilChange(car.getEngine())
-                || vignetteService.hasActiveVignette(car.getId())
-//                        todo
+                || !vignetteService.hasActiveVignette(car.getId())
         )).toList();
 
         return new UserDashboardServiceModelView(user.getRegistrationDate().toLocalDate(), cars, carService.getAllServicesByUser(user.getId()));
