@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -21,13 +22,11 @@ import java.util.UUID;
 public class VignetteServiceImpl implements VignetteService {
 
     private final VignetteRepository vignetteRepository;
-    private final CarService carService;
     private final CarRepository carRepository;
 
     @Autowired
-    public VignetteServiceImpl(VignetteRepository vignetteRepository, CarService carService, CarRepository carRepository) {
+    public VignetteServiceImpl(VignetteRepository vignetteRepository, CarRepository carRepository) {
         this.vignetteRepository = vignetteRepository;
-        this.carService = carService;
         this.carRepository = carRepository;
     }
 
@@ -58,5 +57,10 @@ public class VignetteServiceImpl implements VignetteService {
     @Override
     public boolean hasActiveVignette(UUID id) {
         return vignetteRepository.existsByCarIdAndIsValidTrue(id);
+    }
+
+    @Override
+    public BigDecimal getSumVignetteCostByUserId(UUID userId) {
+        return vignetteRepository.getSumVignetteCostByUserId(userId);
     }
 }

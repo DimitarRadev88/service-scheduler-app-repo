@@ -8,6 +8,7 @@ import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,4 +41,8 @@ public interface CarService {
     void doDelete(UUID id);
 
     CarVignetteAddServiceView getCarVignetteAddServiceView(UUID id);
+
+    BigDecimal getAllServicesCostByUser(UUID userId);
+
+    BigDecimal getSumOilChangesCostByUser(UUID userId);
 }

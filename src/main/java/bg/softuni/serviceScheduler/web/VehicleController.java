@@ -1,6 +1,7 @@
 package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
+import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarInfoServiceViewModel;
 import bg.softuni.serviceScheduler.vehicle.service.dto.EngineMileageAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -163,6 +165,20 @@ public class VehicleController {
 
         carService.doDelete(id);
         return "redirect:/";
+    }
+
+    @GetMapping("/services")
+    public String getAllServicesView(Model model, HttpSession session) {
+        if (session.getAttribute("user_id") == null) {
+            return "redirect:/login";
+        }
+
+        List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServicesByUser((UUID) session.getAttribute("user_id"));
+        BigDecimal allServicesCost = carService.getAllServicesCostByUser((UUID) session.getAttribute("user_id"));
+
+        model.addAttribute("services", services);
+        model.addAttribute("allServicesCost", allServicesCost);
+        return "all-services";
     }
 
 }

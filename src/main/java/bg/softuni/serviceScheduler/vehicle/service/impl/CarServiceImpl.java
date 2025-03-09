@@ -2,6 +2,7 @@ package bg.softuni.serviceScheduler.vehicle.service.impl;
 
 
 import bg.softuni.serviceScheduler.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.vehicle.dao.*;
@@ -12,6 +13,7 @@ import bg.softuni.serviceScheduler.vehicle.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
 import bg.softuni.serviceScheduler.vignette.model.Vignette;
+import bg.softuni.serviceScheduler.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
@@ -36,15 +38,19 @@ public class CarServiceImpl implements CarService {
     private final CarModelRepository carModelRepository;
     private final OilChangeRepository oilChangeRepository;
     private final EngineRepository engineRepository;
+    private final InsuranceService insuranceService;
+    private final VignetteService vignetteService;
 
     @Autowired
-    public CarServiceImpl(CarRepository carRepository, UserRepository userRepository, CarBrandRepository carBrandRepository, CarModelRepository carModelRepository, OilChangeRepository oilChangeRepository, EngineRepository engineRepository) {
+    public CarServiceImpl(CarRepository carRepository, UserRepository userRepository, CarBrandRepository carBrandRepository, CarModelRepository carModelRepository, OilChangeRepository oilChangeRepository, EngineRepository engineRepository, InsuranceService insuranceService, VignetteService vignetteService) {
         this.carRepository = carRepository;
         this.userRepository = userRepository;
         this.carBrandRepository = carBrandRepository;
         this.carModelRepository = carModelRepository;
         this.oilChangeRepository = oilChangeRepository;
         this.engineRepository = engineRepository;
+        this.insuranceService = insuranceService;
+        this.vignetteService = vignetteService;
     }
 
     private static BigDecimal getOilChangesCost(Car car) {
@@ -94,7 +100,10 @@ public class CarServiceImpl implements CarService {
                         all.stream()
                                 .map(Car::getVignettes)
                                 .flatMap(List::stream)
-                                .map(vignette -> new CarDashboardServicesDoneViewServiceModel("Vignette", vignette.getAddedAt(), vignette.getCost())))).toList();
+                                .map(vignette -> new CarDashboardServicesDoneViewServiceModel("Vignette", vignette.getAddedAt(), vignette.getCost()))))
+                .sorted(Comparator.comparing(CarDashboardServicesDoneViewServiceModel::date)
+                        .reversed())
+                .toList();
 
     }
 
@@ -173,7 +182,7 @@ public class CarServiceImpl implements CarService {
 
         Optional<OilChange> optionalOilChange = oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(car.getEngine().getId());
 
-        CarInfoServiceViewModel carInfoServiceViewModel = new CarInfoServiceViewModel(
+        return new CarInfoServiceViewModel(
                 car.getId(),
                 car.getModel().getBrand().getName() + " " + car.getModel().getName(),
                 car.getVin(),
@@ -182,7 +191,6 @@ public class CarServiceImpl implements CarService {
                 getLastServices(car),
                 mapToCarInfoEngineViewModel(car, optionalOilChange)
         );
-        return carInfoServiceViewModel;
     }
 
     private static CarInfoEngineViewModel mapToCarInfoEngineViewModel(Car car, Optional<OilChange> optionalOilChange) {
@@ -330,6 +338,18 @@ public class CarServiceImpl implements CarService {
                         car.getRegistration())
                 )
                 .orElseThrow(() -> new RuntimeException("Car not found"));
+    }
+
+    @Override
+    public BigDecimal getAllServicesCostByUser(UUID userId) {
+        return insuranceService.getSumInsuranceCostByUserId(userId)
+                .add(vignetteService.getSumVignetteCostByUserId(userId))
+                .add(getSumOilChangesCostByUser(userId));
+    }
+
+    @Override
+    public BigDecimal getSumOilChangesCostByUser(UUID userId) {
+        return oilChangeRepository.getSumOilChangesCostByUserId(userId);
     }
 
 }

@@ -19,10 +19,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 
-        http
-                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfiguration()))
-                .csrf(AbstractHttpConfigurer::disable);
-        http
+        return http
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
 //            requests.requestMatchers("/login", "/register", "/", "/home", "/logout", "/vehicles/add", "/vehicles/add/**", "/insurances/add").permitAll();
                     requests.requestMatchers("/css/**", "/fonts/**", "/img/**", "/js/**").permitAll();
@@ -30,22 +29,8 @@ public class SecurityConfig {
                 })
                 .logout(logout -> {
                     logout.logoutSuccessUrl("/");
-                });
-
-        return http.build();
+                }).build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfiguration() {
-        return request -> {
-            org.springframework.web.cors.CorsConfiguration config =
-                    new org.springframework.web.cors.CorsConfiguration();
-            config.setAllowedHeaders(Collections.singletonList("*"));
-            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-            config.setAllowedOriginPatterns(Collections.singletonList("*"));
-            config.setAllowCredentials(true);
-            return config;
-        };
-    }
 
 }

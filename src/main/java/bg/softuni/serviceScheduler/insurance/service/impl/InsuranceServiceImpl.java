@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -49,4 +50,11 @@ public class InsuranceServiceImpl implements InsuranceService {
     public Boolean hasActiveInsurance(UUID carId) {
         return insuranceRepository.existsByIsValidTrueAndCarId(carId);
     }
+
+    @Override
+    public BigDecimal getSumInsuranceCostByUserId(UUID userId) {
+        return insuranceRepository.getSumInsuranceCostByUserId(userId);
+    }
+
+
 }
