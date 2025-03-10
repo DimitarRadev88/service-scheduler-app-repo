@@ -1,13 +1,16 @@
 package bg.softuni.serviceScheduler.web;
 
+import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarInfoServiceViewModel;
 import bg.softuni.serviceScheduler.vehicle.service.dto.EngineMileageAddBindingModel;
-import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
+import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -67,19 +70,19 @@ public class VehicleController {
 
 
     @PostMapping("/add/{brand}")
-    public ModelAndView addNewVehicleWithBrand(ModelAndView modelAndView,
+    public ModelAndView addNewVehicleWithBrand(@AuthenticationPrincipal UserDetails userDetails,
+                                               ModelAndView modelAndView,
                                                @PathVariable String brand,
                                                @Valid CarAddBindingModel vehicleAdd,
                                                BindingResult bindingResult,
-                                               RedirectAttributes redirectAttributes,
-                                               HttpSession session) {
+                                               RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors() || !vehicleAdd.make().equals(brand)) {
             redirectAttributes.addFlashAttribute("vehicleAdd", vehicleAdd);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.vehicleAdd", bindingResult);
             modelAndView.setViewName("redirect:/vehicles/add/" + brand);
         } else {
-            UUID id = carService.doAdd(vehicleAdd, (UUID) session.getAttribute("user_id"));
+            UUID id = carService.doAdd(vehicleAdd, ((ServiceSchedulerUserDetails) userDetails).getId());
             modelAndView.setViewName("redirect:/vehicles/" + id);
         }
 
@@ -104,12 +107,7 @@ public class VehicleController {
     public String changeVehicleMileage(@PathVariable UUID id,
                                        @Valid EngineMileageAddBindingModel engineMileageAdd,
                                        BindingResult bindingResult,
-                                       RedirectAttributes redirectAttributes,
-                                       HttpSession session) {
-
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
+                                       RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("vehicleMileageAdd", engineMileageAdd);
@@ -118,7 +116,7 @@ public class VehicleController {
             carService.doAddMileage(engineMileageAdd, id);
         }
 
-            return "redirect:/vehicles/" + id;
+        return "redirect:/vehicles/" + id;
     }
 
     @GetMapping("/engines/{id}/oil-changes/add")
@@ -139,13 +137,7 @@ public class VehicleController {
             @PathVariable UUID id,
             @Valid OilChangeAddBindingModel oilChangeAdd,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            HttpSession session
-    ) {
-
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
+            RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.oilChangeAdd", bindingResult);
@@ -158,23 +150,16 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteVehicle(@PathVariable UUID id, HttpSession session) {
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
-
+    public String deleteVehicle(@PathVariable UUID id) {
         carService.doDelete(id);
         return "redirect:/";
     }
 
     @GetMapping("/services")
-    public String getAllServicesView(Model model, HttpSession session) {
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
-
-        List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServicesByUser((UUID) session.getAttribute("user_id"));
-        BigDecimal allServicesCost = carService.getAllServicesCostByUser((UUID) session.getAttribute("user_id"));
+    public String getAllServicesView(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        UUID userId = ((ServiceSchedulerUserDetails) userDetails).getId();
+        List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServicesByUser(userId);
+        BigDecimal allServicesCost = carService.getAllServicesCostByUser(userId);
 
         model.addAttribute("services", services);
         model.addAttribute("allServicesCost", allServicesCost);

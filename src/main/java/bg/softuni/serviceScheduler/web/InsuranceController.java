@@ -1,6 +1,7 @@
 package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
@@ -9,6 +10,8 @@ import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,17 +37,12 @@ public class InsuranceController {
     }
 
     @GetMapping("/add")
-    public String getInsuranceAddView(Model model, HttpSession session) {
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
-
+    public String getInsuranceAddView(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (!model.containsAttribute("insuranceAdd")) {
             model.addAttribute("insuranceAdd", new InsuranceAddBindingModel(null, null, null, BigDecimal.ZERO));
         }
 
-        UUID id = (UUID) session.getAttribute("user_id");
-
+        UUID id = ((ServiceSchedulerUserDetails) userDetails).getId();
         UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(id);
 
         model.addAttribute("user", user);
@@ -52,11 +50,7 @@ public class InsuranceController {
     }
 
     @GetMapping("/add/{id}")
-    public String getInsuranceAddWithVehicleInformation(Model model, HttpSession session, @PathVariable UUID id) {
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
-
+    public String getInsuranceAddWithVehicleInformation(@AuthenticationPrincipal UserDetails userDetails, Model model, @PathVariable UUID id) {
         if (id.toString().isBlank()) {
             return "redirect:/insurances/add";
         }
@@ -65,7 +59,7 @@ public class InsuranceController {
             model.addAttribute("insuranceAdd", new InsuranceAddBindingModel(null, null, null, BigDecimal.ZERO));
         }
 
-        UUID userId = (UUID) session.getAttribute("user_id");
+        UUID userId = ((ServiceSchedulerUserDetails) userDetails).getId();
         UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(userId);
 
         CarInsuranceAddServiceView car = carService.getCarInsuranceAddServiceView(id);
@@ -80,12 +74,7 @@ public class InsuranceController {
     public String postInsuranceAdd(@PathVariable UUID carId,
                                    @Valid InsuranceAddBindingModel insuranceAdd,
                                    BindingResult bindingResult,
-                                   RedirectAttributes redirectAttributes,
-                                   HttpSession session) {
-
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
+                                   RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.insuranceAdd", bindingResult);

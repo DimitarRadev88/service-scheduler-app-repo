@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
+
+<body id="page-top">
+<div id="wrapper">
+    <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+            <div class="container-fluid">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <p class="text-center text-primary m-0 fw-bold">All Services</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive table mt-2" id="dataTable" role="grid"
+                             aria-describedby="dataTable_info">
+                            <table class="table my-0">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Switch Role</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="user : ${users}">
+                                    <td th:text="${user.id}"></td>
+                                    <td th:text="${user.username}"></td>
+                                    <td th:text="${user.role}"></td>
+                                    <td th:if="${user.role.name() == 'ADMIN'}">
+                                        <form th:action="@{/users/change-role/user/{id}(id=${user.id})}"
+                                              th:method="put">
+                                            <button type="submit" class="btn btn-primary">MAKE USER</button>
+                                        </form>
+                                    </td>
+                                    <td th:if="${user.role.name() == 'USER'}">
+                                        <form th:action="@{/users/change-role/admin/{id}(id=${user.id})}"
+                                              th:method="put">
+                                            <button type="submit" class="btn btn-primary">MAKE ADMIN</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{common/fragments.html :: footer}"></footer>
+    </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/theme.js"></script>
+</body>
+
+</html>

@@ -41,9 +41,9 @@ public class Car {
     private User user;
     @Column(nullable = false, unique = true)
     private String registration;
-    @OneToMany(mappedBy = "car")
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Insurance> insurances;
-    @OneToMany(mappedBy = "car")
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Vignette> vignettes;
 
 }

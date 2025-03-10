@@ -1,18 +1,22 @@
 package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.user.service.UserService;
-import bg.softuni.serviceScheduler.web.dto.UserLoginBindingModel;
+import bg.softuni.serviceScheduler.user.service.dto.AllUsersServiceModelView;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -25,39 +29,8 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String getLoginView(Model model, HttpSession session) {
-        if (session.getAttribute("user_id") != null) {
-            return "redirect:/";
-        }
-
-        if (!model.containsAttribute("userLogin")) {
-            UserLoginBindingModel userLogin = new UserLoginBindingModel((String) model.getAttribute("email"), null);
-            model.addAttribute("userLogin", userLogin);
-        }
-
+    public String getLoginView() {
         return "login";
-    }
-
-    @PostMapping("/login")
-    public ModelAndView postUserLogin(ModelAndView modelAndView,
-                                      @Valid UserLoginBindingModel userLogin,
-                                      BindingResult bindingResult,
-                                      RedirectAttributes redirectAttributes,
-                                      HttpSession session
-    ) {
-
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("userLogin", userLogin);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userLogin", bindingResult);
-            modelAndView.setViewName("redirect:/login");
-        } else {
-            UUID userId = userService.doLogin(userLogin);
-            modelAndView.setViewName("redirect:/");
-            session.setAttribute("user_id", userId);
-        }
-
-
-        return modelAndView;
     }
 
     @GetMapping("/register")
@@ -75,9 +48,9 @@ public class UserController {
 
     @PostMapping("/register")
     public ModelAndView postUserRegister(ModelAndView modelAndView,
-                                      @Valid UserRegisterBindingModel userRegister,
-                                      BindingResult bindingResult,
-                                      RedirectAttributes redirectAttributes
+                                         @Valid UserRegisterBindingModel userRegister,
+                                         BindingResult bindingResult,
+                                         RedirectAttributes redirectAttributes
     ) {
 
         if (bindingResult.hasErrors()) {
@@ -85,12 +58,39 @@ public class UserController {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userRegister", bindingResult);
             modelAndView.setViewName("redirect:/register");
         } else {
-            String email = userService.doRegister(userRegister);
+            String username = userService.doRegister(userRegister);
             modelAndView.setViewName("redirect:/login");
-            redirectAttributes.addFlashAttribute("email", email);
+            redirectAttributes.addFlashAttribute("username", username);
         }
 
         return modelAndView;
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/users")
+    public String getUsersView(Model model) {
+        List<AllUsersServiceModelView> users = userService.getAllUsers();
+
+        model.addAttribute("users", users);
+
+        return "all-users";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/users/change-role/user/{id}")
+    public String removeAdminRole(@PathVariable UUID id) {
+        userService.removeAdmin(id);
+
+        return "redirect:/users";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/users/change-role/admin/{id}")
+    public String makeAdmin(@PathVariable UUID id) {
+        userService.makeAdmin(id);
+
+
+        return "redirect:/users";
     }
 
 }

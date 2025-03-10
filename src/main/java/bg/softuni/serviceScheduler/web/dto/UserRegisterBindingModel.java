@@ -6,9 +6,8 @@ import jakarta.validation.constraints.Size;
 
 public record UserRegisterBindingModel(
         @NotBlank
-        String firstName,
-        @NotBlank
-        String lastName,
+        @Size(min = 2, max = 50)
+        String username,
         @NotBlank
         @Email
         String email,
@@ -20,8 +19,8 @@ public record UserRegisterBindingModel(
         String confirmPassword
 ) {
 
-        public UserRegisterBindingModel() {
-                this(null, null, null, null, null);
-        }
+    public UserRegisterBindingModel() {
+        this(null, null, null, null);
+    }
 
 }

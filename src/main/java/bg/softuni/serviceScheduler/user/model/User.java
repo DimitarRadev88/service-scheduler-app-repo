@@ -18,10 +18,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false)
-    private String firstName;
-    @Column(nullable = false)
-    private String lastName;
+    @Column(nullable = false, unique = true)
+    private String username;
     @Column(nullable = false)
     private String password;
     @Column(nullable = false, unique = true)
@@ -32,5 +30,11 @@ public class User {
     private String profilePictureURL;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Car> cars;
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    List<UserRole> roles;
 
 }

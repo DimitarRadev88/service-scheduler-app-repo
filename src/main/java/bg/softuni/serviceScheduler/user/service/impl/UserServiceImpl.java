@@ -3,9 +3,13 @@ package bg.softuni.serviceScheduler.user.service.impl;
 import bg.softuni.serviceScheduler.insurance.model.Insurance;
 import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
+import bg.softuni.serviceScheduler.user.dao.UserRoleRepository;
 import bg.softuni.serviceScheduler.user.model.User;
+import bg.softuni.serviceScheduler.user.model.UserRole;
+import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
 import bg.softuni.serviceScheduler.user.service.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.UserService;
+import bg.softuni.serviceScheduler.user.service.dto.AllUsersServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,19 +42,21 @@ public class UserServiceImpl implements UserService {
     private final CarService carService;
     private final InsuranceService insuranceService;
     private final VignetteService vignetteService;
+    private final UserRoleRepository userRoleRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, InsuranceService insuranceService, VignetteService vignetteService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, InsuranceService insuranceService, VignetteService vignetteService, UserRoleRepository userRoleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.carService = carService;
         this.insuranceService = insuranceService;
         this.vignetteService = vignetteService;
+        this.userRoleRepository = userRoleRepository;
     }
 
     @Override
     public UUID doLogin(UserLoginBindingModel userLogin) {
-        Optional<User> optionalUser = userRepository.findByEmail(userLogin.email());
+        Optional<User> optionalUser = userRepository.findByUsername(userLogin.username());
 
         if (optionalUser.isEmpty()) {
             throw new RuntimeException("Invalid username or password");
@@ -66,6 +73,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String doRegister(UserRegisterBindingModel userRegister) {
+        if (userRepository.existsByUsername(userRegister.username())) {
+            throw new RuntimeException("Username already exists!");
+        }
+
         if (userRepository.existsByEmail(userRegister.email())) {
             throw new RuntimeException("Email already exists!");
         }
@@ -75,18 +86,21 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User();
-        user.setFirstName(userRegister.firstName());
-        user.setLastName(userRegister.lastName());
+        user.setUsername(userRegister.username());
         user.setEmail(userRegister.email());
         user.setPassword(passwordEncoder.encode(userRegister.password()));
         user.setRegistrationDate(LocalDateTime.now());
         user.setProfilePictureURL(BASIC_PROFILE_PICTURE_URL);
+        user.setRoles(new ArrayList<>(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER))));
+        if (userRepository.count() == 0) {
+            user.getRoles().add(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN));
+        }
 
         User save = userRepository.save(user);
 
         log.info("New user: {} saved in database", save);
 
-        return save.getEmail();
+        return save.getUsername();
     }
 
     @Override
@@ -132,5 +146,38 @@ public class UserServiceImpl implements UserService {
     public SiteStatisticsServiceModelView getStatistics() {
         return new SiteStatisticsServiceModelView(userRepository.count(), carService.getOilChangesCount());
 
+    }
+
+    @Transactional
+    @Override
+    public List<AllUsersServiceModelView> getAllUsers() {
+        return userRepository.findAllByOrderByRegistrationDateAsc().stream().map(user -> new AllUsersServiceModelView(
+                user.getId(),
+                user.getUsername(),
+                user.getRoles().size() == 2 ? UserRoleEnumeration.ADMIN : UserRoleEnumeration.USER
+        )).toList();
+    }
+
+    @Override
+    @Transactional
+    public void removeAdmin(UUID id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        UserRole userRole = user.getRoles()
+                .stream()
+                .filter(role -> role.getRole().equals(UserRoleEnumeration.ADMIN))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        user.getRoles().remove(userRole);
+        userRepository.save(user);
+        log.info("Removed admin role for user: {}", user.getUsername());
+    }
+
+    @Transactional
+    @Override
+    public void makeAdmin(UUID id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.getRoles().add(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN));
+        userRepository.save(user);
+        log.info("User {} promoted to admin", user.getUsername());
     }
 }

@@ -1,5 +1,8 @@
 package bg.softuni.serviceScheduler.util;
 
+import bg.softuni.serviceScheduler.user.dao.UserRoleRepository;
+import bg.softuni.serviceScheduler.user.model.UserRole;
+import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
 import bg.softuni.serviceScheduler.util.dto.BrandWithModel;
 import bg.softuni.serviceScheduler.vehicle.dao.CarBrandRepository;
 import bg.softuni.serviceScheduler.vehicle.dao.CarModelRepository;
@@ -25,19 +28,33 @@ public class ConsoleRunner implements CommandLineRunner {
 
     private final CarBrandRepository carBrandRepository;
     private final Gson gson;
+    private final UserRoleRepository userRoleRepository;
 
     @Autowired
-    public ConsoleRunner(CarBrandRepository carBrandRepository, Gson gson) {
+    public ConsoleRunner(CarBrandRepository carBrandRepository, Gson gson, UserRoleRepository userRoleRepository) {
         this.carBrandRepository = carBrandRepository;
         this.gson = gson;
+        this.userRoleRepository = userRoleRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        if (userRoleRepository.count() == 0) {
+            initUserRoles();
+        }
         if (carBrandRepository.count() == 0) {
             BrandWithModel[] brandWithModels = readCarBrands();
             initCarBrands(brandWithModels);
         }
+
+    }
+
+    private void initUserRoles() {
+        Arrays.stream(UserRoleEnumeration.values()).forEach(role -> {
+            UserRole userRole = new UserRole();
+            userRole.setRole(role);
+            userRoleRepository.save(userRole);
+        });
 
     }
 

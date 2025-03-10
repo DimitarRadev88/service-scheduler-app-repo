@@ -5,36 +5,43 @@
 
 
 <body class="bg-gradient-primary">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-9 col-lg-12 col-xl-10">
-                <div class="card shadow-lg o-hidden border-0 my-5">
-                    <div class="card-body p-0">
-                        <div class="row">
-                            <div class="col-lg-6 mx-auto">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <h4 class="text-dark mb-4">Welcome Back!</h4>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-12 col-xl-10">
+            <div class="card shadow-lg o-hidden border-0 my-5">
+                <div class="card-body p-0">
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto">
+                            <div class="p-5">
+                                <div class="text-center">
+                                    <h4 class="text-dark mb-4">Welcome Back!</h4>
+                                </div>
+                                <form class="user" th:action="@{/login}" th:method="post">
+                                    <div th:if="${param.error}" class="mb-3">
+                                        <p class="errors alert alert-danger">Invalid username or password</p>
                                     </div>
-                                    <form class="user" th:action="@{/login}" th:method="post" th:object="${userLogin}">
-                                        <div class="mb-3">
-                                            <label for="email" th:if="${#fields.hasErrors('email')}" class="form-label text-danger">Invalid email address</label>
-                                            <label for="email" th:unless="${#fields.hasErrors('email')}" class="form-label">Email address</label>
-                                            <input class="form-control form-control-user" type="email" id="email" aria-describedby="emailHelp" placeholder="user@some-mail.com" th:field="*{email}" name="email"></div>
-                                        <div class="mb-3">
-                                            <label for="password" th:if="${#fields.hasErrors('password')}" class="form-label text-danger">Invalid password, length must be between 6 and 20 characters</label>
-                                            <label for="password" th:unless="${#fields.hasErrors('password')}" class="form-label">Password</label>
-                                            <input class="form-control form-control-user" type="password" id="password" placeholder="Password" th:field="*{password}" name="password"></div>
-                                        <div class="mb-3">
-                                            <div class="custom-checkbox small">
-                                                <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-1"><label class="form-check-label" for="formCheck-1">Remember Me</label></div>
-                                            </div>
-                                        </div><button class="btn btn-primary d-block btn-user w-100" type="submit">Login</button>
-                                        <hr>
-                                        <hr>
-                                    </form>
-                                    <div class="text-center"><a class="small" th:href="@{/forgot-password}">Forgot Password?</a></div>
-                                    <div class="text-center"><a class="small" th:href="@{/register}">Create an Account!</a></div>
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input class="form-control form-control-user" type="text" id="username"
+                                               placeholder="Username" name="username"></div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input class="form-control form-control-user" type="password" id="password"
+                                               placeholder="Password" name="password"></div>
+                                    <div class="mb-3">
+                                        <div class="custom-checkbox small">
+                                            <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                           id="formCheck-1"><label
+                                                    class="form-check-label" for="formCheck-1">Remember Me</label></div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary d-block btn-user w-100" type="submit">Login</button>
+                                    <hr>
+                                    <hr>
+                                </form>
+                                <div class="text-center"><a class="small" th:href="@{/forgot-password}">Forgot
+                                    Password?</a></div>
+                                <div class="text-center"><a class="small" th:href="@{/register}">Create an Account!</a>
                                 </div>
                             </div>
                         </div>
@@ -43,8 +50,9 @@
             </div>
         </div>
     </div>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/theme.js"></script>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/theme.js"></script>
 </body>
 
 </html>

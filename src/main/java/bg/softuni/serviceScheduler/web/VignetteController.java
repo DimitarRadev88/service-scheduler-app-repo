@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.web;
 
+import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
@@ -9,6 +10,8 @@ import bg.softuni.serviceScheduler.web.dto.VignetteAddBindingModel;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,30 +39,19 @@ public class VignetteController {
     }
 
     @GetMapping("/add")
-    public String getVignetteAddView(Model model, HttpSession session) {
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
-
+    public String getVignetteAddView(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (!model.containsAttribute("vignetteAdd")) {
             model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
         }
 
-        UUID id = (UUID) session.getAttribute("user_id");
-
-        UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(id);
-
+        UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(((ServiceSchedulerUserDetails) userDetails).getId());
         model.addAttribute("user", user);
 
         return "vignette-add";
     }
 
     @GetMapping("/add/{id}")
-    public String getVignetteAddWithVehicleInformation(Model model, HttpSession session, @PathVariable UUID id) {
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
-
+    public String getVignetteAddWithVehicleInformation(@AuthenticationPrincipal UserDetails userDetails, Model model, @PathVariable UUID id) {
         if (id.toString().isBlank()) {
             return "redirect:/vignettes/add";
         }
@@ -68,8 +60,8 @@ public class VignetteController {
             model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
         }
 
-        UUID userId = (UUID) session.getAttribute("user_id");
-        UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(userId);
+        UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(((ServiceSchedulerUserDetails) userDetails).getId());
+        model.addAttribute("user", user);
 
         CarVignetteAddServiceView car = carService.getCarVignetteAddServiceView(id);
 
@@ -83,12 +75,7 @@ public class VignetteController {
     public String postVignetteAdd(@PathVariable UUID carId,
                                   @Valid VignetteAddBindingModel vignetteAdd,
                                   BindingResult bindingResult,
-                                  RedirectAttributes redirectAttributes,
-                                  HttpSession session) {
-
-        if (session.getAttribute("user_id") == null) {
-            return "redirect:/login";
-        }
+                                  RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.vignetteAdd", bindingResult);
