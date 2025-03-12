@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.vignette.service.impl;
 
+import bg.softuni.serviceScheduler.insurance.model.Insurance;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
@@ -11,10 +12,12 @@ import bg.softuni.serviceScheduler.web.dto.VignetteAddBindingModel;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -61,6 +64,18 @@ public class VignetteServiceImpl implements VignetteService {
 
     @Override
     public BigDecimal getSumVignetteCostByUserId(UUID userId) {
-        return vignetteRepository.getSumVignetteCostByUserId(userId);
+        BigDecimal sum = vignetteRepository.getSumVignetteCostByUserId(userId);
+        return sum == null ? BigDecimal.ZERO : sum;
     }
+
+    @Override
+    @Scheduled(cron = "0 0 0 * * *")
+    public void changeAllExpiredVignettesIsValidStatus() {
+        List<Vignette> all = vignetteRepository.findAllByIsValidIsTrueAndEndDateIsBefore(LocalDate.now());
+
+        all.forEach(vignette -> {vignette.setIsValid(false);});
+
+        vignetteRepository.saveAll(all);
+    }
+
 }

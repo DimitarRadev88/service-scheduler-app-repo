@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -25,4 +27,5 @@ public interface InsuranceRepository extends JpaRepository<Insurance, UUID> {
     )
     BigDecimal getSumInsuranceCostByUserId(UUID userId);
 
+    List<Insurance> findAllByIsValidIsTrueAndEndDateIsBefore(LocalDate endDateBefore);
 }

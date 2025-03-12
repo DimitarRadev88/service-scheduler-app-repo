@@ -349,7 +349,8 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public BigDecimal getSumOilChangesCostByUser(UUID userId) {
-        return oilChangeRepository.getSumOilChangesCostByUserId(userId);
+        BigDecimal sum = oilChangeRepository.getSumOilChangesCostByUserId(userId);
+        return sum == null ? BigDecimal.ZERO : sum;
     }
 
 }

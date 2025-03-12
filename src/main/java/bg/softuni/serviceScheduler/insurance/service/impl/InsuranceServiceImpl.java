@@ -8,10 +8,12 @@ import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -53,7 +55,18 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Override
     public BigDecimal getSumInsuranceCostByUserId(UUID userId) {
-        return insuranceRepository.getSumInsuranceCostByUserId(userId);
+        BigDecimal sum = insuranceRepository.getSumInsuranceCostByUserId(userId);
+        return sum == null ? BigDecimal.ZERO : sum;
+    }
+
+    @Override
+    @Scheduled(cron = "0 0 0 * * *")
+    public void changeAllExpiredInsurancesIsValidStatus() {
+        List<Insurance> all = insuranceRepository.findAllByIsValidIsTrueAndEndDateIsBefore(LocalDate.now());
+
+        all.forEach(insurance -> {insurance.setIsValid(false);});
+
+        insuranceRepository.saveAll(all);
     }
 
 

@@ -1,6 +1,5 @@
 package bg.softuni.serviceScheduler.insurance.service;
 
-import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
 
 import java.math.BigDecimal;
@@ -13,4 +12,7 @@ public interface InsuranceService {
     Boolean hasActiveInsurance(UUID carId);
 
     BigDecimal getSumInsuranceCostByUserId(UUID userId);
+
+    void changeAllExpiredInsurancesIsValidStatus();
+
 }
