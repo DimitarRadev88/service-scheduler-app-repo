@@ -4,20 +4,20 @@ import bg.softuni.serviceScheduler.insurance.model.Insurance;
 import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.dao.UserRoleRepository;
+import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;
+import bg.softuni.serviceScheduler.user.exception.UsernameAlreadyExistsException;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.model.UserRole;
 import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
 import bg.softuni.serviceScheduler.user.service.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.UserService;
-import bg.softuni.serviceScheduler.user.service.dto.AllUsersServiceModelView;
-import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
-import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
-import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;
+import bg.softuni.serviceScheduler.user.service.dto.*;
 import bg.softuni.serviceScheduler.vehicle.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardViewServiceModel;
 import bg.softuni.serviceScheduler.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.web.dto.UserLoginBindingModel;
+import bg.softuni.serviceScheduler.web.dto.UserProfileEditBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private static final String BASIC_PROFILE_PICTURE_URL = "src/main/resources/static/img/avatars/basic-profile-pic.jpg";
+    private static final String BASIC_PROFILE_PICTURE_URL = "https://t4.ftcdn.net/jpg/04/10/43/77/360_F_410437733_hdq4Q3QOH9uwh0mcqAhRFzOKfrCR24Ta.jpg";
     private final CarService carService;
     private final InsuranceService insuranceService;
     private final VignetteService vignetteService;
@@ -72,17 +72,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String doRegister(UserRegisterBindingModel userRegister) {
+    public String doRegister(UserRegisterBindingModel userRegister) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
         if (userRepository.existsByUsername(userRegister.username())) {
-            throw new RuntimeException("Username already exists!");
+            throw new UsernameAlreadyExistsException("Username already exists!");
         }
 
         if (userRepository.existsByEmail(userRegister.email())) {
-            throw new RuntimeException("Email already exists!");
-        }
-
-        if (!userRegister.password().equals(userRegister.confirmPassword())) {
-            throw new RuntimeException("Passwords do not match!");
+            throw new EmailAlreadyExistsException("Email already exists!");
         }
 
         User user = new User();
@@ -179,5 +175,47 @@ public class UserServiceImpl implements UserService {
         user.getRoles().add(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN));
         userRepository.save(user);
         log.info("User {} promoted to admin", user.getUsername());
+    }
+
+    @Override
+    public UserProfileViewServiceModel getUserProfileView(UUID id) {
+        return userRepository.findById(id).map(u -> new UserProfileViewServiceModel(
+                u.getUsername(),
+                u.getEmail(),
+                u.getRegistrationDate().toLocalDate(),
+                u.getProfilePictureURL()
+        )).orElseThrow(() -> new RuntimeException("User not found!"));
+    }
+
+    @Override
+    public UserEditProfileServiceModel getUserEditProfileServiceModel(UUID id) {
+        return userRepository.findById(id).map(u -> new UserEditProfileServiceModel(
+                u.getUsername(),
+                u.getEmail(),
+                u.getProfilePictureURL()
+        )).orElseThrow(() -> new RuntimeException("User not found!"));
+    }
+
+    @Override
+    public void doEdit(UserProfileEditBindingModel userProfileEditBindingModel, UUID id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getUsername().equals(userProfileEditBindingModel.username()) && userRepository.existsByUsername(userProfileEditBindingModel.username())) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (!user.getEmail().equals(userProfileEditBindingModel.email()) && userRepository.existsByEmail(userProfileEditBindingModel.email())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        user.setUsername(userProfileEditBindingModel.username());
+        user.setEmail(userProfileEditBindingModel.email());
+        user.setProfilePictureURL(userProfileEditBindingModel.profilePictureUrl());
+        if (user.getProfilePictureURL().isBlank()) {
+            user.setProfilePictureURL(BASIC_PROFILE_PICTURE_URL);
+        }
+
+        userRepository.save(user);
+        log.info("User {} profile edited", user.getUsername());
     }
 }

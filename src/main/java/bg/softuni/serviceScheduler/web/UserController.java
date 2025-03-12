@@ -1,7 +1,11 @@
 package bg.softuni.serviceScheduler.web;
 
+import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;
+import bg.softuni.serviceScheduler.user.exception.UsernameAlreadyExistsException;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.AllUsersServiceModelView;
+import bg.softuni.serviceScheduler.user.service.dto.UserEditProfileServiceModel;
+import bg.softuni.serviceScheduler.web.dto.UserProfileEditBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -51,7 +55,7 @@ public class UserController {
                                          @Valid UserRegisterBindingModel userRegister,
                                          BindingResult bindingResult,
                                          RedirectAttributes redirectAttributes
-    ) {
+    ) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("userRegister", userRegister);
@@ -91,6 +95,43 @@ public class UserController {
 
 
         return "redirect:/users";
+    }
+
+    @GetMapping("/profile/{id}")
+    public String getProfileView(Model model, @PathVariable UUID id) {
+        model.addAttribute("userId", id);
+        model.addAttribute("user", userService.getUserProfileView(id));
+        return "profile";
+    }
+
+    @GetMapping("/profile/{id}/edit")
+    public String getProfileEditView(Model model, @PathVariable UUID id) {
+        model.addAttribute("userId", id);
+
+        if (!model.containsAttribute("userEdit")) {
+            UserEditProfileServiceModel user = userService.getUserEditProfileServiceModel(id);
+            model.addAttribute("profilePicture", user.profilePictureUrl());
+            model.addAttribute("userEdit", new UserProfileEditBindingModel(user.username(), user.email(), user.profilePictureUrl()));
+        }
+
+        return "profile-edit";
+    }
+
+    @PostMapping("/profile/{id}/edit")
+    public String editProfile(@PathVariable UUID id,
+                              @Valid UserProfileEditBindingModel userProfileEditBindingModel,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userEdit", bindingResult);
+            redirectAttributes.addFlashAttribute("userEdit", userProfileEditBindingModel);
+            return "redirect:/profile/" + id + "/edit";
+        }
+
+        userService.doEdit(userProfileEditBindingModel, id);
+
+        return "redirect:/profile/" + id;
     }
 
 }

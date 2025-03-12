@@ -15,41 +15,59 @@
                     <form class="user" th:action="@{/register}" th:object="${userRegister}" method="post">
                         <div class="mb-3 row">
                             <label for="username" th:if="${#fields.hasErrors('username')}"
-                                   class="form-label text-danger">Username cannot be blank</label>
-                            <label for="username" th:unless="${#fields.hasErrors('username')}" class="form-label">Username</label>
+                                   class="form-label text-danger">
+                                <strong th:text="${#fields.errors('username').getFirst()}"></strong>
+                            </label>
+                            <label for="username" th:unless="(${#fields.hasErrors('username')})" class="form-label">
+                                <strong th:unless="${usernameException}">Username</strong>
+                                <strong th:if="${usernameException}" th:text="${usernameException}" class="text-danger mb-4"></strong>
+                            </label>
                             <input class="form-control form-control-user" type="text" id="username"
                                    placeholder="Username" name="Username" th:field="*{username}">
                         </div>
                         <div class="mb-3 row">
-                            <label for="email" th:if="${#fields.hasErrors('email')}" class="form-label text-danger">Email
-                                cannot be blank</label>
-                            <label for="email" th:unless="${#fields.hasErrors('email')}" class="form-label">Email</label>
+                            <label for="email" th:if="${#fields.hasErrors('email')}" class="form-label text-danger">
+                                <strong th:text="${#fields.errors('username').getFirst()}"></strong>
+                            </label>
+                            <label for="email" th:unless="${#fields.hasErrors('email')}" class="form-label">
+                                <strong th:unless="${emailException}">Username</strong>
+                                <strong th:if="${emailException}" th:text="${emailException}" class="text-danger mb-4"></strong>
+                            </label>
                             <input class="form-control form-control-user" type="email" id="email"
                                    aria-describedby="emailHelp" placeholder="Email Address" name="email"
                                    th:field="*{email}"></div>
                         <div class="mb-3 row">
                             <label for="password" th:if="${#fields.hasErrors('password')}"
-                                   class="form-label text-danger">Password must be between 6 and 20 characters</label>
-                            <label for="password" th:unless="${#fields.hasErrors('password')}" class="form-label">Password</label>
+                                   class="form-label text-danger">
+                                <strong th:text="${#fields.errors('password').getFirst()}"></strong>
+                            </label>
+                            <label for="password" th:unless="${#fields.hasErrors('password')}" class="form-label">
+                                <strong>Password</strong>
+                            </label>
                             <input class="form-control form-control-user" type="password" id="password"
                                    placeholder="Password" name="password" th:field="*{password}">
                         </div>
                         <div class="mb-3 row">
                             <label for="confirmPassword" th:if="${#fields.hasErrors('confirmPassword')}"
-                                   class="form-label text-danger">Password must be between 6 and 20
-                                characters</label>
+                                   class="form-label text-danger">
+                                    <strong th:text="${#fields.errors('confirmPassword').getFirst()}"></strong>
+                                </label>
                             <label for="confirmPassword" th:unless="${#fields.hasErrors('confirmPassword')}"
-                                   class="form-label">Confirm password</label>
+                                   class="form-label">
+                                <strong>Confirm password</strong>
+                            </label>
                             <input class="form-control form-control-user" type="password" id="confirmPassword"
                                    placeholder="Confirm password" name="confirmPassword"
                                    th:field="*{confirmPassword}">
+                        </div>
+                        <div>
+                            <strong class="text-danger" th:errors="${userRegister}"></strong>
                         </div>
 
                         <button class="btn btn-primary d-block btn-user w-100" type="submit">Register Account</button>
                         <hr>
                         <hr>
                     </form>
-                    <div class="text-center"><a class="small" href="/forgot-password">Forgot Password?</a></div>
                     <div class="text-center"><a class="small" href="/login">Already have an account? Login!</a></div>
                 </div>
             </div>

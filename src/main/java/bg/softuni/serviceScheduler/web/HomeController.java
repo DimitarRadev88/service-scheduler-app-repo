@@ -25,6 +25,7 @@ public class HomeController {
     public String viewHome(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (userDetails instanceof ServiceSchedulerUserDetails) {
             model.addAttribute("user", userService.getUser(((ServiceSchedulerUserDetails) userDetails).getId()));
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
             return "home";
         } else {
             model.addAttribute("statistics", userService.getStatistics());

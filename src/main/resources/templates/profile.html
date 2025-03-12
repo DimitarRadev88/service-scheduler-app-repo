@@ -4,57 +4,63 @@
 <head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
 
 <body id="page-top">
-<div th:insert="~{common/fragments.html :: sidebar}" id="wrapper">
+<div id="wrapper">
+    <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
 
     <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
-            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
-                <div class="container-fluid">
-                    <h3 class="text-center text-dark mb-4">Profile</h3>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card shadow mb-3">
-                                <div class="card-header py-3"></div>
-                                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" alt="ai generated, mouse, racing car, car, helmet, cute, humor, car, car, car, car, car" src="assets/img/g5c33c717dda73ec933295f6cdfd51c5def7b84de84ce011fbaaf9b5d91e82c91550181546ffb0627af9f25e16f332a78e0f7191b96bac5e9d5b58b0da9e28bcb_640.png" width="160" height="160"></div>
-                                <div class="card-body">
-                                    <form>
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="mb-3">
-                                                    <p>Username</p>
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-3">
-                                                    <p>Email</p>
-                                                </div>
+            <nav th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
+            <div class="container-fluid">
+                <h3 class="text-center text-dark mb-4">Profile</h3>
+                <div class="row">
+                    <div class="col-12">
+                        <div th:object="${user}" class="card shadow mb-3">
+                            <div class="card-header py-3"></div>
+                            <div class="card-body text-center shadow">
+                                <img class="rounded-circle mb-3 mt-4"
+                                     alt="profile picture"
+                                     th:src="*{profilePictureUrl}"
+                                     width="160" height="160"></div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3">
+                                                <p th:text="*{username}">Username</p>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <p>Names</p>
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="mb-3">
-                                                    <p>Registered on</p>
+                                                    <p th:text="*{email}">Email</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit">Edit profile</button></div>
-                                    </form>
-                                </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3">
+                                                <p th:text="*{registrationDate}">Registered on</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a th:href="@{/profile/{id}/edit(id=${userId})}"
+                                       class="btn btn-primary btn-sm" role="button">
+                                        Edit Profile
+                                    </a>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         <footer th:replace="~{common/fragments.html :: footer}"></footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/theme.js"></script>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/theme.js"></script>
 </body>
 
 </html>
