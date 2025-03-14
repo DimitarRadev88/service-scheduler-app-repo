@@ -10,7 +10,7 @@
 
     <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
-            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+            <nav th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
             <div class="container-fluid">
                 <h3 class="text-center text-dark mb-4">Oil Change</h3>
                 <div class="row mb-3">

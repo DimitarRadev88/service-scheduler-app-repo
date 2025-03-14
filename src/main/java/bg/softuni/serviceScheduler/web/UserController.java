@@ -2,6 +2,7 @@ package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;
 import bg.softuni.serviceScheduler.user.exception.UsernameAlreadyExistsException;
+import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.AllUsersServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserEditProfileServiceModel;
@@ -10,6 +11,8 @@ import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -72,7 +75,11 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/users")
-    public String getUsersView(Model model) {
+    public String getUsersView(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
+        }
+
         List<AllUsersServiceModelView> users = userService.getAllUsers();
 
         model.addAttribute("users", users);
@@ -93,25 +100,31 @@ public class UserController {
     public String makeAdmin(@PathVariable UUID id) {
         userService.makeAdmin(id);
 
-
         return "redirect:/users";
     }
 
-    @GetMapping("/profile/{id}")
-    public String getProfileView(Model model, @PathVariable UUID id) {
-        model.addAttribute("userId", id);
-        model.addAttribute("user", userService.getUserProfileView(id));
+    @GetMapping("/profile")
+    public String getProfileView(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            UUID id = ((ServiceSchedulerUserDetails) userDetails).getId();
+            model.addAttribute("userId", id);
+            model.addAttribute("user", userService.getUserProfileView(id));
+        }
+
         return "profile";
     }
 
-    @GetMapping("/profile/{id}/edit")
-    public String getProfileEditView(Model model, @PathVariable UUID id) {
-        model.addAttribute("userId", id);
-
-        if (!model.containsAttribute("userEdit")) {
-            UserEditProfileServiceModel user = userService.getUserEditProfileServiceModel(id);
-            model.addAttribute("profilePicture", user.profilePictureUrl());
-            model.addAttribute("userEdit", new UserProfileEditBindingModel(user.username(), user.email(), user.profilePictureUrl()));
+    @GetMapping("/profile/edit")
+    public String getProfileEditView(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            UUID id = ((ServiceSchedulerUserDetails) userDetails).getId();
+            model.addAttribute("userId", id);
+            if (!model.containsAttribute("userEdit")) {
+                model.addAttribute("user", userService.getUserProfileView(id));
+                UserEditProfileServiceModel user = userService.getUserEditProfileServiceModel(id);
+                model.addAttribute("profilePicture", user.profilePictureUrl());
+                model.addAttribute("userEdit", new UserProfileEditBindingModel(user.username(), user.email(), user.profilePictureUrl()));
+            }
         }
 
         return "profile-edit";

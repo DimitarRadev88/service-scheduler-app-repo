@@ -8,7 +8,7 @@
     <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
     <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
-            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+            <nav th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
             <div class="container-fluid">
                 <div class="card shadow">
                     <div class="card-header py-3">

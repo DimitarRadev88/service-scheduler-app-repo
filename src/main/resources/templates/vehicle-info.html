@@ -8,7 +8,7 @@
     <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
     <div class="d-flex flex-column justify-content-between" id="content-wrapper">
         <div id="content">
-            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+            <nav th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
             <div th:object="${carInfo}" class="container-fluid">
                 <div class="row justify-content-center">
                     <div class="col-lg-8 mb-4">
@@ -55,12 +55,15 @@
                                 <div class="row text-center">
                                     <div class="col">
                                         <div class="mb-3">
+                                                <strong class="text-danger" th:errors="${engineMileageAdd}"></strong>
                                             <form th:action="@{/vehicles/{id}/add-mileage(id=${carInfo.id()})}"
                                                   th:object="${engineMileageAdd}" method="post">
-                                                <label for="mileage"><strong>Mileage</strong></label>
-                                                <input id="mileage" name="mileage" type="text"
-                                                       th:value="*{mileage()}"
-                                                       required/>
+                                                <label for="newMileage"><strong>Mileage</strong></label>
+                                                <input id="newMileage" name="newMileage" type="text"
+                                                       th:value="*{newMileage}"/>
+                                                <label hidden="" for="oldMileage"><strong>Mileage</strong></label>
+                                                <input hidden="" id="oldMileage" name="oldMileage" type="text"
+                                                       th:value="*{oldMileage}"/>
                                                 <button type="submit"
                                                         class="btn btn-primary">
                                                     Change

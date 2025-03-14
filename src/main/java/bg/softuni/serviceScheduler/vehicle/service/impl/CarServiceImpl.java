@@ -6,6 +6,7 @@ import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.vehicle.dao.*;
+import bg.softuni.serviceScheduler.vehicle.exception.IllegalMileageException;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.CarModel;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;
@@ -16,6 +17,7 @@ import bg.softuni.serviceScheduler.vignette.model.Vignette;
 import bg.softuni.serviceScheduler.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
+import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -303,7 +305,7 @@ public class CarServiceImpl implements CarService {
     public void doAddMileage(EngineMileageAddBindingModel engineMileageAdd, UUID id) {
         Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
 
-        car.getEngine().setMileage(engineMileageAdd.mileage());
+        car.getEngine().setMileage(engineMileageAdd.newMileage());
 
         carRepository.save(car);
     }

@@ -45,8 +45,10 @@ public class InsuranceController {
         UUID id = ((ServiceSchedulerUserDetails) userDetails).getId();
         UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(id);
 
+        model.addAttribute("userId", id);
         model.addAttribute("user", user);
         return "insurance-add";
+
     }
 
     @GetMapping("/add/{id}")
@@ -65,6 +67,7 @@ public class InsuranceController {
         CarInsuranceAddServiceView car = carService.getCarInsuranceAddServiceView(id);
 
         model.addAttribute("user", user);
+        model.addAttribute("userId", id);
         model.addAttribute("carInfo", car);
 
         return "insurance-add-with-selected-vehicle";

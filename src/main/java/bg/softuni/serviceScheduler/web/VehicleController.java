@@ -4,10 +4,9 @@ import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarInfoServiceViewModel;
-import bg.softuni.serviceScheduler.vehicle.service.dto.EngineMileageAddBindingModel;
+import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,10 +34,14 @@ public class VehicleController {
     }
 
     @GetMapping("/add")
-    public String getVehicleAddPage(Model model) {
+    public String getVehicleAddPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (!model.containsAttribute("brands")) {
             Map<String, List<String>> allBrandsWithModels = carService.getAllBrandsWithModels();
             model.addAttribute("brands", allBrandsWithModels);
+        }
+
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails)userDetails).getId());
         }
 
         return "vehicle-add";
@@ -90,12 +93,15 @@ public class VehicleController {
     }
 
     @GetMapping("/{id}")
-    public String getVehicleDetails(@PathVariable UUID id, Model model) {
+    public String getVehicleDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id, Model model) {
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails)userDetails).getId());
+        }
 
         CarInfoServiceViewModel carInfo = carService.getCarInfoServiceViewModel(id);
 
         if (!model.containsAttribute("engineMileageAdd")) {
-            model.addAttribute("engineMileageAdd", new EngineMileageAddBindingModel(carInfo.engine().mileage()));
+            model.addAttribute("engineMileageAdd", new EngineMileageAddBindingModel(carInfo.engine().mileage(), carInfo.engine().mileage()));
         }
 
         model.addAttribute("carInfo", carInfo);
@@ -110,8 +116,8 @@ public class VehicleController {
                                        RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("vehicleMileageAdd", engineMileageAdd);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.vehicleMileageAdd", bindingResult);
+            redirectAttributes.addFlashAttribute("engineMileageAdd", engineMileageAdd);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.engineMileageAdd", bindingResult);
         } else {
             carService.doAddMileage(engineMileageAdd, id);
         }
@@ -120,7 +126,11 @@ public class VehicleController {
     }
 
     @GetMapping("/engines/{id}/oil-changes/add")
-    public String getAddOilChangeView(@PathVariable UUID id, Model model) {
+    public String getAddOilChangeView(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id, Model model) {
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails)userDetails).getId());
+        }
+
         if (!model.containsAttribute("engineView")) {
             model.addAttribute("engineView", carService.getEngineOilChangeAddViewModel(id));
         }
@@ -161,6 +171,7 @@ public class VehicleController {
         List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServicesByUser(userId);
         BigDecimal allServicesCost = carService.getAllServicesCostByUser(userId);
 
+        model.addAttribute("userId", userId);
         model.addAttribute("services", services);
         model.addAttribute("allServicesCost", allServicesCost);
         return "all-services";

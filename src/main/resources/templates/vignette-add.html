@@ -10,7 +10,7 @@
 
     <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
-            <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+            <nav th:replace="~{common/fragments.html :: navigation(userId=${user.id})}"></nav>
             <div class="container-fluid">
                 <h3 class="text-center text-dark mb-4">New Vignette</h3>
                 <div class="row mb-3">
@@ -25,16 +25,15 @@
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="car">
-                                                    </label>
-                                                    <select id="car" class="form-select"
-                                                            name="car">
+                                                    <label class="form-label" for="car"></label>
+                                                    <select id="car" class="form-select" name="car">
                                                         <option th:value="${null}" selected="">
                                                             Select vehicle
                                                         </option>
                                                         <option th:each="car : ${user.cars()}"
                                                                 th:value="${car.id()}"
-                                                                th:text="${car.makeAndModel()}"></option>
+                                                                th:text="${car.makeAndModel()}">
+                                                        </option>
                                                     </select>
                                                 </div>
                                             </div>

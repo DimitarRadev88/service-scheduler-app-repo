@@ -4,6 +4,7 @@ import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
 import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
+import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import jakarta.transaction.Transactional;

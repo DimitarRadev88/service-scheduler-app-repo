@@ -7,7 +7,6 @@ import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.VignetteAddBindingModel;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,7 +43,8 @@ public class VignetteController {
             model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
         }
 
-        UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(((ServiceSchedulerUserDetails) userDetails).getId());
+        UUID id = ((ServiceSchedulerUserDetails) userDetails).getId();
+        UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(id);
         model.addAttribute("user", user);
 
         return "vignette-add";
@@ -60,12 +60,14 @@ public class VignetteController {
             model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
         }
 
-        UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(((ServiceSchedulerUserDetails) userDetails).getId());
-        model.addAttribute("user", user);
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
+            UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(((ServiceSchedulerUserDetails) userDetails).getId());
+            model.addAttribute("user", user);
+        }
 
         CarVignetteAddServiceView car = carService.getCarVignetteAddServiceView(id);
 
-        model.addAttribute("user", user);
         model.addAttribute("carInfo", car);
 
         return "vignette-add-with-selected-vehicle";

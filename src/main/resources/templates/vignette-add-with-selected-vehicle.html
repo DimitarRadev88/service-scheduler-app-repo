@@ -9,7 +9,7 @@
   <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
   <div class="d-flex flex-column" id="content-wrapper">
     <div id="content">
-      <nav th:replace="~{common/fragments.html :: navigation}"></nav>
+      <nav th:replace="~{common/fragments.html :: navigation(userId=${user.id()})}"></nav>
       <div class="container-fluid">
         <h3 class="text-center text-dark mb-4">New Vignette</h3>
         <div class="row mb-3">
