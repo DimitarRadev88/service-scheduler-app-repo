@@ -54,7 +54,7 @@ public class VignetteServiceImpl implements VignetteService {
                 .add(vignette);
         carRepository.save(car);
 
-        log.info("Vignette expiring on {} added for {}", vignette.getEndDate(), car.getModel().getName());
+        log.info("Vignette expiring on {} added for {}", vignette.getEndDate(), car.getModel().getModelName());
     }
 
     @Override

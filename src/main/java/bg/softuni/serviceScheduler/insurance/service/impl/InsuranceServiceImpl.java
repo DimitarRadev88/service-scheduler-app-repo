@@ -45,7 +45,7 @@ public class InsuranceServiceImpl implements InsuranceService {
                 LocalDate.now()
         ));
 
-        log.info("Insurance expiring on {} for {} added", save.getEndDate(), car.getModel().getName());
+        log.info("Insurance expiring on {} for {} added", save.getEndDate(), car.getModel().getModelName());
     }
 
     @Override
@@ -68,6 +68,5 @@ public class InsuranceServiceImpl implements InsuranceService {
 
         insuranceRepository.saveAll(all);
     }
-
 
 }

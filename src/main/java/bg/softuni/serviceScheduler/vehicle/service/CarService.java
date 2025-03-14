@@ -21,8 +21,6 @@ public interface CarService {
 
     UUID doAdd(CarAddBindingModel vehicleAdd, UUID userId);
 
-    Map<String, List<String>> getAllBrandsWithModels();
-
     CarInsuranceAddServiceView getCarInsuranceAddServiceView(UUID id);
 
     CarInfoServiceViewModel getCarInfoServiceViewModel(UUID id);
@@ -46,4 +44,5 @@ public interface CarService {
     BigDecimal getAllServicesCostByUser(UUID userId);
 
     BigDecimal getSumOilChangesCostByUser(UUID userId);
+
 }

@@ -1,11 +1,13 @@
-package bg.softuni.serviceScheduler.vehicle.model;
+package bg.softuni.serviceScheduler.carModels.model;
 
+import bg.softuni.serviceScheduler.vehicle.model.Car;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,9 +22,10 @@ public class CarModel {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false)
-    private String name;
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private CarBrand brand;
+    private String brandName;
+    @Column(nullable = false)
+    private String modelName;
+    @OneToMany(mappedBy = "model", cascade = CascadeType.ALL)
+    private List<Car> cars;
 
 }

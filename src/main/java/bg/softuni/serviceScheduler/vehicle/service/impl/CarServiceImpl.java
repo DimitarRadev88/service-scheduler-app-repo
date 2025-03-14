@@ -1,19 +1,18 @@
 package bg.softuni.serviceScheduler.vehicle.service.impl;
 
-
-import bg.softuni.serviceScheduler.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.carModels.dao.CarModelRepository;
+import bg.softuni.serviceScheduler.carModels.model.CarModel;
 import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
-import bg.softuni.serviceScheduler.vehicle.dao.*;
-import bg.softuni.serviceScheduler.vehicle.exception.IllegalMileageException;
+import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
+import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
+import bg.softuni.serviceScheduler.vehicle.dao.OilChangeRepository;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
-import bg.softuni.serviceScheduler.vehicle.model.CarModel;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;
 import bg.softuni.serviceScheduler.vehicle.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
-import bg.softuni.serviceScheduler.vignette.model.Vignette;
 import bg.softuni.serviceScheduler.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
@@ -26,8 +25,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -36,7 +37,6 @@ public class CarServiceImpl implements CarService {
 
     private final CarRepository carRepository;
     private final UserRepository userRepository;
-    private final CarBrandRepository carBrandRepository;
     private final CarModelRepository carModelRepository;
     private final OilChangeRepository oilChangeRepository;
     private final EngineRepository engineRepository;
@@ -44,40 +44,14 @@ public class CarServiceImpl implements CarService {
     private final VignetteService vignetteService;
 
     @Autowired
-    public CarServiceImpl(CarRepository carRepository, UserRepository userRepository, CarBrandRepository carBrandRepository, CarModelRepository carModelRepository, OilChangeRepository oilChangeRepository, EngineRepository engineRepository, InsuranceService insuranceService, VignetteService vignetteService) {
+    public CarServiceImpl(CarRepository carRepository, UserRepository userRepository, CarModelRepository carModelRepository, OilChangeRepository oilChangeRepository, EngineRepository engineRepository, InsuranceService insuranceService, VignetteService vignetteService) {
         this.carRepository = carRepository;
         this.userRepository = userRepository;
-        this.carBrandRepository = carBrandRepository;
         this.carModelRepository = carModelRepository;
         this.oilChangeRepository = oilChangeRepository;
         this.engineRepository = engineRepository;
         this.insuranceService = insuranceService;
         this.vignetteService = vignetteService;
-    }
-
-    private static BigDecimal getOilChangesCost(Car car) {
-        return car
-                .getEngine()
-                .getOilChanges()
-                .stream()
-                .map(OilChange::getCost)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-    }
-
-    private static BigDecimal getVignettesCost(Car car) {
-        return car.getVignettes()
-                .stream()
-                .map(Vignette::getCost).
-                reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-    }
-
-    private static BigDecimal getInsurancesCost(Car car) {
-        return car.getInsurances()
-                .stream()
-                .map(Insurance::getCost)
-                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 
     @Transactional
@@ -90,19 +64,19 @@ public class CarServiceImpl implements CarService {
         List<Car> all = carRepository.findAllByUserId(userId);
 
         return Stream.concat(
-                all.stream()
-                        .map(car -> car.getEngine().getOilChanges())
-                        .flatMap(List::stream)
-                        .map(oilChange -> new CarDashboardServicesDoneViewServiceModel("Oil change", oilChange.getDate(), oilChange.getCost())),
-                Stream.concat(
                         all.stream()
-                                .map(Car::getInsurances)
+                                .map(car -> car.getEngine().getOilChanges())
                                 .flatMap(List::stream)
-                                .map(insurance -> new CarDashboardServicesDoneViewServiceModel("Insurance", insurance.getAddedAt(), insurance.getCost())),
-                        all.stream()
-                                .map(Car::getVignettes)
-                                .flatMap(List::stream)
-                                .map(vignette -> new CarDashboardServicesDoneViewServiceModel("Vignette", vignette.getAddedAt(), vignette.getCost()))))
+                                .map(oilChange -> new CarDashboardServicesDoneViewServiceModel("Oil change", oilChange.getDate(), oilChange.getCost())),
+                        Stream.concat(
+                                all.stream()
+                                        .map(Car::getInsurances)
+                                        .flatMap(List::stream)
+                                        .map(insurance -> new CarDashboardServicesDoneViewServiceModel("Insurance", insurance.getAddedAt(), insurance.getCost())),
+                                all.stream()
+                                        .map(Car::getVignettes)
+                                        .flatMap(List::stream)
+                                        .map(vignette -> new CarDashboardServicesDoneViewServiceModel("Vignette", vignette.getAddedAt(), vignette.getCost()))))
                 .sorted(Comparator.comparing(CarDashboardServicesDoneViewServiceModel::date)
                         .reversed())
                 .toList();
@@ -117,12 +91,15 @@ public class CarServiceImpl implements CarService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("No active user found"));
         car.setUser(user);
 
-        Optional<CarModel> carModel = carModelRepository.findCarModelByBrandNameAndName(vehicleAdd.make(), vehicleAdd.model());
-        if (carModel.isEmpty()) {
-            throw new RuntimeException("Unknown car Make or Model!");
+        Optional<CarModel> optionalModel = carModelRepository.findCarModelByBrandNameAndModelName(vehicleAdd.model(), vehicleAdd.model());
+        CarModel carModel = optionalModel.orElse(null);
+        if (carModel == null) {
+            carModel = new CarModel();
+            carModel.setBrandName(vehicleAdd.brand());
+            carModel.setModelName(vehicleAdd.model());
         }
 
-        car.setModel(carModel.get());
+        car.setModel(carModel);
 
         Engine engine = new Engine();
         engine.setDisplacement(vehicleAdd.displacement());
@@ -142,21 +119,9 @@ public class CarServiceImpl implements CarService {
         savedEngine.setCar(car);
         engineRepository.save(savedEngine);
 
-        log.info("User {} added {} with engine {}", user.getId(), car.getModel().getName(), savedEngine.getId());
+        log.info("User {} added {} with engine {}", user.getId(), car.getModel().getModelName(), savedEngine.getId());
 
         return save.getId();
-    }
-
-    @Override
-    @Transactional
-    public Map<String, List<String>> getAllBrandsWithModels() {
-        Map<String, List<String>> models = new LinkedHashMap<>();
-
-        carBrandRepository.findAll().forEach(carBrand -> {
-            models.put(carBrand.getName(), carBrand.getModels().stream().map(CarModel::getName).collect(Collectors.toList()));
-        });
-
-        return models;
     }
 
     @Override
@@ -164,7 +129,7 @@ public class CarServiceImpl implements CarService {
         Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
 
         return new CarInsuranceAddServiceView(car.getId(),
-                car.getModel().getBrand().getName() + " " + car.getModel().getName(),
+                car.getModel().getBrandName() + " " + car.getModel().getModelName(),
                 car.getEngine().getFuelType(),
                 car.getEngine().getDisplacement(),
                 car.getVin(),
@@ -186,7 +151,7 @@ public class CarServiceImpl implements CarService {
 
         return new CarInfoServiceViewModel(
                 car.getId(),
-                car.getModel().getBrand().getName() + " " + car.getModel().getName(),
+                car.getModel().getBrandName() + " " + car.getModel().getModelName(),
                 car.getVin(),
                 car.getRegistration(),
 
@@ -274,7 +239,7 @@ public class CarServiceImpl implements CarService {
     private static CarOilChangeAddServiceViewModel mapToCarOilChangeAddServiceViewModel(Car car) {
         return new CarOilChangeAddServiceViewModel(
                 car.getId(),
-                car.getModel().getBrand().getName() + " " + car.getModel().getName(),
+                car.getModel().getBrandName() + " " + car.getModel().getModelName(),
                 car.getVin()
         );
     }
@@ -336,7 +301,7 @@ public class CarServiceImpl implements CarService {
         return carRepository.findById(id)
                 .map(car -> new CarVignetteAddServiceView(
                         car.getId(),
-                        car.getModel().getBrand().getName() + " " + car.getModel().getName(),
+                        car.getModel().getBrandName() + " " + car.getModel().getModelName(),
                         car.getRegistration())
                 )
                 .orElseThrow(() -> new RuntimeException("Car not found"));

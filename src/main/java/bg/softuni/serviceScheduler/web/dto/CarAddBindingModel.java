@@ -7,8 +7,8 @@ import jakarta.validation.constraints.*;
 import java.time.Year;
 
 public record CarAddBindingModel(
-        @NotBlank(message = "You must select vehicle make")
-        String make,
+        @NotBlank(message = "You must select vehicle brand")
+        String brand,
         @NotBlank(message = "You must select vehicle model")
         String model,
         @Size(max = 15, message = "Max 15 characters for Trim")

@@ -21,22 +21,22 @@
                                         <p class="text-primary m-0 fw-bold">Vehicle Info</p>
                                     </div>
                                     <div class="card-body">
-                                        <form th:action="@{/vehicles/add/{brand}(brand=${vehicleAdd.make})}" th:object="${vehicleAdd}" method="post">
+                                        <form th:action="@{/vehicles/add/{brand}(brand=${vehicleAdd.brand})}" th:object="${vehicleAdd}" method="post">
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="mb-3">
-                                                        <label class="form-label" for="make">
+                                                        <label class="form-label" for="brand">
                                                             <strong class="text-danger"
-                                                                    th:if="${#fields.hasErrors('make')}"
-                                                                    th:errors="*{make}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('make')}">Make*</strong>
+                                                                    th:if="${#fields.hasErrors('brand')}"
+                                                                    th:errors="*{brand}"></strong>
+                                                            <strong th:unless="${#fields.hasErrors('brand')}">Make*</strong>
                                                         </label>
-                                                        <select id="make" class="form-select" th:field="*{make}"
-                                                                name="make">
+                                                        <select id="brand" class="form-select" th:field="*{brand}"
+                                                                name="brand">
                                                             <option th:value="${null}" selected="">Select vehicle make
                                                             </option>
-                                                            <option th:each="make : ${brands.keySet()}"
-                                                                    th:value="${make}" th:text="${make}"></option>
+                                                            <option th:each="brand : ${brands}"
+                                                                    th:value="${brand}" th:text="${brand}"></option>
                                                         </select>
                                                     </div>
                                                 </div>

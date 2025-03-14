@@ -24,4 +24,5 @@ public interface OilChangeRepository extends JpaRepository<OilChange, UUID> {
             GROUP BY u
             """)
     BigDecimal getSumOilChangesCostByUserId(UUID userId);
+
 }

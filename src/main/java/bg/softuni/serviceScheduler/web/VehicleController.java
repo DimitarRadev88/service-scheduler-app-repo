@@ -1,11 +1,12 @@
 package bg.softuni.serviceScheduler.web;
 
+import bg.softuni.serviceScheduler.carModels.service.CarModelService;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarInfoServiceViewModel;
-import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
+import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -28,20 +28,22 @@ import java.util.UUID;
 public class VehicleController {
 
     private final CarService carService;
+    private final CarModelService carModelService;
 
-    public VehicleController(CarService carService) {
+    public VehicleController(CarService carService, CarModelService carModelService) {
         this.carService = carService;
+        this.carModelService = carModelService;
     }
 
     @GetMapping("/add")
     public String getVehicleAddPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (!model.containsAttribute("brands")) {
-            Map<String, List<String>> allBrandsWithModels = carService.getAllBrandsWithModels();
-            model.addAttribute("brands", allBrandsWithModels);
+            List<String> allBrands = carModelService.getAllBrands();
+            model.addAttribute("brands", allBrands);
         }
 
         if (userDetails instanceof ServiceSchedulerUserDetails) {
-            model.addAttribute("userId", ((ServiceSchedulerUserDetails)userDetails).getId());
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
         }
 
         return "vehicle-add";
@@ -58,14 +60,15 @@ public class VehicleController {
             model.addAttribute("vehicleAdd", vehicleAdd);
         }
 
-        Map<String, List<String>> brandsWithModels = carService.getAllBrandsWithModels();
+        List<String> brands = carModelService.getAllBrands();
+        List<String> models = carModelService.getAllModelsByBrand(brand);
 
         if (!model.containsAttribute("brands")) {
-            model.addAttribute("brands", brandsWithModels);
+            model.addAttribute("brands", brands);
         }
 
         if (!model.containsAttribute("models")) {
-            model.addAttribute("models", brandsWithModels.get(brand));
+            model.addAttribute("models", models);
         }
 
         return "vehicle-add-with-brand";
@@ -80,7 +83,7 @@ public class VehicleController {
                                                BindingResult bindingResult,
                                                RedirectAttributes redirectAttributes) {
 
-        if (bindingResult.hasErrors() || !vehicleAdd.make().equals(brand)) {
+        if (bindingResult.hasErrors() || !vehicleAdd.brand().equals(brand)) {
             redirectAttributes.addFlashAttribute("vehicleAdd", vehicleAdd);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.vehicleAdd", bindingResult);
             modelAndView.setViewName("redirect:/vehicles/add/" + brand);
@@ -95,7 +98,7 @@ public class VehicleController {
     @GetMapping("/{id}")
     public String getVehicleDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id, Model model) {
         if (userDetails instanceof ServiceSchedulerUserDetails) {
-            model.addAttribute("userId", ((ServiceSchedulerUserDetails)userDetails).getId());
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
         }
 
         CarInfoServiceViewModel carInfo = carService.getCarInfoServiceViewModel(id);
@@ -128,7 +131,7 @@ public class VehicleController {
     @GetMapping("/engines/{id}/oil-changes/add")
     public String getAddOilChangeView(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id, Model model) {
         if (userDetails instanceof ServiceSchedulerUserDetails) {
-            model.addAttribute("userId", ((ServiceSchedulerUserDetails)userDetails).getId());
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
         }
 
         if (!model.containsAttribute("engineView")) {

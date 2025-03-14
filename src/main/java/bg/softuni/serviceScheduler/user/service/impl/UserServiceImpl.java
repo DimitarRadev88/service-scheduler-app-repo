@@ -105,8 +105,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
         List<CarDashboardViewServiceModel> cars = user.getCars().stream().map(car -> new CarDashboardViewServiceModel(car.getId(),
-                car.getModel().getBrand().getName(),
-                car.getModel().getName(),
+                car.getModel().getBrandName(),
+                car.getModel().getModelName(),
                 car.getVin(),
                 car
                         .getEngine()
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
                 user.getId(),
                 user.getCars().stream().map(car -> new CarInsuranceAddSelectView(
                         car.getId(),
-                        car.getModel().getBrand().getName() + " " + car.getModel().getName()
+                        car.getModel().getBrandName() + " " + car.getModel().getModelName()
                 )).toList()
         );
     }

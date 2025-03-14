@@ -24,14 +24,14 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="mb-3">
-                                                        <label class="form-label" for="make">
-                                                            <strong>Make*</strong>
+                                                        <label class="form-label" for="brand">
+                                                            <strong>Brand*</strong>
                                                         </label>
-                                                        <select id="make" class="form-select" name="make">
-                                                            <option th:value="${null}" selected="">Select vehicle make
+                                                        <select id="brand" class="form-select" name="brand">
+                                                            <option th:value="${null}" selected="">Select vehicle brand
                                                             </option>
-                                                            <option th:each="make : ${brands.keySet()}"
-                                                                    th:value="${make}" th:text="${make}"></option>
+                                                            <option th:each="brand : ${brands}"
+                                                                    th:value="${brand}" th:text="${brand}"></option>
                                                         </select>
                                                     </div>
                                                 </div>

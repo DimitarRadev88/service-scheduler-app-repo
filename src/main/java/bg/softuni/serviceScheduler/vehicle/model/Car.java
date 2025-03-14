@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.vehicle.model;
 
+import bg.softuni.serviceScheduler.carModels.model.CarModel;
 import bg.softuni.serviceScheduler.insurance.model.Insurance;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.vignette.model.Vignette;
@@ -24,7 +25,7 @@ public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(nullable = false)
     private CarModel model;
     @OneToOne(cascade = CascadeType.ALL)

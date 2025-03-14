@@ -14,11 +14,4 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
 
     List<Car> findAllByUserId(UUID userId);
 
-    @Query("""
-           
-            FROM Car c
-            WHERE c.user=:userId
-            
-            """)
-    BigDecimal getSumCarServicesCostByUserId(UUID userId);
 }
