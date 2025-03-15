@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
+
+<body id="page-top">
+<div id="wrapper">
+    <nav th:replace="~{common/fragments.html :: sidebar}"></nav>
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
+            <div class="container-fluid">
+                <h3 class="text-center text-dark mb-4">Create new vehicle model</h3>
+                <div class="row mb-3">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card shadow mb-3">
+                                    <div class="card-header py-3">
+                                        <p class="text-primary m-0 fw-bold">Select Brand</p>
+                                    </div>
+                                    <div class="card-body">
+                                        <form th:action="@{/models/add/{brand}(brand=${carModelAdd.brand})}"
+                                              th:object="${carModelAdd}" method="post">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="mb-3">
+                                                        <label class="form-label" for="brand">
+                                                            <strong class="text-danger"
+                                                                    th:if="${#fields.hasErrors('brand')}"
+                                                                    th:errors="*{brand}"></strong>
+                                                            <strong th:unless="${#fields.hasErrors('brand')}">Make*</strong>
+                                                        </label>
+                                                        <select id="brand" class="form-select" th:field="*{brand}"
+                                                                name="brand">
+                                                            <option th:value="${null}" selected="">Select vehicle make
+                                                            </option>
+                                                            <option th:each="brand : ${brands}"
+                                                                    th:value="${brand}" th:text="${brand}"></option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="model">
+                                                        <strong class="text-danger"
+                                                                th:if="${#fields.hasErrors('model')}"
+                                                                th:errors="*{model}"></strong>
+                                                        <strong th:unless="${#fields.hasErrors('model')}">Model
+                                                            name</strong>
+                                                    </label>
+                                                    <input class="form-control" id="model" type="text"
+                                                           name="model" placeholder="Model" th:field="*{model}">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <button class="btn btn-primary btn-sm" type="submit">
+                                                    Add Model
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{common/fragments.html :: footer}"></footer>
+    </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/model-add.js"></script>
+</body>
+
+</html>
