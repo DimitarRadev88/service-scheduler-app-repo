@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.web;
 
-import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.services.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;

@@ -1,6 +1,7 @@
 package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.carModels.service.CarModelService;
+import bg.softuni.serviceScheduler.services.oilChange.service.OilChangeService;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
@@ -29,10 +30,12 @@ public class VehicleController {
 
     private final CarService carService;
     private final CarModelService carModelService;
+    private final OilChangeService oilChangeService;
 
-    public VehicleController(CarService carService, CarModelService carModelService) {
+    public VehicleController(CarService carService, CarModelService carModelService, OilChangeService oilChangeService) {
         this.carService = carService;
         this.carModelService = carModelService;
+        this.oilChangeService = oilChangeService;
     }
 
     @GetMapping("/add")
@@ -157,7 +160,7 @@ public class VehicleController {
             redirectAttributes.addFlashAttribute("oilChangeAdd", oilChangeAdd);
             return "redirect:/vehicles/engines/" + id + "/oil-changes/add";
         } else {
-            UUID carId = carService.doAdd(oilChangeAdd, id);
+            UUID carId = oilChangeService.doAdd(oilChangeAdd, id);
             return "redirect:/vehicles/" + carId;
         }
     }

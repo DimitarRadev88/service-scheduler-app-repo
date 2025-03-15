@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.insurance.service;
+package bg.softuni.serviceScheduler.services.insurance.service;
 
 import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
 

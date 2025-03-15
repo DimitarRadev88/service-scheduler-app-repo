@@ -1,8 +1,8 @@
-package bg.softuni.serviceScheduler.insurance.service.impl;
+package bg.softuni.serviceScheduler.services.insurance.service.impl;
 
-import bg.softuni.serviceScheduler.insurance.dao.InsuranceRepository;
-import bg.softuni.serviceScheduler.insurance.model.Insurance;
-import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.services.insurance.dao.InsuranceRepository;
+import bg.softuni.serviceScheduler.services.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.services.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
@@ -35,14 +35,14 @@ public class InsuranceServiceImpl implements InsuranceService {
 
         Insurance save = insuranceRepository.save(new Insurance(
                 null,
+                LocalDate.now(),
+                insuranceAdd.cost(),
                 insuranceAdd.companyName(),
                 insuranceAdd.fromDate(),
                 insuranceAdd.fromDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()),
                 insuranceAdd.insuranceValidityPeriod(),
-                insuranceAdd.cost(),
                 insuranceAdd.fromDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()).isAfter(LocalDate.now()),
-                car,
-                LocalDate.now()
+                car
         ));
 
         log.info("Insurance expiring on {} for {} added", save.getEndDate(), car.getModel().getModelName());

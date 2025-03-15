@@ -1,13 +1,13 @@
-package bg.softuni.serviceScheduler.vignette.service.impl;
+package bg.softuni.serviceScheduler.services.vignette.service.impl;
 
-import bg.softuni.serviceScheduler.insurance.model.Insurance;
+
+import bg.softuni.serviceScheduler.services.vignette.dao.VignetteRepository;
+import bg.softuni.serviceScheduler.services.vignette.model.Vignette;
+import bg.softuni.serviceScheduler.services.vignette.model.VignetteCost;
+import bg.softuni.serviceScheduler.services.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
-import bg.softuni.serviceScheduler.vignette.dao.VignetteRepository;
-import bg.softuni.serviceScheduler.vignette.model.Vignette;
-import bg.softuni.serviceScheduler.vignette.model.VignetteCost;
-import bg.softuni.serviceScheduler.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.web.dto.VignetteAddBindingModel;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -41,13 +41,13 @@ public class VignetteServiceImpl implements VignetteService {
         LocalDate endDate = vignetteAdd.fromDate().plusDays(vignetteAdd.validity().getDays());
         Vignette vignette = new Vignette(
                 null,
+                LocalDate.now(),
+                VignetteCost.valueOf(vignetteAdd.validity().name()).getCost(),
                 vignetteAdd.fromDate(),
                 endDate,
                 vignetteAdd.validity(),
-                VignetteCost.valueOf(vignetteAdd.validity().name()).getCost(),
                 endDate.isAfter(LocalDate.now()),
-                car,
-                LocalDate.now()
+                car
         );
         vignetteRepository.save(vignette);
         car.getVignettes()

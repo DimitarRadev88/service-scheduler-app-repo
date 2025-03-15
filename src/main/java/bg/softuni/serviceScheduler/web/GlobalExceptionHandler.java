@@ -2,15 +2,10 @@ package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;
 import bg.softuni.serviceScheduler.user.exception.UsernameAlreadyExistsException;
-import bg.softuni.serviceScheduler.vehicle.exception.IllegalMileageException;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.UUID;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

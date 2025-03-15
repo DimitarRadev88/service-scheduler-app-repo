@@ -96,7 +96,7 @@
                                     th:field="*{validity}">
                               <option th:value="${null}" selected="">Select validity period
                               </option>
-                              <option th:each="validity : ${T (bg.softuni.serviceScheduler.vignette.model.VignetteValidity).values()}"
+                              <option th:each="validity : ${T (bg.softuni.serviceScheduler.services.vignette.model.VignetteValidity).values()}"
                                       th:value="${validity}"
                                       th:text="${validity}"></option>
                             </select></div>

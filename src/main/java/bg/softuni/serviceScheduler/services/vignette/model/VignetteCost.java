@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.vignette.model;
+package bg.softuni.serviceScheduler.services.vignette.model;
 
 import java.math.BigDecimal;
 

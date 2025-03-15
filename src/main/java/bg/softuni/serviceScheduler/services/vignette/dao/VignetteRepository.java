@@ -1,7 +1,6 @@
-package bg.softuni.serviceScheduler.vignette.dao;
+package bg.softuni.serviceScheduler.services.vignette.dao;
 
-import bg.softuni.serviceScheduler.insurance.model.Insurance;
-import bg.softuni.serviceScheduler.vignette.model.Vignette;
+import bg.softuni.serviceScheduler.services.vignette.model.Vignette;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

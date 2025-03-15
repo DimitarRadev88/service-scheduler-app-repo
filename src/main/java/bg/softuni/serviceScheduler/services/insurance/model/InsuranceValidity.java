@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.insurance.model;
+package bg.softuni.serviceScheduler.services.insurance.model;
 
 import lombok.Getter;
 

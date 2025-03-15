@@ -1,6 +1,6 @@
-package bg.softuni.serviceScheduler.vehicle.dao;
+package bg.softuni.serviceScheduler.services.oilChange.dao;
 
-import bg.softuni.serviceScheduler.vehicle.model.OilChange;
+import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

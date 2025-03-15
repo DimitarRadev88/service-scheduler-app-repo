@@ -2,22 +2,21 @@ package bg.softuni.serviceScheduler.vehicle.service.impl;
 
 import bg.softuni.serviceScheduler.carModels.dao.CarModelRepository;
 import bg.softuni.serviceScheduler.carModels.model.CarModel;
-import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.services.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.services.vignette.service.VignetteService;
+import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
-import bg.softuni.serviceScheduler.vehicle.dao.OilChangeRepository;
+import bg.softuni.serviceScheduler.services.oilChange.dao.OilChangeRepository;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;
-import bg.softuni.serviceScheduler.vehicle.model.OilChange;
+import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
-import bg.softuni.serviceScheduler.vignette.service.VignetteService;
-import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
-import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +66,7 @@ public class CarServiceImpl implements CarService {
                         all.stream()
                                 .map(car -> car.getEngine().getOilChanges())
                                 .flatMap(List::stream)
-                                .map(oilChange -> new CarDashboardServicesDoneViewServiceModel("Oil change", oilChange.getDate(), oilChange.getCost())),
+                                .map(oilChange -> new CarDashboardServicesDoneViewServiceModel("Oil change", oilChange.getAddedAt(), oilChange.getCost())),
                         Stream.concat(
                                 all.stream()
                                         .map(Car::getInsurances)
@@ -245,39 +244,12 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    @Transactional
-    public UUID doAdd(OilChangeAddBindingModel oilChangeAdd, UUID engineId) {
-        Engine engine = engineRepository.findById(engineId).orElseThrow(() -> new RuntimeException("Engine not found"));
-
-        OilChange oilChange = new OilChange(
-                null,
-                engine,
-                oilChangeAdd.cost(),
-                LocalDate.now(),
-                oilChangeAdd.changeMileage(),
-                oilChangeAdd.changeInterval(),
-                oilChangeAdd.changeDate()
-        );
-
-        OilChange save = oilChangeRepository.save(oilChange);
-        engine.getOilChanges().add(save);
-
-        engineRepository.save(engine);
-        return engine.getCar().getId();
-    }
-
-    @Override
     public void doAddMileage(EngineMileageAddBindingModel engineMileageAdd, UUID id) {
         Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
 
         car.getEngine().setMileage(engineMileageAdd.newMileage());
 
         carRepository.save(car);
-    }
-
-    @Override
-    public Long getOilChangesCount() {
-        return oilChangeRepository.count();
     }
 
     @Override

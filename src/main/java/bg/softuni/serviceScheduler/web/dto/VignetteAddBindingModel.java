@@ -1,7 +1,6 @@
 package bg.softuni.serviceScheduler.web.dto;
 
-import bg.softuni.serviceScheduler.vehicle.model.VehicleCategory;
-import bg.softuni.serviceScheduler.vignette.model.VignetteValidity;
+import bg.softuni.serviceScheduler.services.vignette.model.VignetteValidity;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;

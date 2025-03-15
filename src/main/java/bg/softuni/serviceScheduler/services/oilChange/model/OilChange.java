@@ -1,5 +1,6 @@
-package bg.softuni.serviceScheduler.vehicle.model;
+package bg.softuni.serviceScheduler.services.oilChange.model;
 
+import bg.softuni.serviceScheduler.vehicle.model.Engine;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class OilChange {
     @Column(nullable = false)
     private BigDecimal cost;
     @Column(nullable = false)
-    private LocalDate date;
+    private LocalDate addedAt;
     @Column(nullable = false)
     private Integer mileage;
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.vehicle.model;
 
+import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,11 +1,11 @@
 package bg.softuni.serviceScheduler.web;
 
+import bg.softuni.serviceScheduler.services.vignette.service.VignetteService;
+import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
-import bg.softuni.serviceScheduler.vignette.service.VignetteService;
-import bg.softuni.serviceScheduler.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.web.dto.VignetteAddBindingModel;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

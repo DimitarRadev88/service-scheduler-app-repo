@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.vignette.service;
+package bg.softuni.serviceScheduler.services.vignette.service;
 
 import bg.softuni.serviceScheduler.web.dto.VignetteAddBindingModel;
 

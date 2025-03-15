@@ -1,6 +1,6 @@
-package bg.softuni.serviceScheduler.insurance.dao;
+package bg.softuni.serviceScheduler.services.insurance.dao;
 
-import bg.softuni.serviceScheduler.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.services.insurance.model.Insurance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

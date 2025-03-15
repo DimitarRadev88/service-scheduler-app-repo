@@ -1,7 +1,9 @@
 package bg.softuni.serviceScheduler.user.service.impl;
 
-import bg.softuni.serviceScheduler.insurance.model.Insurance;
-import bg.softuni.serviceScheduler.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.services.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.services.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.services.oilChange.service.OilChangeService;
+import bg.softuni.serviceScheduler.services.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.dao.UserRoleRepository;
 import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;
@@ -12,10 +14,9 @@ import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
 import bg.softuni.serviceScheduler.user.service.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.*;
-import bg.softuni.serviceScheduler.vehicle.model.OilChange;
+import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardViewServiceModel;
-import bg.softuni.serviceScheduler.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.web.dto.UserLoginBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserProfileEditBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
@@ -43,15 +44,17 @@ public class UserServiceImpl implements UserService {
     private final InsuranceService insuranceService;
     private final VignetteService vignetteService;
     private final UserRoleRepository userRoleRepository;
+    private final OilChangeService oilChangeService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, InsuranceService insuranceService, VignetteService vignetteService, UserRoleRepository userRoleRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, InsuranceService insuranceService, VignetteService vignetteService, UserRoleRepository userRoleRepository, OilChangeService oilChangeService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.carService = carService;
         this.insuranceService = insuranceService;
         this.vignetteService = vignetteService;
         this.userRoleRepository = userRoleRepository;
+        this.oilChangeService = oilChangeService;
     }
 
     @Override
@@ -140,7 +143,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SiteStatisticsServiceModelView getStatistics() {
-        return new SiteStatisticsServiceModelView(userRepository.count(), carService.getOilChangesCount());
+        return new SiteStatisticsServiceModelView(userRepository.count(), oilChangeService.getOilChangesCount());
 
     }
 

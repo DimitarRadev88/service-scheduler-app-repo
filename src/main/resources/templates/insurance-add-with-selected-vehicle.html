@@ -142,7 +142,7 @@
                                                             <option th:value="${null}" selected="">Select validity
                                                                 period
                                                             </option>
-                                                            <option th:each="validity : ${T (bg.softuni.serviceScheduler.insurance.model.InsuranceValidity).values()}"
+                                                            <option th:each="validity : ${T (bg.softuni.serviceScheduler.services.insurance.model.InsuranceValidity).values()}"
                                                                     th:value="${validity}"
                                                                     th:text="${validity.getPeriodName()}"></option>
                                                         </select></div>
