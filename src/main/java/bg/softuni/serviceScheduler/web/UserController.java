@@ -139,12 +139,12 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userEdit", bindingResult);
             redirectAttributes.addFlashAttribute("userEdit", userProfileEditBindingModel);
-            return "redirect:/profile/" + id + "/edit";
+            return "redirect:/profile/edit";
         }
 
         userService.doEdit(userProfileEditBindingModel, id);
 
-        return "redirect:/profile/" + id;
+        return "redirect:/profile";
     }
 
 }
