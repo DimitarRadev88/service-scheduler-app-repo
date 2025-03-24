@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.carModels.model;
+package bg.softuni.serviceScheduler.carModel.model;
 
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import jakarta.persistence.*;

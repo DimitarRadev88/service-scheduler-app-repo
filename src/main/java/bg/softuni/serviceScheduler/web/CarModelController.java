@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.web;
 
-import bg.softuni.serviceScheduler.carModels.service.CarModelService;
+import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.web.dto.CarBrandAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarModelAddBindingModel;

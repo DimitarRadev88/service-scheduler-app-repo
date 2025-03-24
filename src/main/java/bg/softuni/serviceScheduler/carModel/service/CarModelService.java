@@ -1,8 +1,7 @@
-package bg.softuni.serviceScheduler.carModels.service;
+package bg.softuni.serviceScheduler.carModel.service;
 
 import bg.softuni.serviceScheduler.web.dto.CarBrandAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarModelAddBindingModel;
-import jakarta.validation.Valid;
 
 import java.util.List;
 

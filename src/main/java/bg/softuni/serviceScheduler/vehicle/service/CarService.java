@@ -23,8 +23,6 @@ public interface CarService {
 
     CarInfoServiceViewModel getCarInfoServiceViewModel(UUID id);
 
-    LastServicesServiceViewModel getLastServices(Car car);
-
     EngineOilChangeServiceViewModel getEngineOilChangeAddViewModel(UUID engineId);
 
     void doAddMileage(EngineMileageAddBindingModel engineMileageAdd, UUID id);
@@ -36,7 +34,5 @@ public interface CarService {
     CarVignetteAddServiceView getCarVignetteAddServiceView(UUID id);
 
     BigDecimal getAllServicesCostByUser(UUID userId);
-
-    BigDecimal getSumOilChangesCostByUser(UUID userId);
 
 }

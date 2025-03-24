@@ -1,7 +1,6 @@
-package bg.softuni.serviceScheduler.carModels.dao;
+package bg.softuni.serviceScheduler.carModel.dao;
 
-import bg.softuni.serviceScheduler.carModels.model.CarModel;
-import jakarta.validation.constraints.NotBlank;
+import bg.softuni.serviceScheduler.carModel.model.CarModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

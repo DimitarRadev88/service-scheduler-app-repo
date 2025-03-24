@@ -1,11 +1,10 @@
-package bg.softuni.serviceScheduler.carModels.service.impl;
+package bg.softuni.serviceScheduler.carModel.service.impl;
 
-import bg.softuni.serviceScheduler.carModels.service.CarModelService;
-import bg.softuni.serviceScheduler.carModels.service.dto.CarBrandNameDto;
-import bg.softuni.serviceScheduler.carModels.service.dto.CarModelNameDto;
+import bg.softuni.serviceScheduler.carModel.service.CarModelService;
+import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
+import bg.softuni.serviceScheduler.carModel.service.dto.CarModelNameDto;
 import bg.softuni.serviceScheduler.web.dto.CarBrandAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarModelAddBindingModel;
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 public class CarModelServiceImpl implements CarModelService {
 
     private final RestClient restClient;
+
     @Autowired
     public CarModelServiceImpl(@Qualifier("carBrandsRestClient") RestClient restClient) {
         this.restClient = restClient;
@@ -52,6 +52,7 @@ public class CarModelServiceImpl implements CarModelService {
                     .uri("/models/" + brand)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
+//                    .onStatus()
                     .body(CarModelNameDto[].class);
         } catch (HttpClientErrorException e) {
             log.error(e.getResponseBodyAsString());
