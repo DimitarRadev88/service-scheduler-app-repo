@@ -214,51 +214,6 @@ public class CarServiceTests {
     }
 
     @Test
-    public void testNeedsOilChangeReturnsTrueWhenMileageAtChangeInterval() {
-        Mockito
-                .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
-                .thenReturn(Optional.of(new OilChange(
-                                OIL_CHANGE_ID,
-                                this.engine,
-                                SERVICE_COST,
-                                OIL_CHANGE_ADD_DATE,
-                                ENGINE_MILEAGE - OIL_CHANGE_INTERVAL,
-                                OIL_CHANGE_INTERVAL,
-                                OIL_CHANGE_DATE)
-                        )
-                );
-
-        assertTrue(carService.needsOilChange(car.getEngine()));
-    }
-
-    @Test
-    public void testNeedsOilChangeReturnsTrueWhenMileageOverChangeInterval() {
-        Mockito
-                .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
-                .thenReturn(Optional.of(new OilChange(
-                                OIL_CHANGE_ID,
-                                this.engine,
-                                SERVICE_COST,
-                                OIL_CHANGE_ADD_DATE,
-                                ENGINE_MILEAGE - OIL_CHANGE_INTERVAL - 1,
-                                OIL_CHANGE_INTERVAL,
-                                OIL_CHANGE_DATE)
-                        )
-                );
-
-        assertTrue(carService.needsOilChange(car.getEngine()));
-    }
-
-    @Test
-    public void testNeedsOilChangeReturnsFalseWhenMileageUnderChangeInterval() {
-        Mockito
-                .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
-                .thenReturn(Optional.of(this.oilChange));
-
-        assertFalse(carService.needsOilChange(car.getEngine()));
-    }
-
-    @Test
     public void testAddMileageAdds() {
         Mockito
                 .when(carRepository.findById(CAR_ID))

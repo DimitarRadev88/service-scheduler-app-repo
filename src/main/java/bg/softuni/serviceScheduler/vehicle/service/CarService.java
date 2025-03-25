@@ -1,6 +1,7 @@
 package bg.softuni.serviceScheduler.vehicle.service;
 
 import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddServiceView;
+import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
@@ -27,12 +28,13 @@ public interface CarService {
 
     void doAddMileage(EngineMileageAddBindingModel engineMileageAdd, UUID id);
 
-    boolean needsOilChange(Engine engine);
-
     void doDelete(UUID id);
 
     CarVignetteAddServiceView getCarVignetteAddServiceView(UUID id);
 
     BigDecimal getAllServicesCostByUser(UUID userId);
 
+    List<CarDashboardViewServiceModel> getAllCarDashboardServiceViewModelsByUser(UUID id);
+
+    List<CarInsuranceAddSelectView> getCarInsuranceAddSelectView(UUID id);
 }

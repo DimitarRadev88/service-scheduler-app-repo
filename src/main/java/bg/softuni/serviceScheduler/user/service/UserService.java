@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    UUID doLogin(UserLoginBindingModel userLogin);
 
     String doRegister(UserRegisterBindingModel userRegister) throws UsernameAlreadyExistsException, EmailAlreadyExistsException;
 
@@ -32,5 +31,5 @@ public interface UserService {
 
     UserEditProfileServiceModel getUserEditProfileServiceModel(UUID id);
 
-    void doEdit(@Valid UserProfileEditBindingModel userProfileEditBindingModel, UUID id);
+    void doEdit(@Valid UserProfileEditBindingModel userProfileEditBindingModel, UUID id) throws UsernameAlreadyExistsException, EmailAlreadyExistsException;
 }

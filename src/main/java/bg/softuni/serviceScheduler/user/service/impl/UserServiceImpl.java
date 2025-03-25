@@ -1,23 +1,20 @@
 package bg.softuni.serviceScheduler.user.service.impl;
 
-import bg.softuni.serviceScheduler.services.insurance.model.Insurance;
-import bg.softuni.serviceScheduler.services.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.services.oilChange.service.OilChangeService;
-import bg.softuni.serviceScheduler.services.vignette.service.VignetteService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.dao.UserRoleRepository;
 import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;
+import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
+import bg.softuni.serviceScheduler.user.exception.UserRoleNotFoundException;
 import bg.softuni.serviceScheduler.user.exception.UsernameAlreadyExistsException;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.model.UserRole;
 import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
-import bg.softuni.serviceScheduler.user.service.dto.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.*;
-import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
+import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardViewServiceModel;
-import bg.softuni.serviceScheduler.web.dto.UserLoginBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserProfileEditBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import jakarta.transaction.Transactional;
@@ -26,52 +23,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private static final String BASIC_PROFILE_PICTURE_URL = "https://t4.ftcdn.net/jpg/04/10/43/77/360_F_410437733_hdq4Q3QOH9uwh0mcqAhRFzOKfrCR24Ta.jpg";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private static final String BASIC_PROFILE_PICTURE_URL = "https://t4.ftcdn.net/jpg/04/10/43/77/360_F_410437733_hdq4Q3QOH9uwh0mcqAhRFzOKfrCR24Ta.jpg";
     private final CarService carService;
-    private final InsuranceService insuranceService;
-    private final VignetteService vignetteService;
     private final UserRoleRepository userRoleRepository;
     private final OilChangeService oilChangeService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, InsuranceService insuranceService, VignetteService vignetteService, UserRoleRepository userRoleRepository, OilChangeService oilChangeService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CarService carService, UserRoleRepository userRoleRepository, OilChangeService oilChangeService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.carService = carService;
-        this.insuranceService = insuranceService;
-        this.vignetteService = vignetteService;
         this.userRoleRepository = userRoleRepository;
         this.oilChangeService = oilChangeService;
-    }
-
-    @Override
-    public UUID doLogin(UserLoginBindingModel userLogin) {
-        Optional<User> optionalUser = userRepository.findByUsername(userLogin.username());
-
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("Invalid username or password");
-        }
-
-        User user = optionalUser.get();
-
-        if (!passwordEncoder.matches(userLogin.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
-        }
-
-        return user.getId();
     }
 
     @Override
@@ -103,41 +78,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDashboardServiceModelView getUser(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        List<CarDashboardViewServiceModel> cars = user.getCars().stream().map(car -> new CarDashboardViewServiceModel(car.getId(),
-                car.getModel().getBrandName(),
-                car.getModel().getModelName(),
-                car.getVin(),
-                car
-                        .getEngine()
-                        .getOilChanges()
-                        .stream()
-                        .map(OilChange::getCost)
-                        .reduce(BigDecimal::add)
-                        .orElse(BigDecimal.ZERO)
-                        .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
-                !insuranceService.hasActiveInsurance(car.getId())
-                || carService.needsOilChange(car.getEngine())
-                || !vignetteService.hasActiveVignette(car.getId())
-        )).toList();
+        List<CarDashboardViewServiceModel> cars = carService.getAllCarDashboardServiceViewModelsByUser(user.getId());
+        List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServicesByUser(user.getId());
 
-        return new UserDashboardServiceModelView(user.getRegistrationDate().toLocalDate(), cars, carService.getAllServicesByUser(user.getId()));
+        return new UserDashboardServiceModelView(user.getRegistrationDate().toLocalDate(), cars, services);
     }
 
     @Override
-    @Transactional
     public UserWithCarsInfoAddServiceView getUserWithCarsInfoAddServiceView(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return new UserWithCarsInfoAddServiceView(
                 user.getId(),
-                user.getCars().stream().map(car -> new CarInsuranceAddSelectView(
-                        car.getId(),
-                        car.getModel().getBrandName() + " " + car.getModel().getModelName()
-                )).toList()
+                carService.getCarInsuranceAddSelectView(user.getId())
         );
     }
 
@@ -153,67 +113,92 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllByOrderByRegistrationDateAsc().stream().map(user -> new AllUsersServiceModelView(
                 user.getId(),
                 user.getUsername(),
-                user.getRoles().size() == 2 ? UserRoleEnumeration.ADMIN : UserRoleEnumeration.USER
+                user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(UserRoleEnumeration.ADMIN))
+                        ? UserRoleEnumeration.ADMIN
+                        : UserRoleEnumeration.USER
         )).toList();
     }
 
     @Override
     @Transactional
     public void removeAdmin(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        UserRole userRole = user.getRoles()
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        UserRole userRole = user
+                .getRoles()
                 .stream()
                 .filter(role -> role.getRole().equals(UserRoleEnumeration.ADMIN))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new UserRoleNotFoundException("Role not found"));
+
         user.getRoles().remove(userRole);
+
         userRepository.save(user);
+
         log.info("Removed admin role for user: {}", user.getUsername());
     }
 
     @Transactional
     @Override
     public void makeAdmin(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        user.getRoles().add(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN));
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        user
+                .getRoles()
+                .add(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN));
+
         userRepository.save(user);
+
         log.info("User {} promoted to admin", user.getUsername());
     }
 
     @Override
     public UserProfileViewServiceModel getUserProfileView(UUID id) {
-        return userRepository.findById(id).map(u -> new UserProfileViewServiceModel(
-                u.getUsername(),
-                u.getEmail(),
-                u.getRegistrationDate().toLocalDate(),
-                u.getProfilePictureURL()
-        )).orElseThrow(() -> new RuntimeException("User not found!"));
+        return userRepository
+                .findById(id)
+                .map(u -> new UserProfileViewServiceModel(
+                        u.getUsername(),
+                        u.getEmail(),
+                        u.getRegistrationDate().toLocalDate(),
+                        u.getProfilePictureURL()
+                ))
+                .orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
 
     @Override
     public UserEditProfileServiceModel getUserEditProfileServiceModel(UUID id) {
-        return userRepository.findById(id).map(u -> new UserEditProfileServiceModel(
-                u.getUsername(),
-                u.getEmail(),
-                u.getProfilePictureURL()
-        )).orElseThrow(() -> new RuntimeException("User not found!"));
+        return userRepository
+                .findById(id)
+                .map(u -> new UserEditProfileServiceModel(
+                        u.getUsername(),
+                        u.getEmail(),
+                        u.getProfilePictureURL()
+                ))
+                .orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
 
     @Override
-    public void doEdit(UserProfileEditBindingModel userProfileEditBindingModel, UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    public void doEdit(UserProfileEditBindingModel userProfileEditBindingModel, UUID id) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (!user.getUsername().equals(userProfileEditBindingModel.username()) && userRepository.existsByUsername(userProfileEditBindingModel.username())) {
-            throw new RuntimeException("Username already exists");
+            throw new UsernameAlreadyExistsException("Username already exists");
         }
 
         if (!user.getEmail().equals(userProfileEditBindingModel.email()) && userRepository.existsByEmail(userProfileEditBindingModel.email())) {
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException("Email already exists");
         }
 
         user.setUsername(userProfileEditBindingModel.username());
         user.setEmail(userProfileEditBindingModel.email());
         user.setProfilePictureURL(userProfileEditBindingModel.profilePictureUrl());
+
         if (user.getProfilePictureURL().isBlank()) {
             user.setProfilePictureURL(BASIC_PROFILE_PICTURE_URL);
         }

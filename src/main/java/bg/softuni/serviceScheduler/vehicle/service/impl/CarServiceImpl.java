@@ -10,6 +10,7 @@ import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddS
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
 import bg.softuni.serviceScheduler.user.model.User;
+import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
 import bg.softuni.serviceScheduler.services.oilChange.dao.OilChangeRepository;
@@ -259,8 +260,7 @@ public class CarServiceImpl implements CarService {
         carRepository.save(car);
     }
 
-    @Override
-    public boolean needsOilChange(Engine engine) {
+    private boolean needsOilChange(Engine engine) {
         return oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(engine.getId())
                 .map(oilChange -> oilChange.getMileage() + oilChange.getChangeInterval() <= engine.getMileage())
                 .orElse(true);
@@ -295,6 +295,38 @@ public class CarServiceImpl implements CarService {
         return insuranceService.getSumInsuranceCostByUserId(userId)
                 .add(vignetteService.getSumVignetteCostByUserId(userId))
                 .add(getSumOilChangesCostByUser(userId));
+    }
+
+    @Override
+    public List<CarDashboardViewServiceModel> getAllCarDashboardServiceViewModelsByUser(UUID id) {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return carRepository.findAllByUserId(id).stream().map(car -> new CarDashboardViewServiceModel(car.getId(),
+                car.getModel().getBrandName(),
+                car.getModel().getModelName(),
+                car.getVin(),
+                car
+                        .getEngine()
+                        .getOilChanges()
+                        .stream()
+                        .map(OilChange::getCost)
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO)
+                        .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
+                !insuranceService.hasActiveInsurance(car.getId())
+                || needsOilChange(car.getEngine())
+                || !vignetteService.hasActiveVignette(car.getId())
+        )).toList();
+    }
+
+    @Override
+    public List<CarInsuranceAddSelectView> getCarInsuranceAddSelectView(UUID id) {
+        return carRepository.findAllByUserId(id).stream().map(car -> new CarInsuranceAddSelectView(
+                car.getId(),
+                car.getModel().getBrandName() + " " + car.getModel().getModelName()
+        )).toList();
     }
 
     private BigDecimal getSumOilChangesCostByUser(UUID userId) {

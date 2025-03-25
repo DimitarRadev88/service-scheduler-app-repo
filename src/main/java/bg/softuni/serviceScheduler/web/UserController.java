@@ -134,7 +134,7 @@ public class UserController {
     public String editProfile(@PathVariable UUID id,
                               @Valid UserProfileEditBindingModel userProfileEditBindingModel,
                               BindingResult bindingResult,
-                              RedirectAttributes redirectAttributes) {
+                              RedirectAttributes redirectAttributes) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userEdit", bindingResult);
