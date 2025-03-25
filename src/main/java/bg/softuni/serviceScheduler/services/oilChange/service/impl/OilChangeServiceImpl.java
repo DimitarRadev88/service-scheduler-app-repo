@@ -4,6 +4,7 @@ import bg.softuni.serviceScheduler.services.oilChange.dao.OilChangeRepository;
 import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;
 import bg.softuni.serviceScheduler.services.oilChange.service.OilChangeService;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
+import bg.softuni.serviceScheduler.vehicle.exception.EngineNotFoundException;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import jakarta.transaction.Transactional;
@@ -28,7 +29,7 @@ public class OilChangeServiceImpl implements OilChangeService {
     @Transactional
     @Override
     public UUID doAdd(OilChangeAddBindingModel oilChangeAdd, UUID engineId) {
-        Engine engine = engineRepository.findById(engineId).orElseThrow(() -> new RuntimeException("Engine not found"));
+        Engine engine = engineRepository.findById(engineId).orElseThrow(() -> new EngineNotFoundException("Engine not found"));
 
         OilChange oilChange = new OilChange(
                 null,

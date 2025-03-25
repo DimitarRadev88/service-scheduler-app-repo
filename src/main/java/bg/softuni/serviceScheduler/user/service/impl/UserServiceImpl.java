@@ -11,7 +11,7 @@ import bg.softuni.serviceScheduler.user.exception.UsernameAlreadyExistsException
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.model.UserRole;
 import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
-import bg.softuni.serviceScheduler.user.service.SiteStatisticsServiceModelView;
+import bg.softuni.serviceScheduler.user.service.dto.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.*;
 import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;

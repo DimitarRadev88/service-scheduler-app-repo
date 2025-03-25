@@ -28,10 +28,6 @@ public class Vignette extends CarService {
     @ManyToOne
     private Car car;
 
-    public Vignette(UUID id, LocalDate addedAt, BigDecimal cost) {
-        super(id, addedAt, cost);
-    }
-
     public Vignette(UUID id, LocalDate addedAt, BigDecimal cost, LocalDate startDate, LocalDate endDate, VignetteValidity validity, Boolean isValid, Car car) {
         super(id, addedAt, cost);
         this.startDate = startDate;

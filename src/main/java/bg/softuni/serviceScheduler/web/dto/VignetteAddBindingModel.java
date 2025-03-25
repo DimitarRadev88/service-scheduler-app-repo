@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public record VignetteAddBindingModel(
         @NotNull(message = "You must select vignette start date")
-        LocalDate fromDate,
+        LocalDate startDate,
         @NotNull(message = "You must select vignette validity period")
         VignetteValidity validity
 ) {

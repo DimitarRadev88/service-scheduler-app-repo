@@ -10,7 +10,7 @@ public record InsuranceAddBindingModel(
         @Size(min = 2, max = 30, message = "Company name must be between 3 and 30 characters")
         String companyName,
         @NotNull(message = "You must select insurance start date")
-        LocalDate fromDate,
+        LocalDate startDate,
         @NotNull(message = "You must select insurance validity period")
         InsuranceValidity insuranceValidityPeriod,
         @Positive(message = "Insurance cost must be more than zero")

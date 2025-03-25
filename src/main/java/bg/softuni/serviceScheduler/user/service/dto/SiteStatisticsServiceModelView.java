@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.user.service;
+package bg.softuni.serviceScheduler.user.service.dto;
 
 public record SiteStatisticsServiceModelView (
     Long registeredUsers,

@@ -42,35 +42,35 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CarServiceTests {
 
-    private static final UUID USER_ID = UUID.fromString("5fc03087-d265-11e7-b8c6-83e29cd24f4c");
-    private static final UUID CAR_ID = UUID.fromString("6fc03087-d265-11e7-b8c6-83e29cd24f4c");
-    public static final String CAR_BRAND = "Brand";
-    public static final String CAR_MODEL = "Model";
-    public static final String CAR_TRIM = "Trim";
-    public static final Year CAR_YEAR = Year.of(2000);
-    public static final String CAR_VIN = "CARVINNUMBER12345";
-    public static final String CAR_REGISTRATION = "BB0000BB";
-    public static final VehicleCategory CAR_CATEGORY = VehicleCategory.B;
-    private static final UUID CAR_MODEL_ID = UUID.fromString("7fc03087-d265-11e7-b8c6-83e29cd24f4c");
-    private static final UUID ENGINE_ID = UUID.fromString("8fc03087-d265-11e7-b8c6-83e29cd24f4c");
-    public static final FuelType ENGINE_FUEL_TYPE = FuelType.PETROL;
-    public static final int ENGINE_DISPLACEMENT = 2000;
-    public static final double ENGINE_OIL_CAPACITY = 4.0;
-    public static final int ENGINE_MILEAGE = 123000;
-    public static final String ENGINE_OIL_FILTER_NUMBER = "Oil filter number";
-    private static final UUID OIL_CHANGE_ID = UUID.fromString("1fc03087-d265-11e7-b8c6-83e29cd24f5c");
+    private static final UUID USER_ID = UUID.randomUUID();
+    private static final UUID CAR_ID = UUID.randomUUID();
+    private static final String CAR_BRAND = "Brand";
+    private static final String CAR_MODEL = "Model";
+    private static final String CAR_TRIM = "Trim";
+    private static final Year CAR_YEAR = Year.of(2000);
+    private static final String CAR_VIN = "CARVINNUMBER12345";
+    private static final String CAR_REGISTRATION = "BB0000BB";
+    private static final VehicleCategory CAR_CATEGORY = VehicleCategory.B;
+    private static final UUID CAR_MODEL_ID = UUID.randomUUID();
+    private static final UUID ENGINE_ID = UUID.randomUUID();
+    private static final FuelType ENGINE_FUEL_TYPE = FuelType.PETROL;
+    private static final int ENGINE_DISPLACEMENT = 2000;
+    private static final double ENGINE_OIL_CAPACITY = 4.0;
+    private static final int ENGINE_MILEAGE = 123000;
+    private static final String ENGINE_OIL_FILTER_NUMBER = "Oil filter number";
+    private static final UUID OIL_CHANGE_ID = UUID.randomUUID();
     private static final Integer OIL_CHANGE_MILEAGE = ENGINE_MILEAGE - 1000;
     private static final Integer OIL_CHANGE_INTERVAL = 10000;
     private static final LocalDate OIL_CHANGE_DATE = LocalDate.now().minusDays(6);
     private static final LocalDate OIL_CHANGE_ADD_DATE = LocalDate.now().minusDays(2);
-    private static final UUID INSURANCE_ID = UUID.fromString("0fc03087-d265-11e7-b8c6-83e29cd24f4c");
+    private static final UUID INSURANCE_ID = UUID.randomUUID();
     private static final String INSURANCE_COMPANY = "Insurance Company";
     private static final InsuranceValidity INSURANCE_VALIDITY = InsuranceValidity.MONTHLY;
     private static final LocalDate INSURANCE_START_DATE = LocalDate.now().minusDays(5);
     private static final LocalDate INSURANCE_END_DATE = INSURANCE_START_DATE.plusDays(INSURANCE_VALIDITY.getDays());
     private static final LocalDate INSURANCE_ADD_DATE = LocalDate.now().minusDays(1);
     private static final Boolean INSURANCE_IS_VALID = INSURANCE_END_DATE.isAfter(LocalDate.now());
-    private static final UUID VIGNETTE_ID = UUID.fromString("9fc03087-d265-11e7-b8c6-83e29cd24f4c");
+    private static final UUID VIGNETTE_ID = UUID.randomUUID();
     private static final VignetteValidity VIGNETTE_VALIDITY = VignetteValidity.WEEKEND;
     private static final LocalDate VIGNETTE_START_DATE = LocalDate.now().minusDays(1);
     private static final LocalDate VIGNETTE_END_DATE = LocalDate.now().plusDays(VIGNETTE_VALIDITY.getDays());
@@ -84,7 +84,7 @@ public class CarServiceTests {
     private final EngineRepository engineRepository = Mockito.mock(EngineRepository.class);
     private final InsuranceService insuranceService = Mockito.mock(InsuranceService.class);
     private final VignetteService vignetteService = Mockito.mock(VignetteService.class);
-    public static final BigDecimal SERVICE_COST = BigDecimal.ONE;
+    private static final BigDecimal SERVICE_COST = BigDecimal.ONE;
 
     private static final List<CarDashboardServicesDoneViewServiceModel> ALL_SERVICES = List.of(
             new CarDashboardServicesDoneViewServiceModel("Vignette", VIGNETTE_ADD_DATE, SERVICE_COST),
@@ -268,7 +268,9 @@ public class CarServiceTests {
 
         carService.doAddMileage(mileageAddBindingModel, CAR_ID);
 
-        Mockito.when(carRepository.save(car)).thenReturn(car);
+        Mockito
+                .when(carRepository.save(car))
+                .thenReturn(car);
 
         assertEquals(mileageAddBindingModel.newMileage(), car.getEngine().getMileage());
     }
@@ -419,14 +421,21 @@ public class CarServiceTests {
 
     @Test
     public void testDoAddThrowsWhenUserNotFound() {
-        Mockito.when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
+        Mockito
+                .when(userRepository.findById(USER_ID))
+                .thenReturn(Optional.empty());
+
         assertThrows(UserNotFoundException.class, () -> carService.doAdd(CAR_ADD, UUID.randomUUID()));
     }
 
     @Test
     public void testGetAllServicesByUserShouldReturn() {
-        Mockito.when(userRepository.findById(USER_ID)).thenReturn(Optional.of(this.user));
-        Mockito.when(carRepository.findAllByUserId(USER_ID)).thenReturn(List.of(this.car));
+        Mockito
+                .when(userRepository.findById(USER_ID))
+                .thenReturn(Optional.of(this.user));
+        Mockito
+                .when(carRepository.findAllByUserId(USER_ID))
+                .thenReturn(List.of(this.car));
 
         List<CarDashboardServicesDoneViewServiceModel> result = carService.getAllServicesByUser(USER_ID);
         for (int i = 0; i < ALL_SERVICES.size(); i++) {
@@ -436,15 +445,21 @@ public class CarServiceTests {
 
     @Test
     public void testGetAllServicesByUserShouldReturnEmptyListWhenNoServicesFound() {
-        Mockito.when(userRepository.findById(USER_ID)).thenReturn(Optional.of(this.user));
-        Mockito.when(carRepository.findAllByUserId(USER_ID)).thenReturn(new ArrayList<>());
+        Mockito
+                .when(userRepository.findById(USER_ID))
+                .thenReturn(Optional.of(this.user));
+        Mockito
+                .when(carRepository.findAllByUserId(USER_ID))
+                .thenReturn(new ArrayList<>());
 
         assertTrue(carService.getAllServicesByUser(USER_ID).isEmpty());
     }
 
     @Test
     public void testGetAllServicesByUserShouldThrowWhenUserNotFound() {
-        Mockito.when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
+        Mockito
+                .when(userRepository.findById(USER_ID))
+                .thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> carService.getAllServicesByUser(USER_ID));
     }
