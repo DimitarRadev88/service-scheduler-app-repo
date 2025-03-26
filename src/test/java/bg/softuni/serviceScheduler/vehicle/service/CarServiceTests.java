@@ -14,6 +14,7 @@ import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddS
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
 import bg.softuni.serviceScheduler.user.model.User;
+import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
 import bg.softuni.serviceScheduler.vehicle.exception.CarNotFoundException;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -419,5 +421,147 @@ public class CarServiceTests {
         assertThrows(UserNotFoundException.class, () -> carService.getAllServicesByUser(USER_ID));
     }
 
+    @Test
+    public void testGetAllCarDashboardServiceViewModelsByUserThrowsWhenUserNotFound() {
+        Mockito
+                .when(userRepository.existsById(USER_ID))
+                .thenReturn(false);
+
+        assertThrows(UserNotFoundException.class, () -> carService.getAllCarDashboardServiceViewModelsByUser(USER_ID));
+    }
+
+    @Test
+    public void testGetAllCarDashboardServiceViewModelsByUserReturnsCorrectValuesWhenNoServiceIsNeededAndHaveServicesDone() {
+        Mockito.
+                when(userRepository.existsById(USER_ID))
+                .thenReturn(true);
+        Mockito
+                .when(carRepository.findAllByUserId(USER_ID))
+                .thenReturn(new ArrayList<>(
+                        List.of(
+                                car
+                        )
+                ));
+        Mockito.
+                when(insuranceService.hasActiveInsurance(CAR_ID))
+                .thenReturn(true);
+        Mockito
+                .when(vignetteService.hasActiveVignette(CAR_ID))
+                .thenReturn(true);
+        Mockito
+                .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
+                .thenReturn(Optional.of(oilChange));
+
+        List<CarDashboardViewServiceModel> expected = new ArrayList<>(
+                List.of(
+                        new CarDashboardViewServiceModel(CAR_ID, CAR_BRAND, CAR_MODEL, CAR_VIN, new BigDecimal("3"), false)
+                )
+        );
+
+        List<CarDashboardViewServiceModel> actual = carService.getAllCarDashboardServiceViewModelsByUser(USER_ID);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetAllCarDashboardServiceViewModelsByUserReturnsCorrectValuesWhenServiceIsNeededAndHaveServicesDone() {
+        Mockito.
+                when(userRepository.existsById(USER_ID))
+                .thenReturn(true);
+        Mockito
+                .when(carRepository.findAllByUserId(USER_ID))
+                .thenReturn(new ArrayList<>(
+                        List.of(
+                                car
+                        )
+                ));
+        Mockito.
+                when(insuranceService.hasActiveInsurance(CAR_ID))
+                .thenReturn(false);
+        Mockito
+                .when(vignetteService.hasActiveVignette(CAR_ID))
+                .thenReturn(false);
+        Mockito
+                .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
+                .thenReturn(Optional.of(oilChange));
+
+        List<CarDashboardViewServiceModel> expected = new ArrayList<>(
+                List.of(
+                        new CarDashboardViewServiceModel(CAR_ID, CAR_BRAND, CAR_MODEL, CAR_VIN, new BigDecimal("3"), true)
+                )
+        );
+
+        List<CarDashboardViewServiceModel> actual = carService.getAllCarDashboardServiceViewModelsByUser(USER_ID);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetAllCarDashboardServiceViewModelsByUserReturnsCorrectValuesWhenServiceIsNeededAndNoServicesDone() {
+        Mockito.
+                when(userRepository.existsById(USER_ID))
+                .thenReturn(true);
+
+        car.setInsurances(new ArrayList<>());
+        car.setVignettes(new ArrayList<>());
+        car.getEngine().setOilChanges(new ArrayList<>());
+
+        Mockito
+                .when(carRepository.findAllByUserId(USER_ID))
+                .thenReturn(new ArrayList<>(
+                        List.of(
+                                car
+                        )
+                ));
+        Mockito.
+                when(insuranceService.hasActiveInsurance(CAR_ID))
+                .thenReturn(false);
+        Mockito
+                .when(vignetteService.hasActiveVignette(CAR_ID))
+                .thenReturn(false);
+        Mockito
+                .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
+                .thenReturn(Optional.empty());
+
+        List<CarDashboardViewServiceModel> expected = new ArrayList<>(
+                List.of(
+                        new CarDashboardViewServiceModel(CAR_ID, CAR_BRAND, CAR_MODEL, CAR_VIN, BigDecimal.ZERO, true)
+                )
+        );
+
+        List<CarDashboardViewServiceModel> actual = carService.getAllCarDashboardServiceViewModelsByUser(USER_ID);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetCarInsuranceAddSelectViewReturnsAllUserCars() {
+        List<Car> cars = createCars();
+
+        Mockito
+                .when(carRepository.findAllByUserId(USER_ID))
+                .thenReturn(cars);
+
+        List<CarInsuranceAddSelectView> expected = cars
+                .stream()
+                .map(car -> new CarInsuranceAddSelectView(
+                        car.getId(),
+                        car.getModel().getBrandName() + " " + car.getModel().getModelName())
+                )
+                .toList();
+
+        List<CarInsuranceAddSelectView> actual = carService.getCarInsuranceAddSelectView(USER_ID);
+
+        assertEquals(expected, actual);
+    }
+
+    private List<Car> createCars() {
+        return List.of(
+                car,
+                new Car(UUID.randomUUID(), new CarModel(null, "some brand", "some model", null), engine, CAR_VIN, CAR_YEAR, CAR_CATEGORY, user, null, null, new ArrayList<>()),
+                new Car(UUID.randomUUID(), new CarModel(null, "some brand 2", "some model 2", null), null, CAR_VIN, CAR_YEAR, CAR_CATEGORY, user, CAR_REGISTRATION, null, null),
+                new Car(UUID.randomUUID(), new CarModel(null, "some brand 1", "some model 1", null), engine, null, CAR_YEAR, CAR_CATEGORY, user, null, new ArrayList<>(), null)
+        );
+    }
 
 }

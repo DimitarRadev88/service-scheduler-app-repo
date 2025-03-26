@@ -27,10 +27,8 @@ public class CarModelServiceTests {
 
     @Autowired
     private MockRestServiceServer server;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private CarModelService carModelService;
 

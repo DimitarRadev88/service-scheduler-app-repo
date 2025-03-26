@@ -323,7 +323,18 @@ public class CarServiceImpl implements CarService {
                         .map(OilChange::getCost)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO)
-                        .add(car.getInsurances().stream().map(Insurance::getCost).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)),
+                        .add(car
+                                .getInsurances()
+                                .stream()
+                                .map(Insurance::getCost)
+                                .reduce(BigDecimal::add)
+                                .orElse(BigDecimal.ZERO))
+                        .add(car
+                                .getVignettes()
+                                .stream()
+                                .map(Vignette::getCost)
+                                .reduce(BigDecimal::add)
+                                .orElse(BigDecimal.ZERO)),
                 !insuranceService.hasActiveInsurance(car.getId())
                 || needsOilChange(car.getEngine())
                 || !vignetteService.hasActiveVignette(car.getId())
