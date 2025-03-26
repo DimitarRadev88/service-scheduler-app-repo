@@ -29,14 +29,14 @@
                                                             <strong class="text-danger"
                                                                     th:if="${#fields.hasErrors('brand')}"
                                                                     th:errors="*{brand}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('brand')}">Make*</strong>
+                                                            <strong th:unless="${#fields.hasErrors('brand')}">Brand*</strong>
                                                         </label>
                                                         <select id="brand" class="form-select" th:field="*{brand}"
                                                                 name="brand">
-                                                            <option th:value="${null}" selected="">Select vehicle make
+                                                            <option th:value="${null}" selected="">Select vehicle brand
                                                             </option>
                                                             <option th:each="brand : ${brands}"
-                                                                    th:value="${brand}" th:text="${brand}"></option>
+                                                                    th:value="${brand.name()}" th:text="${brand.name()}"></option>
                                                         </select>
                                                     </div>
                                                 </div>

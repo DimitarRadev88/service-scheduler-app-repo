@@ -1,6 +1,8 @@
 package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.carModel.service.CarModelService;
+import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
+import bg.softuni.serviceScheduler.carModel.service.dto.CarModelNameDto;
 import bg.softuni.serviceScheduler.services.oilChange.service.OilChangeService;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
@@ -41,7 +43,7 @@ public class VehicleController {
     @GetMapping("/add")
     public String getVehicleAddPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (!model.containsAttribute("brands")) {
-            List<String> allBrands = carModelService.getAllBrands();
+            List<CarBrandNameDto> allBrands = carModelService.getAllBrands();
             model.addAttribute("brands", allBrands);
         }
 
@@ -63,8 +65,8 @@ public class VehicleController {
             model.addAttribute("vehicleAdd", vehicleAdd);
         }
 
-        List<String> brands = carModelService.getAllBrands();
-        List<String> models = carModelService.getAllModelsByBrand(brand);
+        List<CarBrandNameDto> brands = carModelService.getAllBrands();
+        List<CarModelNameDto> models = carModelService.getAllModelsByBrand(brand);
 
         if (!model.containsAttribute("brands")) {
             model.addAttribute("brands", brands);

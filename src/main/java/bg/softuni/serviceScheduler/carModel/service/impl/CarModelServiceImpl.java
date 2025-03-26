@@ -3,19 +3,20 @@ package bg.softuni.serviceScheduler.carModel.service.impl;
 import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarModelNameDto;
+import bg.softuni.serviceScheduler.config.BrandsApiConfig;
 import bg.softuni.serviceScheduler.web.dto.CarBrandAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarModelAddBindingModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,44 +25,45 @@ public class CarModelServiceImpl implements CarModelService {
     private final RestClient restClient;
 
     @Autowired
-    public CarModelServiceImpl(@Qualifier("carBrandsRestClient") RestClient restClient) {
-        this.restClient = restClient;
+    public CarModelServiceImpl(RestClient.Builder builder, BrandsApiConfig brandsApiConfig) {
+        this.restClient = builder
+                .baseUrl(brandsApiConfig.getBaseUrl())
+                .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .build();
+        ;
     }
 
     @Override
-    public List<String> getAllBrands() {
-        CarBrandNameDto[] body = restClient
+    public List<CarBrandNameDto> getAllBrands() {
+        List<CarBrandNameDto> body = restClient
                 .get()
                 .uri("/brands/all")
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .body(CarBrandNameDto[].class);
+                .body(new ParameterizedTypeReference<>() {
+                });
 
-        return Arrays.stream(body)
-                .map(CarBrandNameDto::name)
-                .toList();
-
+        return body == null ? new ArrayList<>() : body;
     }
 
     @Override
-    public List<String> getAllModelsByBrand(String brand) {
-        CarModelNameDto[] body = null;
+    public List<CarModelNameDto> getAllModelsByBrand(String brand) {
         try {
-            body = restClient
+            List<CarModelNameDto> body = restClient
                     .get()
                     .uri("/models/" + brand)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
-//                    .onStatus()
-                    .body(CarModelNameDto[].class);
-        } catch (HttpClientErrorException e) {
+                    .body(new ParameterizedTypeReference<>() {
+                    });
+            if (body != null) {
+                return body;
+            }
+        } catch (HttpServerErrorException e) {
             log.error(e.getResponseBodyAsString());
         }
 
-
-        return Arrays.stream(body)
-                .map(CarModelNameDto::name)
-                .collect(Collectors.toList());
+        return new ArrayList<>();
     }
 
     @Override

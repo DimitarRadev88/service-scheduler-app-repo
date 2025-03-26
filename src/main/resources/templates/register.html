@@ -30,7 +30,7 @@
                                 <strong th:text="${#fields.errors('username').getFirst()}"></strong>
                             </label>
                             <label for="email" th:unless="${#fields.hasErrors('email')}" class="form-label">
-                                <strong th:unless="${emailException}">Username</strong>
+                                <strong th:unless="${emailException}">Email</strong>
                                 <strong th:if="${emailException}" th:text="${emailException}" class="text-danger mb-4"></strong>
                             </label>
                             <input class="form-control form-control-user" type="email" id="email"

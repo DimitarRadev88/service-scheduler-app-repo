@@ -110,16 +110,16 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="mb-3">
-                                                        <label th:unless="${#fields.hasErrors('fromDate')}"
-                                                               class="form-label" for="fromDate">
+                                                        <label th:unless="${#fields.hasErrors('startDate')}"
+                                                               class="form-label" for="startDate">
                                                             <strong>Valid From*</strong>
                                                         </label>
-                                                        <label th:if="${#fields.hasErrors('fromDate')}"
-                                                               class="form-label text-danger" for="fromDate">
-                                                            <strong th:errors="*{fromDate}"></strong>
+                                                        <label th:if="${#fields.hasErrors('startDate')}"
+                                                               class="form-label text-danger" for="startDate">
+                                                            <strong th:errors="*{startDate}"></strong>
                                                         </label>
-                                                        <input id="fromDate" class="form-control" type="date"
-                                                               th:field="*{fromDate}" name="fromDate">
+                                                        <input id="startDate" class="form-control" type="date"
+                                                               th:field="*{startDate}" name="startDate">
                                                     </div>
                                                 </div>
                                             </div>

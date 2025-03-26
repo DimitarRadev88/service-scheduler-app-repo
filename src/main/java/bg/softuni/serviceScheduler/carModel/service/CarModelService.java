@@ -1,14 +1,16 @@
 package bg.softuni.serviceScheduler.carModel.service;
 
+import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
+import bg.softuni.serviceScheduler.carModel.service.dto.CarModelNameDto;
 import bg.softuni.serviceScheduler.web.dto.CarBrandAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarModelAddBindingModel;
 
 import java.util.List;
 
 public interface CarModelService {
-    List<String> getAllBrands();
+    List<CarBrandNameDto> getAllBrands();
 
-    List<String> getAllModelsByBrand(String brand);
+    List<CarModelNameDto> getAllModelsByBrand(String brand);
 
     void doAdd(CarModelAddBindingModel carModelAdd);
 

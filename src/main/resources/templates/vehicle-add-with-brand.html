@@ -36,7 +36,7 @@
                                                             <option th:value="${null}" selected="">Select vehicle make
                                                             </option>
                                                             <option th:each="brand : ${brands}"
-                                                                    th:value="${brand}" th:text="${brand}"></option>
+                                                                    th:value="${brand.name()}" th:text="${brand.name()}"></option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -52,7 +52,7 @@
                                                                 name="model">
                                                             <option th:value="${null}" selected="">Select vehicle model</option>
                                                             <option th:each="model : ${models}"
-                                                                    th:value="${model}" th:text="${model}">A3
+                                                                    th:value="${model.name()}" th:text="${model.name()}">A3
                                                             </option>
                                                         </select>
                                                     </div>
