@@ -59,13 +59,17 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyExistsException("Email already exists!");
         }
 
-        User user = new User();
-        user.setUsername(userRegister.username());
-        user.setEmail(userRegister.email());
-        user.setPassword(passwordEncoder.encode(userRegister.password()));
-        user.setRegistrationDate(LocalDateTime.now());
-        user.setProfilePictureURL(BASIC_PROFILE_PICTURE_URL);
-        user.setRoles(new ArrayList<>(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER))));
+        User user = new User(
+                null,
+                userRegister.username(),
+                passwordEncoder.encode(userRegister.password()),
+                userRegister.email(),
+                LocalDateTime.now(),
+                BASIC_PROFILE_PICTURE_URL,
+                new ArrayList<>(),
+                new ArrayList<>(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER)))
+        );
+
         if (userRepository.count() == 0) {
             user.getRoles().add(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN));
         }

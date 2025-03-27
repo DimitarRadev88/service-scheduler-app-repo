@@ -18,10 +18,16 @@ import bg.softuni.serviceScheduler.web.dto.UserProfileEditBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.naming.AuthenticationException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 public class UserServiceTests {
 
@@ -47,18 +54,29 @@ public class UserServiceTests {
     private static final String NEW_URL = "new url";
     private static final String BLANK_URL = " ";
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
-    private final PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final CarService carService = Mockito.mock(CarService.class);
     private final UserRoleRepository userRoleRepository = Mockito.mock(UserRoleRepository.class);
     private final OilChangeService oilChangeService = Mockito.mock(OilChangeService.class);
 
     private UserService userService;
     private User user;
+    @Captor
+    ArgumentCaptor<User> userCaptor;
 
     @BeforeEach
     void setUp() {
+        this.userCaptor = ArgumentCaptor.forClass(User.class);
         userService = new UserServiceImpl(userRepository, passwordEncoder, carService, userRoleRepository, oilChangeService);
-        user = new User(USER_ID, USER_USERNAME, USER_PASSWORD, USER_EMAIL, USER_REGISTRATION_DATE, USER_PROFILE_PICTURE_URL, USER_CARS, new ArrayList<>(List.of(USER_ROLE_USER, USER_ROLE_ADMIN)));
+        user = new User(USER_ID,
+                USER_USERNAME,
+                USER_PASSWORD,
+                USER_EMAIL,
+                USER_REGISTRATION_DATE,
+                USER_PROFILE_PICTURE_URL,
+                USER_CARS,
+                new ArrayList<>(List.of(USER_ROLE_USER, USER_ROLE_ADMIN))
+        );
     }
 
     @Test
@@ -67,11 +85,17 @@ public class UserServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(USER_USERNAME, USER_EMAIL, BLANK_URL);
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
+                USER_USERNAME, USER_EMAIL, BLANK_URL
+        );
 
         userService.doEdit(editBindingModel, USER_ID);
 
-        assertEquals(BASIC_PROFILE_PICTURE_URL, user.getProfilePictureURL());
+        verify(userRepository).save(userCaptor.capture());
+
+        User saved = userCaptor.getValue();
+
+        assertEquals(BASIC_PROFILE_PICTURE_URL, saved.getProfilePictureURL());
     }
 
     @Test
@@ -80,11 +104,17 @@ public class UserServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(USER_USERNAME, USER_EMAIL, NEW_URL);
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
+                USER_USERNAME, USER_EMAIL, NEW_URL
+        );
 
         userService.doEdit(editBindingModel, USER_ID);
 
-        assertEquals(NEW_URL, user.getProfilePictureURL());
+        verify(userRepository).save(userCaptor.capture());
+
+        User saved = userCaptor.getValue();
+
+        assertEquals(NEW_URL, saved.getProfilePictureURL());
     }
 
     @Test
@@ -93,11 +123,17 @@ public class UserServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(USER_USERNAME, NEW_EMAIL, USER_PROFILE_PICTURE_URL);
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
+                USER_USERNAME, NEW_EMAIL, USER_PROFILE_PICTURE_URL
+        );
 
         userService.doEdit(editBindingModel, USER_ID);
 
-        assertEquals(NEW_EMAIL, user.getEmail());
+        verify(userRepository).save(userCaptor.capture());
+
+        User saved = userCaptor.getValue();
+
+        assertEquals(NEW_EMAIL, saved.getEmail());
     }
 
     @Test
@@ -106,11 +142,17 @@ public class UserServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(NEW_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL);
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
+                NEW_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL
+        );
 
         userService.doEdit(editBindingModel, USER_ID);
 
-        assertEquals(NEW_USERNAME, user.getUsername());
+        verify(userRepository).save(userCaptor.capture());
+
+        User saved = userCaptor.getValue();
+
+        assertEquals(NEW_USERNAME, saved.getUsername());
     }
 
     @Test
@@ -123,7 +165,9 @@ public class UserServiceTests {
                 .when(userRepository.existsByEmail(NEW_EMAIL))
                 .thenReturn(true);
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(USER_USERNAME, NEW_EMAIL, USER_PROFILE_PICTURE_URL);
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
+                USER_USERNAME, NEW_EMAIL, USER_PROFILE_PICTURE_URL
+        );
 
         assertThrows(EmailAlreadyExistsException.class, () -> userService.doEdit(editBindingModel, USER_ID));
     }
@@ -138,7 +182,9 @@ public class UserServiceTests {
                 .when(userRepository.existsByUsername(NEW_USERNAME))
                 .thenReturn(true);
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(NEW_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL);
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
+                NEW_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL
+        );
 
         assertThrows(UsernameAlreadyExistsException.class, () -> userService.doEdit(editBindingModel, USER_ID));
     }
@@ -149,7 +195,9 @@ public class UserServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.empty());
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(USER_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL);
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
+                USER_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL
+        );
 
         assertThrows(UserNotFoundException.class, () -> userService.doEdit(editBindingModel, USER_ID));
     }
@@ -160,7 +208,9 @@ public class UserServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
 
-        UserEditProfileServiceModel expected = new UserEditProfileServiceModel(USER_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL);
+        UserEditProfileServiceModel expected = new UserEditProfileServiceModel(
+                USER_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL
+        );
 
         UserEditProfileServiceModel actual = userService.getUserEditProfileServiceModel(USER_ID);
 
@@ -183,7 +233,9 @@ public class UserServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
 
-        UserProfileViewServiceModel expected = new UserProfileViewServiceModel(USER_USERNAME, USER_EMAIL, USER_REGISTRATION_DATE.toLocalDate(), USER_PROFILE_PICTURE_URL);
+        UserProfileViewServiceModel expected = new UserProfileViewServiceModel(
+                USER_USERNAME, USER_EMAIL, USER_REGISTRATION_DATE.toLocalDate(), USER_PROFILE_PICTURE_URL
+        );
 
         UserProfileViewServiceModel actual = userService.getUserProfileView(USER_ID);
 
@@ -200,7 +252,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void testRemoveAdminAddsAdminRoleToUserRoles() {
+    public void testMakeAdminAddsAdminRoleToUserRoles() {
         user.setRoles(new ArrayList<>(List.of(USER_ROLE_USER)));
         Mockito
                 .when(userRepository.findById(USER_ID))
@@ -210,6 +262,10 @@ public class UserServiceTests {
                 .thenReturn(USER_ROLE_ADMIN);
 
         userService.makeAdmin(USER_ID);
+
+        verify(userRepository).save(userCaptor.capture());
+
+        userCaptor.getValue();
 
         assertTrue(user.getRoles().contains(USER_ROLE_ADMIN));
     }
@@ -231,7 +287,11 @@ public class UserServiceTests {
 
         userService.removeAdmin(USER_ID);
 
-        assertFalse(user.getRoles().contains(USER_ROLE_ADMIN));
+        verify(userRepository).save(userCaptor.capture());
+
+        User saved = userCaptor.getValue();
+
+        assertFalse(saved.getRoles().contains(USER_ROLE_ADMIN));
     }
 
     @Test
@@ -376,23 +436,97 @@ public class UserServiceTests {
     }
 
     @Test
-    public void testDoRegisterReturnsCorrectUsername() throws AuthenticationException {
+    public void testDoRegisterSavesUserAsAdminWhenRepositoryIsEmpty() throws AuthenticationException {
+        UserRegisterBindingModel userRegisterBindingModel = new UserRegisterBindingModel(
+                USER_USERNAME, USER_EMAIL, USER_PASSWORD, USER_PASSWORD
+        );
+
+        User user = new User();
+        user.setUsername(USER_USERNAME);
+
         Mockito
-                .when(userRepository.existsByUsername(Mockito.anyString()))
+                .when(userRepository.existsByUsername(USER_USERNAME))
                 .thenReturn(false);
         Mockito
-                .when(userRepository.existsByEmail(Mockito.anyString()))
+                .when(userRepository.existsByEmail(USER_EMAIL))
                 .thenReturn(false);
         Mockito
-                .when(userRoleRepository.findByRole(Mockito.any(UserRoleEnumeration.class)))
-                .thenReturn(new UserRole());
+                .when(userRoleRepository.findByRole(UserRoleEnumeration.USER))
+                .thenReturn(USER_ROLE_USER);
+        Mockito
+                .when(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN))
+                .thenReturn(USER_ROLE_ADMIN);
+
         Mockito
                 .when(userRepository.save(Mockito.any(User.class)))
                 .thenReturn(user);
 
-        UserRegisterBindingModel userRegisterBindingModel = new UserRegisterBindingModel(USER_USERNAME, USER_EMAIL, USER_PASSWORD, USER_PASSWORD);
+        Mockito
+                .when(userRepository.count())
+                .thenReturn(0L);
 
-        assertEquals(USER_USERNAME, userService.doRegister(userRegisterBindingModel));
+        String actual = userService.doRegister(userRegisterBindingModel);
+
+        verify(userRepository).save(userCaptor.capture());
+
+        User saved = userCaptor.getValue();
+
+        assertEquals(USER_USERNAME, actual);
+        assertEquals(USER_USERNAME, saved.getUsername());
+        assertEquals(USER_EMAIL, saved.getEmail());
+        assertTrue(passwordEncoder.matches(USER_PASSWORD, saved.getPassword()));
+        assertEquals(LocalDate.now(), saved.getRegistrationDate().toLocalDate());
+        assertEquals(BASIC_PROFILE_PICTURE_URL, saved.getProfilePictureURL());
+        assertTrue(saved.getCars().isEmpty());
+        assertEquals(new ArrayList<>(List.of(USER_ROLE_USER, USER_ROLE_ADMIN)), saved.getRoles());
+
+    }
+
+    @Test
+    public void testDoRegisterSavesUser() throws AuthenticationException {
+        UserRegisterBindingModel userRegisterBindingModel = new UserRegisterBindingModel(
+                USER_USERNAME, USER_EMAIL, USER_PASSWORD, USER_PASSWORD
+        );
+
+        User user = new User();
+        user.setUsername(USER_USERNAME);
+
+        Mockito
+                .when(userRepository.existsByUsername(USER_USERNAME))
+                .thenReturn(false);
+        Mockito
+                .when(userRepository.existsByEmail(USER_EMAIL))
+                .thenReturn(false);
+        Mockito
+                .when(userRoleRepository.findByRole(UserRoleEnumeration.USER))
+                .thenReturn(USER_ROLE_USER);
+        Mockito
+                .when(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN))
+                .thenReturn(USER_ROLE_ADMIN);
+
+        Mockito
+                .when(userRepository.save(Mockito.any(User.class)))
+                .thenReturn(user);
+
+        Mockito
+                .when(userRepository.count())
+                .thenReturn(1L);
+
+        String actual = userService.doRegister(userRegisterBindingModel);
+
+        verify(userRepository).save(userCaptor.capture());
+
+        User saved = userCaptor.getValue();
+
+        assertEquals(USER_USERNAME, actual);
+        assertEquals(USER_USERNAME, saved.getUsername());
+        assertEquals(USER_EMAIL, saved.getEmail());
+        assertTrue(passwordEncoder.matches(USER_PASSWORD, saved.getPassword()));
+        assertEquals(LocalDate.now(), saved.getRegistrationDate().toLocalDate());
+        assertEquals(BASIC_PROFILE_PICTURE_URL, saved.getProfilePictureURL());
+        assertTrue(saved.getCars().isEmpty());
+        assertEquals(new ArrayList<>(List.of(USER_ROLE_USER)), saved.getRoles());
+
     }
 
     @Test
