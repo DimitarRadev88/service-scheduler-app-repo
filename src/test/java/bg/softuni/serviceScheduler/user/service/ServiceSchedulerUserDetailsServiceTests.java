@@ -11,7 +11,9 @@ import bg.softuni.serviceScheduler.vehicle.model.Car;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ExtendWith(MockitoExtension.class)
 public class ServiceSchedulerUserDetailsServiceTests {
 
     private static final UUID USER_ID = UUID.randomUUID();
@@ -34,7 +37,6 @@ public class ServiceSchedulerUserDetailsServiceTests {
     private static final List<Car> USER_CARS = new ArrayList<>(List.of(new Car()));
     private static final UserRole USER_ROLE_USER = new UserRole(UUID.randomUUID(), UserRoleEnumeration.USER);
     private static final UserRole USER_ROLE_ADMIN = new UserRole(UUID.randomUUID(), UserRoleEnumeration.ADMIN);
-
     private static final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private UserDetailsService userDetailsService;
     private User user;

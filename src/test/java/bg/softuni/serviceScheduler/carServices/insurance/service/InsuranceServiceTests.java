@@ -10,16 +10,14 @@ import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.exception.CarNotFoundException;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +26,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
 public class InsuranceServiceTests {
 
     private static final UUID INSURANCE_ID = UUID.randomUUID();
@@ -40,9 +42,12 @@ public class InsuranceServiceTests {
     private static final BigDecimal INSURANCE_COST = BigDecimal.valueOf(100);
     private static final UUID CAR_ID = UUID.randomUUID();
 
-    private final InsuranceRepository insuranceRepository = Mockito.mock(InsuranceRepository.class);
-    private final CarRepository carRepository = Mockito.mock(CarRepository.class);
-    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
+    @Mock
+    private InsuranceRepository insuranceRepository;
+    @Mock
+    private CarRepository carRepository;;
+    @Mock
+    private UserRepository userRepository;
 
     private InsuranceService insuranceService;
     private InsuranceAddBindingModel insuranceAdd;
@@ -160,9 +165,6 @@ public class InsuranceServiceTests {
 
         Mockito.when(insuranceRepository.save(Mockito.any(Insurance.class)))
                 .thenReturn(insurance);
-
-        Mockito.when(carRepository.save(car))
-                        .thenReturn(car);
 
         insuranceService.doAdd(insuranceAdd, car.getId());
 

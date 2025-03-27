@@ -7,22 +7,19 @@ import bg.softuni.serviceScheduler.carServices.vignette.model.VignetteValidity;
 import bg.softuni.serviceScheduler.carServices.vignette.service.impl.VignetteServiceImpl;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
-import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.exception.CarNotFoundException;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.VehicleCategory;
 import bg.softuni.serviceScheduler.web.dto.VignetteAddBindingModel;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,6 +29,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
 public class VignetteServiceTests {
 
     private static final UUID CAR_ID = UUID.randomUUID();
@@ -46,10 +47,12 @@ public class VignetteServiceTests {
     private static final LocalDate VIGNETTE_ADD_DATE = LocalDate.now();
     private static final BigDecimal VIGNETTE_COST = VignetteCost.valueOf(VIGNETTE_VALIDITY.name()).getCost();
     private static final Boolean VIGNETTE_IS_VALID = VIGNETTE_END_DATE.isAfter(LocalDate.now());
-
-    private final VignetteRepository vignetteRepository = Mockito.mock(VignetteRepository.class);
-    private final CarRepository carRepository = Mockito.mock(CarRepository.class);
-    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
+    @Mock
+    private VignetteRepository vignetteRepository;
+    @Mock
+    private CarRepository carRepository;
+    @Mock
+    private UserRepository userRepository;
     private VignetteService vignetteService;
     private VignetteAddBindingModel vignetteAdd;
     private Vignette vignette;
@@ -163,9 +166,6 @@ public class VignetteServiceTests {
         Mockito
                 .when(vignetteRepository.save(Mockito.any(Vignette.class)))
                 .thenReturn(vignette);
-
-
-        Mockito.when(carRepository.save(car)).thenReturn(car);
 
         vignetteService.doAdd(vignetteAdd, CAR_ID);
 

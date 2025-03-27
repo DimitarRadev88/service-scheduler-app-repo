@@ -29,9 +29,12 @@ import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,11 +43,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 public class CarServiceTests {
 
     private static final UUID USER_ID = UUID.randomUUID();
@@ -81,13 +84,20 @@ public class CarServiceTests {
     private static final LocalDate VIGNETTE_END_DATE = LocalDate.now().plusDays(VIGNETTE_VALIDITY.getDays());
     private static final LocalDate VIGNETTE_ADD_DATE = LocalDate.now();
     private static final Boolean VIGNETTE_IS_VALID = VIGNETTE_END_DATE.isAfter(LocalDate.now());
-    private final CarRepository carRepository = Mockito.mock(CarRepository.class);
-    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
-    private final CarModelRepository carModelRepository = Mockito.mock(CarModelRepository.class);
-    private final OilChangeRepository oilChangeRepository = Mockito.mock(OilChangeRepository.class);
-    private final EngineRepository engineRepository = Mockito.mock(EngineRepository.class);
-    private final InsuranceService insuranceService = Mockito.mock(InsuranceService.class);
-    private final VignetteService vignetteService = Mockito.mock(VignetteService.class);
+    @Mock
+    private CarRepository carRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private CarModelRepository carModelRepository;
+    @Mock
+    private OilChangeRepository oilChangeRepository;
+    @Mock
+    private EngineRepository engineRepository;
+    @Mock
+    private InsuranceService insuranceService;
+    @Mock
+    private VignetteService vignetteService;
     private static final BigDecimal SERVICE_COST = BigDecimal.ONE;
 
     private static final List<CarDashboardServicesDoneViewServiceModel> ALL_SERVICES = List.of(
@@ -437,7 +447,7 @@ public class CarServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> carService.doAdd(carAdd, UUID.randomUUID()));
+        assertThrows(UserNotFoundException.class, () -> carService.doAdd(carAdd, USER_ID));
     }
 
     @Test
@@ -479,7 +489,7 @@ public class CarServiceTests {
                         100,
                         0,
                         0
-                        )
+                )
         );
 
         Mockito
@@ -570,12 +580,6 @@ public class CarServiceTests {
         Mockito.
                 when(insuranceService.hasActiveInsurance(CAR_ID))
                 .thenReturn(false);
-        Mockito
-                .when(vignetteService.hasActiveVignette(CAR_ID))
-                .thenReturn(false);
-        Mockito
-                .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
-                .thenReturn(Optional.of(oilChange));
 
         List<CarDashboardViewServiceModel> expected = new ArrayList<>(
                 List.of(
@@ -608,12 +612,6 @@ public class CarServiceTests {
         Mockito.
                 when(insuranceService.hasActiveInsurance(CAR_ID))
                 .thenReturn(false);
-        Mockito
-                .when(vignetteService.hasActiveVignette(CAR_ID))
-                .thenReturn(false);
-        Mockito
-                .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
-                .thenReturn(Optional.empty());
 
         List<CarDashboardViewServiceModel> expected = new ArrayList<>(
                 List.of(

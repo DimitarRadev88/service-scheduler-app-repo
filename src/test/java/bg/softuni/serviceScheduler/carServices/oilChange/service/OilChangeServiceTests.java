@@ -5,6 +5,7 @@ import bg.softuni.serviceScheduler.carServices.oilChange.model.OilChange;
 import bg.softuni.serviceScheduler.vehicle.exception.EngineNotFoundException;
 import bg.softuni.serviceScheduler.carServices.oilChange.service.impl.OilChangeServiceImpl;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
@@ -15,9 +16,12 @@ import bg.softuni.serviceScheduler.vehicle.model.VehicleCategory;
 import bg.softuni.serviceScheduler.web.dto.OilChangeAddBindingModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ExtendWith(MockitoExtension.class)
 public class OilChangeServiceTests {
 
     private static final UUID CAR_ID = UUID.randomUUID();
@@ -47,9 +52,10 @@ public class OilChangeServiceTests {
     private static final LocalDate OIL_CHANGE_ADDED_AT = LocalDate.now();
     private static final BigDecimal OIL_CHANGE_COST = BigDecimal.ONE;
 
-
-    private final OilChangeRepository oilChangeRepository = Mockito.mock(OilChangeRepository.class);
-    private final EngineRepository engineRepository = Mockito.mock(EngineRepository.class);
+    @Mock
+    private OilChangeRepository oilChangeRepository;
+    @Mock
+    private EngineRepository engineRepository;
     private OilChangeService oilChangeService;
     private Engine engine;
     private OilChangeAddBindingModel oilChangeAdd;
@@ -57,6 +63,7 @@ public class OilChangeServiceTests {
     @Captor
     private ArgumentCaptor<OilChange> oilChangeCaptor;
     private Car car;
+
     @BeforeEach
     public void setup() {
         this.oilChangeService = new OilChangeServiceImpl(oilChangeRepository, engineRepository);
@@ -111,7 +118,6 @@ public class OilChangeServiceTests {
 
         assertThrows(EngineNotFoundException.class, () -> this.oilChangeService.doAdd(this.oilChangeAdd, ENGINE_ID));
     }
-
 
 
 }

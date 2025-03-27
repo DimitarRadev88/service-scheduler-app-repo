@@ -18,11 +18,10 @@ import bg.softuni.serviceScheduler.web.dto.UserProfileEditBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -37,6 +36,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTests {
 
     private static final String BASIC_PROFILE_PICTURE_URL = "https://t4.ftcdn.net/jpg/04/10/43/77/360_F_410437733_hdq4Q3QOH9uwh0mcqAhRFzOKfrCR24Ta.jpg";
@@ -53,11 +53,15 @@ public class UserServiceTests {
     private static final String NEW_USERNAME = "New Username";
     private static final String NEW_URL = "new url";
     private static final String BLANK_URL = " ";
-    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private final CarService carService = Mockito.mock(CarService.class);
-    private final UserRoleRepository userRoleRepository = Mockito.mock(UserRoleRepository.class);
-    private final OilChangeService oilChangeService = Mockito.mock(OilChangeService.class);
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private CarService carService;
+    @Mock
+    private UserRoleRepository userRoleRepository;
+    @Mock
+    private OilChangeService oilChangeService;
 
     private UserService userService;
     private User user;
@@ -500,9 +504,6 @@ public class UserServiceTests {
         Mockito
                 .when(userRoleRepository.findByRole(UserRoleEnumeration.USER))
                 .thenReturn(USER_ROLE_USER);
-        Mockito
-                .when(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN))
-                .thenReturn(USER_ROLE_ADMIN);
 
         Mockito
                 .when(userRepository.save(Mockito.any(User.class)))
