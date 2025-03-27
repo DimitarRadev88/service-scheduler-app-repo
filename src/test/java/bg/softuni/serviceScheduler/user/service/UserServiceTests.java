@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.user.service;
 
-import bg.softuni.serviceScheduler.services.oilChange.service.OilChangeService;
+import bg.softuni.serviceScheduler.carServices.oilChange.service.OilChangeService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.dao.UserRoleRepository;
 import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;
@@ -62,7 +62,7 @@ public class UserServiceTests {
     private UserService userService;
     private User user;
     @Captor
-    ArgumentCaptor<User> userCaptor;
+    private ArgumentCaptor<User> userCaptor;
 
     @BeforeEach
     void setUp() {

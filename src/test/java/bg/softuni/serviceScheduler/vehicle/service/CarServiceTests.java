@@ -2,15 +2,15 @@ package bg.softuni.serviceScheduler.vehicle.service;
 
 import bg.softuni.serviceScheduler.carModel.dao.CarModelRepository;
 import bg.softuni.serviceScheduler.carModel.model.CarModel;
-import bg.softuni.serviceScheduler.services.insurance.model.Insurance;
-import bg.softuni.serviceScheduler.services.insurance.model.InsuranceValidity;
-import bg.softuni.serviceScheduler.services.insurance.service.InsuranceService;
-import bg.softuni.serviceScheduler.services.oilChange.dao.OilChangeRepository;
-import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;
-import bg.softuni.serviceScheduler.services.vignette.model.Vignette;
-import bg.softuni.serviceScheduler.services.vignette.model.VignetteValidity;
-import bg.softuni.serviceScheduler.services.vignette.service.VignetteService;
-import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddServiceView;
+import bg.softuni.serviceScheduler.carServices.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.carServices.insurance.model.InsuranceValidity;
+import bg.softuni.serviceScheduler.carServices.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.carServices.oilChange.dao.OilChangeRepository;
+import bg.softuni.serviceScheduler.carServices.oilChange.model.OilChange;
+import bg.softuni.serviceScheduler.carServices.vignette.model.Vignette;
+import bg.softuni.serviceScheduler.carServices.vignette.model.VignetteValidity;
+import bg.softuni.serviceScheduler.carServices.vignette.service.VignetteService;
+import bg.softuni.serviceScheduler.carServices.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
 import bg.softuni.serviceScheduler.user.model.User;
@@ -29,6 +29,8 @@ import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
@@ -41,6 +43,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 public class CarServiceTests {
 
@@ -78,7 +81,6 @@ public class CarServiceTests {
     private static final LocalDate VIGNETTE_END_DATE = LocalDate.now().plusDays(VIGNETTE_VALIDITY.getDays());
     private static final LocalDate VIGNETTE_ADD_DATE = LocalDate.now();
     private static final Boolean VIGNETTE_IS_VALID = VIGNETTE_END_DATE.isAfter(LocalDate.now());
-    private static final CarAddBindingModel CAR_ADD = new CarAddBindingModel(CAR_BRAND, CAR_MODEL, CAR_TRIM, CAR_YEAR, CAR_VIN, CAR_REGISTRATION, CAR_CATEGORY, ENGINE_FUEL_TYPE, ENGINE_DISPLACEMENT, ENGINE_OIL_CAPACITY, ENGINE_MILEAGE, ENGINE_OIL_FILTER_NUMBER);
     private final CarRepository carRepository = Mockito.mock(CarRepository.class);
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final CarModelRepository carModelRepository = Mockito.mock(CarModelRepository.class);
@@ -97,11 +99,16 @@ public class CarServiceTests {
     private CarService carService;
     private User user;
     private Car car;
+    private CarAddBindingModel carAdd;
     private CarModel carModel;
     private Engine engine;
     private OilChange oilChange;
     private Insurance insurance;
     private Vignette vignette;
+    @Captor
+    ArgumentCaptor<Car> carCaptor;
+    @Captor
+    ArgumentCaptor<Engine> engineCaptor;
 
     @BeforeEach
     public void setUp() {
@@ -117,6 +124,9 @@ public class CarServiceTests {
         this.vignette = new Vignette(VIGNETTE_ID, VIGNETTE_ADD_DATE, SERVICE_COST, VIGNETTE_START_DATE, VIGNETTE_END_DATE, VIGNETTE_VALIDITY, VIGNETTE_IS_VALID, this.car);
         this.car = new Car(CAR_ID, this.carModel, this.engine, CAR_VIN, CAR_YEAR, CAR_CATEGORY, this.user, CAR_REGISTRATION, List.of(this.insurance), List.of(this.vignette));
         this.engine.setCar(car);
+        carAdd = new CarAddBindingModel(CAR_BRAND, CAR_MODEL, CAR_TRIM, CAR_YEAR, CAR_VIN, CAR_REGISTRATION, CAR_CATEGORY, ENGINE_FUEL_TYPE, ENGINE_DISPLACEMENT, ENGINE_OIL_CAPACITY, ENGINE_MILEAGE, ENGINE_OIL_FILTER_NUMBER);
+        carCaptor = ArgumentCaptor.forClass(Car.class);
+        engineCaptor = ArgumentCaptor.forClass(Engine.class);
     }
 
     @Test
@@ -221,15 +231,16 @@ public class CarServiceTests {
                 .when(carRepository.findById(CAR_ID))
                 .thenReturn(Optional.of(car));
 
-        EngineMileageAddBindingModel mileageAddBindingModel = new EngineMileageAddBindingModel(car.getEngine().getMileage(), car.getEngine().getMileage() + 10000);
+        int newMileage = car.getEngine().getMileage() + 10000;
+        EngineMileageAddBindingModel mileageAddBindingModel = new EngineMileageAddBindingModel(car.getEngine().getMileage(), newMileage);
 
         carService.doAddMileage(mileageAddBindingModel, CAR_ID);
 
-        Mockito
-                .when(carRepository.save(car))
-                .thenReturn(car);
+        verify(carRepository).save(carCaptor.capture());
 
-        assertEquals(mileageAddBindingModel.newMileage(), car.getEngine().getMileage());
+        Car saved = carCaptor.getValue();
+
+        assertEquals(newMileage, saved.getEngine().getMileage(), "wrong mileage");
     }
 
     @Test
@@ -363,7 +374,7 @@ public class CarServiceTests {
     }
 
     @Test
-    public void testDoAddAdds() {
+    public void testDoAddCreatesNewCarModel() {
         Mockito
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(this.user));
@@ -371,9 +382,53 @@ public class CarServiceTests {
                 .when(carModelRepository.findCarModelByBrandNameAndModelName(CAR_BRAND, CAR_MODEL))
                 .thenReturn(Optional.empty());
 
-        Mockito.when(carRepository.save(Mockito.any(Car.class))).thenReturn(car);
+        Mockito
+                .when(carRepository.save(Mockito.any(Car.class)))
+                .thenReturn(car);
 
-        carService.doAdd(CAR_ADD, USER_ID);
+        carService.doAdd(carAdd, USER_ID);
+
+        verify(carRepository).save(carCaptor.capture());
+        Car savedCar = carCaptor.getValue();
+
+        assertEquals(CAR_BRAND, savedCar.getModel().getBrandName());
+        assertEquals(CAR_MODEL, savedCar.getModel().getModelName());
+
+    }
+
+    @Test
+    public void testDoAddAdds() {
+        Mockito
+                .when(userRepository.findById(USER_ID))
+                .thenReturn(Optional.of(this.user));
+        Mockito
+                .when(carModelRepository.findCarModelByBrandNameAndModelName(CAR_BRAND, CAR_MODEL))
+                .thenReturn(Optional.of(carModel));
+
+        Mockito
+                .when(carRepository.save(Mockito.any(Car.class)))
+                .thenReturn(car);
+
+        carService.doAdd(carAdd, USER_ID);
+
+        verify(carRepository).save(carCaptor.capture());
+        Car savedCar = carCaptor.getValue();
+        verify(engineRepository).save(engineCaptor.capture());
+        Engine savedEngine = engineCaptor.getValue();
+
+        assertEquals(user, savedCar.getUser(), "wrong user");
+        assertEquals(carModel, savedCar.getModel(), "wrong model");
+        assertEquals(CAR_CATEGORY, savedCar.getCategory(), "wrong category");
+        assertEquals(CAR_VIN, savedCar.getVin(), "wrong vin");
+        assertEquals(CAR_YEAR, savedCar.getYearOfProduction(), "wrong year");
+        assertEquals(CAR_REGISTRATION, savedCar.getRegistration(), "wrong registration");
+
+        assertEquals(ENGINE_DISPLACEMENT, savedEngine.getDisplacement(), "wrong displacement");
+        assertEquals(ENGINE_MILEAGE, savedEngine.getMileage(), "wrong mileage");
+        assertEquals(ENGINE_OIL_CAPACITY, savedEngine.getOilCapacity(), "wrong oil capacity");
+        assertEquals(ENGINE_FUEL_TYPE, savedEngine.getFuelType(), "wrong fuel type");
+        assertEquals(savedCar, savedEngine.getCar(), "wrong car");
+
     }
 
     @Test
@@ -382,7 +437,7 @@ public class CarServiceTests {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> carService.doAdd(CAR_ADD, UUID.randomUUID()));
+        assertThrows(UserNotFoundException.class, () -> carService.doAdd(carAdd, UUID.randomUUID()));
     }
 
     @Test
@@ -398,6 +453,43 @@ public class CarServiceTests {
         for (int i = 0; i < ALL_SERVICES.size(); i++) {
             assertEquals(ALL_SERVICES.get(i), result.get(i));
         }
+    }
+
+    @Test
+    public void testGetCarInfoServiceViewModelWithEmptyServices() {
+        car.getEngine().setOilChanges(new ArrayList<>());
+        car.setVignettes(new ArrayList<>());
+        car.setInsurances(new ArrayList<>());
+
+        CarInfoServiceViewModel carInfo = new CarInfoServiceViewModel(
+                CAR_ID,
+                carModel.getBrandName() + " " + carModel.getModelName(),
+                CAR_VIN,
+                CAR_REGISTRATION,
+                new LastServicesServiceViewModel(
+                        new CarOilChangeDateAndIdServiceViewModel(null, null),
+                        new InsurancePaymentDateAndIdServiceViewModel(null, null, true, true),
+                        new VignetteDateAndIdServiceViewModel(null, null, true, true)
+                ),
+                new CarInfoEngineViewModel(
+                        ENGINE_ID,
+                        ENGINE_FUEL_TYPE,
+                        ENGINE_DISPLACEMENT,
+                        ENGINE_MILEAGE,
+                        100,
+                        0,
+                        0
+                        )
+        );
+
+        Mockito
+                .when(carRepository.findById(CAR_ID))
+                .thenReturn(Optional.of(car));
+
+        CarInfoServiceViewModel viewModel = carService.getCarInfoServiceViewModel(CAR_ID);
+
+        assertEquals(carInfo, viewModel);
+
     }
 
     @Test

@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.vehicle.service;
 
-import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddServiceView;
+import bg.softuni.serviceScheduler.carServices.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;

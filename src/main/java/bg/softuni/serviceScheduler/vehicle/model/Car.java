@@ -1,8 +1,8 @@
 package bg.softuni.serviceScheduler.vehicle.model;
 
 import bg.softuni.serviceScheduler.carModel.model.CarModel;
-import bg.softuni.serviceScheduler.services.insurance.model.Insurance;
-import bg.softuni.serviceScheduler.services.vignette.model.Vignette;
+import bg.softuni.serviceScheduler.carServices.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.carServices.vignette.model.Vignette;
 import bg.softuni.serviceScheduler.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.user.service.impl;
 
-import bg.softuni.serviceScheduler.services.oilChange.service.OilChangeService;
+import bg.softuni.serviceScheduler.carServices.oilChange.service.OilChangeService;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.dao.UserRoleRepository;
 import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;

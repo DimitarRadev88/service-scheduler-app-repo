@@ -1,7 +1,7 @@
 package bg.softuni.serviceScheduler.web;
 
-import bg.softuni.serviceScheduler.services.vignette.service.VignetteService;
-import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddServiceView;
+import bg.softuni.serviceScheduler.carServices.vignette.service.VignetteService;
+import bg.softuni.serviceScheduler.carServices.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;

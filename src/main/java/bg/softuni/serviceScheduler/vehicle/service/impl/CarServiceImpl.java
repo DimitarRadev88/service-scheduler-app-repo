@@ -2,13 +2,13 @@ package bg.softuni.serviceScheduler.vehicle.service.impl;
 
 import bg.softuni.serviceScheduler.carModel.dao.CarModelRepository;
 import bg.softuni.serviceScheduler.carModel.model.CarModel;
-import bg.softuni.serviceScheduler.services.insurance.model.Insurance;
-import bg.softuni.serviceScheduler.services.insurance.service.InsuranceService;
-import bg.softuni.serviceScheduler.services.oilChange.dao.OilChangeRepository;
-import bg.softuni.serviceScheduler.services.oilChange.model.OilChange;
-import bg.softuni.serviceScheduler.services.vignette.model.Vignette;
-import bg.softuni.serviceScheduler.services.vignette.service.VignetteService;
-import bg.softuni.serviceScheduler.services.vignette.service.dto.CarVignetteAddServiceView;
+import bg.softuni.serviceScheduler.carServices.insurance.model.Insurance;
+import bg.softuni.serviceScheduler.carServices.insurance.service.InsuranceService;
+import bg.softuni.serviceScheduler.carServices.oilChange.dao.OilChangeRepository;
+import bg.softuni.serviceScheduler.carServices.oilChange.model.OilChange;
+import bg.softuni.serviceScheduler.carServices.vignette.model.Vignette;
+import bg.softuni.serviceScheduler.carServices.vignette.service.VignetteService;
+import bg.softuni.serviceScheduler.carServices.vignette.service.dto.CarVignetteAddServiceView;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
 import bg.softuni.serviceScheduler.user.model.User;
@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -169,13 +170,17 @@ public class CarServiceImpl implements CarService {
                 car.getEngine().getFuelType(),
                 car.getEngine().getDisplacement(),
                 car.getEngine().getMileage(),
-                optionalOilChange.map(oilChange -> oilChange.getMileage() - car.getEngine().getMileage() >= 0
-                                ? 0
-                                : Math.min((car.getEngine().getMileage() - oilChange.getMileage()) * 100 / oilChange.getChangeInterval(), 100))
-                        .orElse(100),
+                getOilChangeLifePercent(optionalOilChange, car.getEngine().getMileage()),
                 optionalOilChange.map(OilChange::getChangeInterval).orElse(0),
                 optionalOilChange.map(OilChange::getMileage).orElse(0)
         );
+    }
+
+    private static Integer getOilChangeLifePercent(Optional<OilChange> optionalOilChange, Integer mileage) {
+        return optionalOilChange.map(oilChange -> oilChange.getMileage() - mileage >= 0
+                ? 0
+                : Math.min((mileage - oilChange.getMileage()) * 100 / oilChange.getChangeInterval(), 100))
+                .orElse(100);
     }
 
     private LastServicesServiceViewModel getLastServices(Car car) {

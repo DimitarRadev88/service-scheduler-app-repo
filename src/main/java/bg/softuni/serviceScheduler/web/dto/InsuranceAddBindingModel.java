@@ -1,6 +1,6 @@
 package bg.softuni.serviceScheduler.web.dto;
 
-import bg.softuni.serviceScheduler.services.insurance.model.InsuranceValidity;
+import bg.softuni.serviceScheduler.carServices.insurance.model.InsuranceValidity;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;

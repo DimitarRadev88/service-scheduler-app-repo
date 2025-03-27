@@ -3,7 +3,7 @@ package bg.softuni.serviceScheduler.web;
 import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarModelNameDto;
-import bg.softuni.serviceScheduler.services.oilChange.service.OilChangeService;
+import bg.softuni.serviceScheduler.carServices.oilChange.service.OilChangeService;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarDashboardServicesDoneViewServiceModel;
