@@ -59,16 +59,7 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyExistsException("Email already exists!");
         }
 
-        User user = new User(
-                null,
-                userRegister.username(),
-                passwordEncoder.encode(userRegister.password()),
-                userRegister.email(),
-                LocalDateTime.now(),
-                BASIC_PROFILE_PICTURE_URL,
-                new ArrayList<>(),
-                new ArrayList<>(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER)))
-        );
+        User user = map(userRegister);
 
         if (userRepository.count() == 0) {
             user.getRoles().add(userRoleRepository.findByRole(UserRoleEnumeration.ADMIN));
@@ -81,11 +72,22 @@ public class UserServiceImpl implements UserService {
         return save.getUsername();
     }
 
+    private User map(UserRegisterBindingModel userRegister) {
+        return new User(
+                null,
+                userRegister.username(),
+                passwordEncoder.encode(userRegister.password()),
+                userRegister.email(),
+                LocalDateTime.now(),
+                BASIC_PROFILE_PICTURE_URL,
+                new ArrayList<>(),
+                new ArrayList<>(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER)))
+        );
+    }
+
     @Override
     public UserDashboardServiceModelView getUser(UUID id) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = findUser(id);
 
         List<CarDashboardViewServiceModel> cars = carService.getAllCarDashboardServiceViewModelsByUser(user.getId());
         List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServicesByUser(user.getId());
@@ -95,9 +97,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserWithCarsInfoAddServiceView getUserWithCarsInfoAddServiceView(UUID id) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = findUser(id);
 
         return new UserWithCarsInfoAddServiceView(
                 user.getId(),
@@ -114,21 +114,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<AllUsersServiceModelView> getAllUsers() {
-        return userRepository.findAllByOrderByRegistrationDateAsc().stream().map(user -> new AllUsersServiceModelView(
-                user.getId(),
-                user.getUsername(),
-                user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(UserRoleEnumeration.ADMIN))
-                        ? UserRoleEnumeration.ADMIN
-                        : UserRoleEnumeration.USER
-        )).toList();
+        return userRepository.findAllByOrderByRegistrationDateAsc()
+                .stream()
+                .map(UserServiceImpl::mapToAllUsersServiceModelView)
+                .toList();
     }
+
 
     @Override
     @Transactional
     public void removeAdmin(UUID id) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = findUser(id);
 
         UserRole userRole = user
                 .getRoles()
@@ -147,9 +143,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void makeAdmin(UUID id) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = findUser(id);
 
         user
                 .getRoles()
@@ -160,36 +154,33 @@ public class UserServiceImpl implements UserService {
         log.info("User {} promoted to admin", user.getUsername());
     }
 
+    private User findUser(UUID id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
     @Override
     public UserProfileViewServiceModel getUserProfileView(UUID id) {
         return userRepository
                 .findById(id)
-                .map(u -> new UserProfileViewServiceModel(
-                        u.getUsername(),
-                        u.getEmail(),
-                        u.getRegistrationDate().toLocalDate(),
-                        u.getProfilePictureURL()
-                ))
+                .map(UserServiceImpl::mapToUserProfileViewServiceModel)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
+
 
     @Override
     public UserEditProfileServiceModel getUserEditProfileServiceModel(UUID id) {
         return userRepository
                 .findById(id)
-                .map(u -> new UserEditProfileServiceModel(
-                        u.getUsername(),
-                        u.getEmail(),
-                        u.getProfilePictureURL()
-                ))
+                .map(UserServiceImpl::mapToUserEditProfileServiceViewModel)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
 
+
     @Override
     public void doEdit(UserProfileEditBindingModel userProfileEditBindingModel, UUID id) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = findUser(id);
 
         if (!user.getUsername().equals(userProfileEditBindingModel.username()) && userRepository.existsByUsername(userProfileEditBindingModel.username())) {
             throw new UsernameAlreadyExistsException("Username already exists");
@@ -210,4 +201,32 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("User {} profile edited", user.getUsername());
     }
+
+    private static UserEditProfileServiceModel mapToUserEditProfileServiceViewModel(User u) {
+        return new UserEditProfileServiceModel(
+                u.getUsername(),
+                u.getEmail(),
+                u.getProfilePictureURL()
+        );
+    }
+
+    private static AllUsersServiceModelView mapToAllUsersServiceModelView(User user) {
+        return new AllUsersServiceModelView(
+                user.getId(),
+                user.getUsername(),
+                user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(UserRoleEnumeration.ADMIN))
+                        ? UserRoleEnumeration.ADMIN
+                        : UserRoleEnumeration.USER
+        );
+    }
+
+    private static UserProfileViewServiceModel mapToUserProfileViewServiceModel(User u) {
+        return new UserProfileViewServiceModel(
+                u.getUsername(),
+                u.getEmail(),
+                u.getRegistrationDate().toLocalDate(),
+                u.getProfilePictureURL()
+        );
+    }
+
 }

@@ -10,6 +10,7 @@ import bg.softuni.serviceScheduler.web.dto.InsuranceAddBindingModel;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -53,10 +54,6 @@ public class InsuranceController {
 
     @GetMapping("/add/{id}")
     public String getInsuranceAddWithVehicleInformation(@AuthenticationPrincipal UserDetails userDetails, Model model, @PathVariable UUID id) {
-        if (id.toString().isBlank()) {
-            return "redirect:/insurances/add";
-        }
-
         if (!model.containsAttribute("insuranceAdd")) {
             model.addAttribute("insuranceAdd", new InsuranceAddBindingModel(null, null, null, BigDecimal.ZERO));
         }
@@ -67,7 +64,7 @@ public class InsuranceController {
         CarInsuranceAddServiceView car = carService.getCarInsuranceAddServiceView(id);
 
         model.addAttribute("user", user);
-        model.addAttribute("userId", id);
+        model.addAttribute("userId", userId);
         model.addAttribute("carInfo", car);
 
         return "insurance-add-with-selected-vehicle";

@@ -40,26 +40,14 @@ public class InsuranceServiceImpl implements InsuranceService {
     public void doAdd(InsuranceAddBindingModel insuranceAdd, UUID carId) {
         Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException("Car not found"));
 
-        Insurance saved = insuranceRepository.save(new Insurance(
-                null,
-                LocalDate.now(),
-                insuranceAdd.cost(),
-                insuranceAdd.companyName(),
-                insuranceAdd.startDate(),
-                insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()),
-                insuranceAdd.insuranceValidityPeriod(),
-                insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()).isAfter(LocalDate.now()),
-                car
-        ));
+        Insurance saved = insuranceRepository.save(map(insuranceAdd, car));
 
         log.info("Insurance with id {} expiring on {} for car with id {} added", saved.getId(), saved.getEndDate(), car.getId());
     }
 
     @Override
     public Boolean hasActiveInsurance(UUID carId) {
-        if (!carRepository.existsById(carId)) {
-            throw new CarNotFoundException("Car not found");
-        }
+        checkCar(carId);
 
         return insuranceRepository.existsByIsValidTrueAndCarId(carId);
     }
@@ -76,7 +64,7 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Override
     @Scheduled(cron = "0 0 0 * * *")
-    public void changeAllExpiredInsurancesIsValidStatus() {
+    public void invalidateAllExpiredInsurances() {
         List<Insurance> all = insuranceRepository.findAllByIsValidIsTrueAndEndDateIsBefore(LocalDate.now());
 
         all.forEach(insurance -> insurance.setIsValid(false));
@@ -86,11 +74,32 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Override
     public BigDecimal getSumInsuranceCostByCarId(UUID carId) {
+        checkCar(carId);
+
+        BigDecimal sumInsuranceCostByCarId = insuranceRepository.getSumInsuranceCostByCarId(carId);
+
+        return sumInsuranceCostByCarId == null ? BigDecimal.ZERO : sumInsuranceCostByCarId;
+    }
+
+    private void checkCar(UUID carId) {
         if (!carRepository.existsById(carId)) {
             throw new CarNotFoundException("Car not found");
         }
-
-        return insuranceRepository.getSumInsuranceCostByCarId(carId);
     }
+
+    private static Insurance map(InsuranceAddBindingModel insuranceAdd, Car car) {
+        return new Insurance(
+                null,
+                LocalDate.now(),
+                insuranceAdd.cost(),
+                insuranceAdd.companyName(),
+                insuranceAdd.startDate(),
+                insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()),
+                insuranceAdd.insuranceValidityPeriod(),
+                insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()).isAfter(LocalDate.now()),
+                car
+        );
+    }
+
 
 }

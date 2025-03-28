@@ -69,7 +69,7 @@ public class InsuranceServiceImplTest {
     }
 
     @Test
-    public void testChangeAllExpiredInsurancesIsValidStatusChangesExpiredInsurancesIsValidToFalse() {
+    public void testInvalidateExpiredInsurancesIsValidStatusChanges() {
         Insurance expiredInsuranceOne = new Insurance(null, null, null, null, null, LocalDate.now().minusDays(1), null, true, null);
         Insurance expiredInsuranceTwo = new Insurance(null, null, null, null, null, LocalDate.now().minusDays(2), null, true, null);
         Insurance expiredInsuranceThree = new Insurance(null, null, null, null, null, LocalDate.now().minusDays(3), null, true, null);
@@ -79,7 +79,7 @@ public class InsuranceServiceImplTest {
                 .when(insuranceRepository.findAllByIsValidIsTrueAndEndDateIsBefore(Mockito.any(LocalDate.class)))
                 .thenReturn(insurances);
 
-        insuranceService.changeAllExpiredInsurancesIsValidStatus();
+        insuranceService.invalidateAllExpiredInsurances();
 
         verify(insuranceRepository).saveAll(insuranceCaptorList.capture());
 

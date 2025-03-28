@@ -31,8 +31,8 @@ public interface VignetteRepository extends JpaRepository<Vignette, UUID> {
             SELECT SUM(v.cost)
             FROM Vignette v
             JOIN v.car c
-            WHERE c.id = :carId
-            GROUP BY c
+            WHERE c.id = :id
+            GROUP BY c.id
             """)
     BigDecimal getSumVignetteCostByCarId(UUID id);
 

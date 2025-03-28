@@ -87,7 +87,7 @@ public class VignetteServiceImpl implements VignetteService {
 
     @Override
     @Scheduled(cron = "0 0 0 * * *")
-    public void changeAllExpiredVignettesIsValidStatus() {
+    public void invalidateAllExpiredVignettes() {
         List<Vignette> all = vignetteRepository.findAllByIsValidIsTrueAndEndDateIsBefore(LocalDate.now());
 
         all.forEach(vignette -> vignette.setIsValid(false));
@@ -103,7 +103,8 @@ public class VignetteServiceImpl implements VignetteService {
             throw new CarNotFoundException("Car not found");
         }
 
-        return vignetteRepository.getSumVignetteCostByCarId(id);
+        BigDecimal sum = vignetteRepository.getSumVignetteCostByCarId(id);
+        return sum == null ? BigDecimal.ZERO : sum;
     }
 
 }

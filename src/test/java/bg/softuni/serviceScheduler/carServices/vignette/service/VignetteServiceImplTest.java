@@ -80,7 +80,7 @@ public class VignetteServiceImplTest {
                 .when(vignetteRepository.findAllByIsValidIsTrueAndEndDateIsBefore(Mockito.any(LocalDate.class)))
                 .thenReturn(List.of(expiredVignette, expiredVignette2, expiredVignette3));
 
-        vignetteService.changeAllExpiredVignettesIsValidStatus();
+        vignetteService.invalidateAllExpiredVignettes();
 
         verify(vignetteRepository).saveAll(vignetteListCaptor.capture());
 

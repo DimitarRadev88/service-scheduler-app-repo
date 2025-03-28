@@ -13,7 +13,7 @@ public interface InsuranceService {
 
     BigDecimal getSumInsuranceCostByUserId(UUID userId);
 
-    void changeAllExpiredInsurancesIsValidStatus();
+    void invalidateAllExpiredInsurances();
 
     BigDecimal getSumInsuranceCostByCarId(UUID carId);
 }

@@ -175,11 +175,12 @@ public class CarServiceImpl implements CarService {
 
 
     private CarDashboardViewServiceModel mapToCarDashboardViewServiceModel(Car car) {
+        BigDecimal oilChangesSum = oilChangeRepository.getSumOilChangesCostByEngineId(car.getEngine().getId());
         return new CarDashboardViewServiceModel(car.getId(),
                 car.getModel().getBrandName(),
                 car.getModel().getModelName(),
                 car.getVin(),
-                oilChangeRepository.getSumOilChangesCostByEngineId(car.getEngine().getId())
+                oilChangesSum == null ? BigDecimal.ZERO : oilChangesSum
                         .add(insuranceService.getSumInsuranceCostByCarId(car.getId()))
                         .add(vignetteService.getSumVignetteCostByCarId(car.getId())),
                 !insuranceService.hasActiveInsurance(car.getId())

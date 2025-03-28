@@ -12,7 +12,7 @@ public interface VignetteService {
 
     BigDecimal getSumVignetteCostByUserId(UUID userId);
 
-    void changeAllExpiredVignettesIsValidStatus();
+    void invalidateAllExpiredVignettes();
 
     BigDecimal getSumVignetteCostByCarId(UUID id);
 }

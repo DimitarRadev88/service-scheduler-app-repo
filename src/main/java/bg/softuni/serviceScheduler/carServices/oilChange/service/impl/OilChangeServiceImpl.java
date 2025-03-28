@@ -33,15 +33,7 @@ public class OilChangeServiceImpl implements OilChangeService {
     public UUID doAdd(OilChangeAddBindingModel oilChangeAdd, UUID engineId) {
         Engine engine = engineRepository.findById(engineId).orElseThrow(() -> new EngineNotFoundException("Engine not found"));
 
-        OilChange oilChange = new OilChange(
-                null,
-                engine,
-                oilChangeAdd.cost(),
-                LocalDate.now(),
-                oilChangeAdd.changeMileage(),
-                oilChangeAdd.changeInterval(),
-                oilChangeAdd.changeDate()
-        );
+        OilChange oilChange = map(oilChangeAdd, engine);
 
         oilChangeRepository.save(oilChange);
 
@@ -53,6 +45,19 @@ public class OilChangeServiceImpl implements OilChangeService {
     @Override
     public Long getOilChangesCount() {
         return oilChangeRepository.count();
+    }
+
+
+    private static OilChange map(OilChangeAddBindingModel oilChangeAdd, Engine engine) {
+        return new OilChange(
+                null,
+                engine,
+                oilChangeAdd.cost(),
+                LocalDate.now(),
+                oilChangeAdd.changeMileage(),
+                oilChangeAdd.changeInterval(),
+                oilChangeAdd.changeDate()
+        );
     }
 
 }

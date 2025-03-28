@@ -24,11 +24,11 @@ public class ServiceSchedulerUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .map(o -> new ServiceSchedulerUserDetails(
-                        o.getId(),
-                        o.getUsername(),
-                        o.getPassword(),
-                        o.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name())).toList()
+                .map(user -> new ServiceSchedulerUserDetails(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name())).toList()
                 )).orElseThrow(() -> new UsernameNotFoundException("User with username: " + username + " not found"));
     }
 
