@@ -2,6 +2,7 @@ package bg.softuni.serviceScheduler.carServices.oilChange.service;
 
 import bg.softuni.serviceScheduler.carServices.oilChange.dao.OilChangeRepository;
 import bg.softuni.serviceScheduler.carServices.oilChange.model.OilChange;
+import bg.softuni.serviceScheduler.vehicle.exception.CarNotFoundException;
 import bg.softuni.serviceScheduler.vehicle.exception.EngineNotFoundException;
 import bg.softuni.serviceScheduler.carServices.oilChange.service.impl.OilChangeServiceImpl;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
@@ -27,12 +28,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class OilChangeServiceTests {
+public class OilChangeServiceImplTest {
 
     private static final UUID CAR_ID = UUID.randomUUID();
     private static final Year CAR_YEAR = Year.of(2000);
@@ -118,6 +118,5 @@ public class OilChangeServiceTests {
 
         assertThrows(EngineNotFoundException.class, () -> this.oilChangeService.doAdd(this.oilChangeAdd, ENGINE_ID));
     }
-
 
 }

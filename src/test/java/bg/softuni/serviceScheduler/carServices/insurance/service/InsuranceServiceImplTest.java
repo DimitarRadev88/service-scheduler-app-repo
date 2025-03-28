@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class InsuranceServiceTests {
+public class InsuranceServiceImplTest {
 
     private static final UUID INSURANCE_ID = UUID.randomUUID();
     private static final String INSURANCE_COMPANY = "Insurance Company";
@@ -188,6 +188,28 @@ public class InsuranceServiceTests {
                 .thenReturn(Optional.empty());
 
         assertThrows(CarNotFoundException.class, () -> insuranceService.doAdd(insuranceAdd, CAR_ID));
+    }
+
+    @Test
+    public void testGetSumInsuranceCostByCarIdReturnsCorrectSum() {
+        Mockito
+                .when(carRepository.existsById(CAR_ID))
+                .thenReturn(true);
+
+        Mockito
+                .when(insuranceRepository.getSumInsuranceCostByCarId(CAR_ID))
+                .thenReturn(INSURANCE_COST);
+
+        assertEquals(INSURANCE_COST, insuranceService.getSumInsuranceCostByCarId(CAR_ID));
+    }
+
+    @Test
+    public void testGetSumInsuranceCostByCarIdThrowsWhenCarNotFound() {
+        Mockito
+                .when(carRepository.existsById(CAR_ID))
+                .thenReturn(false);
+
+        assertThrows(CarNotFoundException.class, () -> insuranceService.getSumInsuranceCostByCarId(CAR_ID));
     }
 
 }

@@ -23,7 +23,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 @RestClientTest({CarModelService.class, BrandsApiConfig.class})
-public class CarModelServiceTests {
+public class CarModelServiceImplTest {
 
     @Autowired
     private MockRestServiceServer server;

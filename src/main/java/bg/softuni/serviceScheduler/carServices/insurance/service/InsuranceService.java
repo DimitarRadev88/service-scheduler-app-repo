@@ -15,4 +15,5 @@ public interface InsuranceService {
 
     void changeAllExpiredInsurancesIsValidStatus();
 
+    BigDecimal getSumInsuranceCostByCarId(UUID carId);
 }

@@ -25,4 +25,13 @@ public interface OilChangeRepository extends JpaRepository<OilChange, UUID> {
             """)
     BigDecimal getSumOilChangesCostByUserId(UUID userId);
 
+    @Query("""
+            SELECT SUM(oc.cost)
+            FROM OilChange oc
+            JOIN oc.engine e
+            WHERE e.id = :engineId
+            GROUP BY e.id
+            """)
+    BigDecimal getSumOilChangesCostByEngineId(UUID engineId);
+
 }

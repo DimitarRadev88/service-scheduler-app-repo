@@ -1,7 +1,5 @@
 package bg.softuni.serviceScheduler.vehicle.service.dto;
 
-import bg.softuni.serviceScheduler.vehicle.model.FuelType;
-
 import java.util.UUID;
 
 public record CarInfoServiceViewModel(
@@ -12,4 +10,8 @@ public record CarInfoServiceViewModel(
         LastServicesServiceViewModel lastServices,
         CarInfoEngineViewModel engine
 ) {
+    public CarInfoServiceViewModel() {
+        this(null, null, null, null, null, null);
+    }
+
 }

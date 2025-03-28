@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class VignetteServiceTests {
+public class VignetteServiceImplTest {
 
     private static final UUID CAR_ID = UUID.randomUUID();
     private static final Year CAR_YEAR = Year.of(2000);
@@ -189,6 +189,28 @@ public class VignetteServiceTests {
                 .thenReturn(Optional.empty());
 
         assertThrows(CarNotFoundException.class, () -> vignetteService.doAdd(vignetteAdd, CAR_ID));
+    }
+
+    @Test
+    public void testGetSumVignetteCostByCarIdReturnsCorrectSum() {
+        Mockito
+                .when(carRepository.existsById(CAR_ID))
+                .thenReturn(true);
+
+        Mockito
+                .when(vignetteRepository.getSumVignetteCostByCarId(CAR_ID))
+                .thenReturn(VIGNETTE_COST);
+
+        assertEquals(VIGNETTE_COST, vignetteService.getSumVignetteCostByCarId(CAR_ID));
+    }
+
+    @Test
+    public void testGetSumInsuranceCostByCarIdThrowsWhenCarNotFound() {
+        Mockito
+                .when(carRepository.existsById(CAR_ID))
+                .thenReturn(false);
+
+        assertThrows(CarNotFoundException.class, () -> vignetteService.getSumVignetteCostByCarId(CAR_ID));
     }
 
 }

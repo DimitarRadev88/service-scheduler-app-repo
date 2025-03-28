@@ -34,7 +34,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -63,91 +62,175 @@ public class CarServiceImpl implements CarService {
     @Transactional
     @Override
     public List<CarDashboardServicesDoneViewServiceModel> getAllServicesByUser(UUID userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new UserNotFoundException("User not found");
-        }
+        checkUser(userId);
 
         List<Car> all = carRepository.findAllByUserId(userId);
 
-        return Stream.concat(
-                        all.stream()
-                                .map(car -> car.getEngine().getOilChanges())
-                                .flatMap(List::stream)
-                                .map(oilChange -> new CarDashboardServicesDoneViewServiceModel("Oil change", oilChange.getAddedAt(), oilChange.getCost())),
-                        Stream.concat(
-                                all.stream()
-                                        .map(Car::getInsurances)
-                                        .flatMap(List::stream)
-                                        .map(insurance -> new CarDashboardServicesDoneViewServiceModel("Insurance", insurance.getAddedAt(), insurance.getCost())),
-                                all.stream()
-                                        .map(Car::getVignettes)
-                                        .flatMap(List::stream)
-                                        .map(vignette -> new CarDashboardServicesDoneViewServiceModel("Vignette", vignette.getAddedAt(), vignette.getCost()))))
-                .sorted(Comparator.comparing(CarDashboardServicesDoneViewServiceModel::date)
-                        .reversed())
-                .toList();
-
+        return mapToCarDashboardServicesDoneViewServiceModel(all);
     }
 
     @Override
     @Transactional
     public UUID doAdd(CarAddBindingModel vehicleAdd, UUID userId) {
-        Car car = new Car();
+        User user = getUser(userId);
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("No active user found"));
+        Car car = map(vehicleAdd);
+
         car.setUser(user);
 
-        Optional<CarModel> optionalModel = carModelRepository.findCarModelByBrandNameAndModelName(vehicleAdd.brand(), vehicleAdd.model());
-        CarModel carModel = optionalModel.orElse(null);
-        if (carModel == null) {
-            carModel = new CarModel();
-            carModel.setBrandName(vehicleAdd.brand());
-            carModel.setModelName(vehicleAdd.model());
-        }
-
-        car.setModel(carModel);
-
-        Engine engine = new Engine();
-        engine.setDisplacement(vehicleAdd.displacement());
-        engine.setMileage(vehicleAdd.mileage());
-        engine.setOilCapacity(vehicleAdd.oilCapacity());
-        engine.setFuelType(vehicleAdd.fuelType());
-
-        car.setEngine(engine);
-
-        car.setCategory(vehicleAdd.category());
-        car.setVin(vehicleAdd.vin());
-        car.setYearOfProduction(vehicleAdd.year());
-        car.setRegistration(vehicleAdd.registration());
-
-        Car save = carRepository.save(car);
-        Engine savedEngine = save.getEngine();
+        Car saved = carRepository.save(car);
+        Engine savedEngine = saved.getEngine();
         savedEngine.setCar(car);
         engineRepository.save(savedEngine);
 
         log.info("User {} added {} with engine {}", user.getId(), car.getModel().getModelName(), savedEngine.getId());
 
-        return save.getId();
+        return saved.getId();
     }
 
     @Override
     public CarInsuranceAddServiceView getCarInsuranceAddServiceView(UUID id) {
-        Car car = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("Car not found"));
+        Car car = getCar(id);
 
-        return new CarInsuranceAddServiceView(car.getId(),
-                car.getModel().getBrandName() + " " + car.getModel().getModelName(),
-                car.getEngine().getFuelType(),
-                car.getEngine().getDisplacement(),
-                car.getVin(),
-                car.getRegistration());
+        return mapToCarInsuranceAddServiceView(car);
+    }
+
+    private Car getCar(UUID id) {
+        return carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("Car not found"));
     }
 
     @Override
     @Transactional
     public CarInfoServiceViewModel getCarInfoServiceViewModel(UUID id) {
-        Car car = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("Car not found"));
+        Car car = getCar(id);
 
         return mapToCarInfoServiceViewModel(car);
+    }
+
+    @Override
+    public EngineOilChangeServiceViewModel getEngineOilChangeAddViewModel(UUID engineId) {
+        Engine engine = engineRepository.findById(engineId).orElseThrow(() -> new EngineNotFoundException("Engine not found"));
+
+        return mapToEngineOilChangeServiceViewModel(engine);
+    }
+
+    @Override
+    public void doAddMileage(EngineMileageAddBindingModel engineMileageAdd, UUID id) {
+        Car car = getCar(id);
+
+        car.getEngine().setMileage(engineMileageAdd.newMileage());
+
+        carRepository.save(car);
+    }
+
+    @Override
+    public void doDelete(UUID id) {
+        if (!carRepository.existsById(id)) {
+            throw new CarNotFoundException("Car not found");
+        }
+
+        carRepository.deleteById(id);
+    }
+
+    @Override
+    public CarVignetteAddServiceView getCarVignetteAddServiceView(UUID id) {
+        return carRepository.findById(id)
+                .map(CarServiceImpl::mapToCarVignetteAdServiceView
+                )
+                .orElseThrow(() -> new CarNotFoundException("Car not found"));
+    }
+
+    @Override
+    public BigDecimal getAllServicesCostByUser(UUID userId) {
+        checkUser(userId);
+
+        return insuranceService.getSumInsuranceCostByUserId(userId)
+                .add(vignetteService.getSumVignetteCostByUserId(userId))
+                .add(getSumOilChangesCostByUser(userId));
+    }
+
+    @Override
+    @Transactional
+    public List<CarDashboardViewServiceModel> getAllCarDashboardServiceViewModelsByUser(UUID id) {
+        checkUser(id);
+
+        return carRepository.findAllByUserId(id).stream().map(this::mapToCarDashboardViewServiceModel).toList();
+    }
+
+    @Override
+    @Transactional
+    public List<CarInsuranceAddSelectView> getCarInsuranceAddSelectView(UUID id) {
+        return carRepository.findAllByUserId(id)
+                .stream()
+                .map(CarServiceImpl::maptoCarInsuranceAddSelectView)
+                .toList();
+    }
+
+    private static CarInsuranceAddSelectView maptoCarInsuranceAddSelectView(Car car) {
+        return new CarInsuranceAddSelectView(
+                car.getId(),
+                car.getModel().getBrandName() + " " + car.getModel().getModelName()
+        );
+    }
+
+
+    private CarDashboardViewServiceModel mapToCarDashboardViewServiceModel(Car car) {
+        return new CarDashboardViewServiceModel(car.getId(),
+                car.getModel().getBrandName(),
+                car.getModel().getModelName(),
+                car.getVin(),
+                oilChangeRepository.getSumOilChangesCostByEngineId(car.getEngine().getId())
+                        .add(insuranceService.getSumInsuranceCostByCarId(car.getId()))
+                        .add(vignetteService.getSumVignetteCostByCarId(car.getId())),
+                !insuranceService.hasActiveInsurance(car.getId())
+                || needsOilChange(car.getEngine())
+                || !vignetteService.hasActiveVignette(car.getId())
+        );
+    }
+
+    private BigDecimal getSumOilChangesCostByUser(UUID userId) {
+        BigDecimal sum = oilChangeRepository.getSumOilChangesCostByUserId(userId);
+        return sum == null ? BigDecimal.ZERO : sum;
+    }
+
+    private static CarOilChangeAddServiceViewModel mapToCarOilChangeAddServiceViewModel(Car car) {
+        return new CarOilChangeAddServiceViewModel(
+                car.getId(),
+                car.getModel().getBrandName() + " " + car.getModel().getModelName(),
+                car.getVin()
+        );
+    }
+
+    private static List<CarDashboardServicesDoneViewServiceModel> mapToCarDashboardServicesDoneViewServiceModel(List<Car> all) {
+        return Stream.concat(
+                        getOilChangesServiceView(all),
+                        Stream.concat(
+                                getInsurancesServiceView(all),
+                                getVignettesServiceView(all)))
+                .sorted(Comparator.comparing(CarDashboardServicesDoneViewServiceModel::date)
+                        .reversed())
+                .toList();
+    }
+
+    private static Stream<CarDashboardServicesDoneViewServiceModel> getVignettesServiceView(List<Car> all) {
+        return all.stream()
+                .map(Car::getVignettes)
+                .flatMap(List::stream)
+                .map(vignette -> new CarDashboardServicesDoneViewServiceModel("Vignette", vignette.getAddedAt(), vignette.getCost()));
+    }
+
+    private static Stream<CarDashboardServicesDoneViewServiceModel> getInsurancesServiceView(List<Car> all) {
+        return all.stream()
+                .map(Car::getInsurances)
+                .flatMap(List::stream)
+                .map(insurance -> new CarDashboardServicesDoneViewServiceModel("Insurance", insurance.getAddedAt(), insurance.getCost()));
+    }
+
+    private static Stream<CarDashboardServicesDoneViewServiceModel> getOilChangesServiceView(List<Car> all) {
+        return all.stream()
+                .map(car -> car.getEngine().getOilChanges())
+                .flatMap(List::stream)
+                .map(oilChange -> new CarDashboardServicesDoneViewServiceModel("Oil change", oilChange.getAddedAt(), oilChange.getCost()));
     }
 
     private CarInfoServiceViewModel mapToCarInfoServiceViewModel(Car car) {
@@ -178,8 +261,8 @@ public class CarServiceImpl implements CarService {
 
     private static Integer getOilChangeLifePercent(Optional<OilChange> optionalOilChange, Integer mileage) {
         return optionalOilChange.map(oilChange -> oilChange.getMileage() - mileage >= 0
-                ? 0
-                : Math.min((mileage - oilChange.getMileage()) * 100 / oilChange.getChangeInterval(), 100))
+                        ? 0
+                        : Math.min((mileage - oilChange.getMileage()) * 100 / oilChange.getChangeInterval(), 100))
                 .orElse(100);
     }
 
@@ -236,11 +319,47 @@ public class CarServiceImpl implements CarService {
         );
     }
 
-    @Override
-    public EngineOilChangeServiceViewModel getEngineOilChangeAddViewModel(UUID engineId) {
-        Engine engine = engineRepository.findById(engineId).orElseThrow(() -> new EngineNotFoundException("Engine not found"));
+    private Car map(CarAddBindingModel vehicleAdd) {
+        Car car = new Car();
+        Optional<CarModel> optionalModel = carModelRepository.findCarModelByBrandNameAndModelName(vehicleAdd.brand(), vehicleAdd.model());
+        CarModel carModel = optionalModel.orElse(null);
+        if (carModel == null) {
+            carModel = new CarModel();
+            carModel.setBrandName(vehicleAdd.brand());
+            carModel.setModelName(vehicleAdd.model());
+        }
 
-        return mapToEngineOilChangeServiceViewModel(engine);
+        car.setModel(carModel);
+
+        Engine engine = new Engine();
+        engine.setDisplacement(vehicleAdd.displacement());
+        engine.setMileage(vehicleAdd.mileage());
+        engine.setOilCapacity(vehicleAdd.oilCapacity());
+        engine.setFuelType(vehicleAdd.fuelType());
+
+        car.setEngine(engine);
+
+        car.setCategory(vehicleAdd.category());
+        car.setVin(vehicleAdd.vin());
+        car.setYearOfProduction(vehicleAdd.year());
+        car.setRegistration(vehicleAdd.registration());
+
+        return car;
+    }
+
+    private static CarInsuranceAddServiceView mapToCarInsuranceAddServiceView(Car car) {
+        return new CarInsuranceAddServiceView(car.getId(),
+                car.getModel().getBrandName() + " " + car.getModel().getModelName(),
+                car.getEngine().getFuelType(),
+                car.getEngine().getDisplacement(),
+                car.getVin(),
+                car.getRegistration());
+    }
+
+    private boolean needsOilChange(Engine engine) {
+        return oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(engine.getId())
+                .map(oilChange -> oilChange.getMileage() + oilChange.getChangeInterval() <= engine.getMileage())
+                .orElse(true);
     }
 
     private static EngineOilChangeServiceViewModel mapToEngineOilChangeServiceViewModel(Engine engine) {
@@ -256,108 +375,21 @@ public class CarServiceImpl implements CarService {
         );
     }
 
-    private static CarOilChangeAddServiceViewModel mapToCarOilChangeAddServiceViewModel(Car car) {
-        return new CarOilChangeAddServiceViewModel(
+    private static CarVignetteAddServiceView mapToCarVignetteAdServiceView(Car car) {
+        return new CarVignetteAddServiceView(
                 car.getId(),
                 car.getModel().getBrandName() + " " + car.getModel().getModelName(),
-                car.getVin()
-        );
+                car.getRegistration());
     }
 
-    @Override
-    public void doAddMileage(EngineMileageAddBindingModel engineMileageAdd, UUID id) {
-        Car car = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("Car not found"));
-
-        car.getEngine().setMileage(engineMileageAdd.newMileage());
-
-        carRepository.save(car);
-    }
-
-    private boolean needsOilChange(Engine engine) {
-        return oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(engine.getId())
-                .map(oilChange -> oilChange.getMileage() + oilChange.getChangeInterval() <= engine.getMileage())
-                .orElse(true);
-    }
-
-    @Override
-    public void doDelete(UUID id) {
-        if (!carRepository.existsById(id)) {
-            throw new CarNotFoundException("Car not found");
-        }
-
-        carRepository.deleteById(id);
-    }
-
-    @Override
-    public CarVignetteAddServiceView getCarVignetteAddServiceView(UUID id) {
-        return carRepository.findById(id)
-                .map(car -> new CarVignetteAddServiceView(
-                        car.getId(),
-                        car.getModel().getBrandName() + " " + car.getModel().getModelName(),
-                        car.getRegistration())
-                )
-                .orElseThrow(() -> new CarNotFoundException("Car not found"));
-    }
-
-    @Override
-    public BigDecimal getAllServicesCostByUser(UUID userId) {
+    private void checkUser(UUID userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("User not found");
         }
-
-        return insuranceService.getSumInsuranceCostByUserId(userId)
-                .add(vignetteService.getSumVignetteCostByUserId(userId))
-                .add(getSumOilChangesCostByUser(userId));
     }
 
-    @Override
-    @Transactional
-    public List<CarDashboardViewServiceModel> getAllCarDashboardServiceViewModelsByUser(UUID id) {
-        if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException("User not found");
-        }
-
-        return carRepository.findAllByUserId(id).stream().map(car -> new CarDashboardViewServiceModel(car.getId(),
-                car.getModel().getBrandName(),
-                car.getModel().getModelName(),
-                car.getVin(),
-                car
-                        .getEngine()
-                        .getOilChanges()
-                        .stream()
-                        .map(OilChange::getCost)
-                        .reduce(BigDecimal::add)
-                        .orElse(BigDecimal.ZERO)
-                        .add(car
-                                .getInsurances()
-                                .stream()
-                                .map(Insurance::getCost)
-                                .reduce(BigDecimal::add)
-                                .orElse(BigDecimal.ZERO))
-                        .add(car
-                                .getVignettes()
-                                .stream()
-                                .map(Vignette::getCost)
-                                .reduce(BigDecimal::add)
-                                .orElse(BigDecimal.ZERO)),
-                !insuranceService.hasActiveInsurance(car.getId())
-                || needsOilChange(car.getEngine())
-                || !vignetteService.hasActiveVignette(car.getId())
-        )).toList();
-    }
-
-    @Override
-    @Transactional
-    public List<CarInsuranceAddSelectView> getCarInsuranceAddSelectView(UUID id) {
-        return carRepository.findAllByUserId(id).stream().map(car -> new CarInsuranceAddSelectView(
-                car.getId(),
-                car.getModel().getBrandName() + " " + car.getModel().getModelName()
-        )).toList();
-    }
-
-    private BigDecimal getSumOilChangesCostByUser(UUID userId) {
-        BigDecimal sum = oilChangeRepository.getSumOilChangesCostByUserId(userId);
-        return sum == null ? BigDecimal.ZERO : sum;
+    private User getUser(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
 }

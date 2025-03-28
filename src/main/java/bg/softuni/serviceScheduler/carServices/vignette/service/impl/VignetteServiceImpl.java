@@ -97,4 +97,13 @@ public class VignetteServiceImpl implements VignetteService {
         log.info("All expired vignettes: {}", all);
     }
 
+    @Override
+    public BigDecimal getSumVignetteCostByCarId(UUID id) {
+        if (!carRepository.existsById(id)) {
+            throw new CarNotFoundException("Car not found");
+        }
+
+        return vignetteRepository.getSumVignetteCostByCarId(id);
+    }
+
 }

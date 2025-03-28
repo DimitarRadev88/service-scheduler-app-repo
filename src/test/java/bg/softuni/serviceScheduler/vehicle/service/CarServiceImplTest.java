@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CarServiceTests {
+public class CarServiceImplTest {
 
     private static final UUID USER_ID = UUID.randomUUID();
     private static final UUID CAR_ID = UUID.randomUUID();
@@ -98,6 +98,7 @@ public class CarServiceTests {
     private InsuranceService insuranceService;
     @Mock
     private VignetteService vignetteService;
+
     private static final BigDecimal SERVICE_COST = BigDecimal.ONE;
 
     private static final List<CarDashboardServicesDoneViewServiceModel> ALL_SERVICES = List.of(
@@ -453,8 +454,8 @@ public class CarServiceTests {
     @Test
     public void testGetAllServicesByUserShouldReturn() {
         Mockito
-                .when(userRepository.findById(USER_ID))
-                .thenReturn(Optional.of(this.user));
+                .when(userRepository.existsById(USER_ID))
+                .thenReturn(true);
         Mockito
                 .when(carRepository.findAllByUserId(USER_ID))
                 .thenReturn(List.of(this.car));
@@ -505,8 +506,8 @@ public class CarServiceTests {
     @Test
     public void testGetAllServicesByUserShouldReturnEmptyListWhenNoServicesFound() {
         Mockito
-                .when(userRepository.findById(USER_ID))
-                .thenReturn(Optional.of(this.user));
+                .when(userRepository.existsById(USER_ID))
+                .thenReturn(true);
         Mockito
                 .when(carRepository.findAllByUserId(USER_ID))
                 .thenReturn(new ArrayList<>());
@@ -517,8 +518,8 @@ public class CarServiceTests {
     @Test
     public void testGetAllServicesByUserShouldThrowWhenUserNotFound() {
         Mockito
-                .when(userRepository.findById(USER_ID))
-                .thenReturn(Optional.empty());
+                .when(userRepository.existsById(USER_ID))
+                .thenReturn(false);
 
         assertThrows(UserNotFoundException.class, () -> carService.getAllServicesByUser(USER_ID));
     }
@@ -553,6 +554,15 @@ public class CarServiceTests {
         Mockito
                 .when(oilChangeRepository.findFirstByEngineIdOrderByMileageDesc(ENGINE_ID))
                 .thenReturn(Optional.of(oilChange));
+        Mockito
+                .when(oilChangeRepository.getSumOilChangesCostByEngineId(ENGINE_ID))
+                .thenReturn(SERVICE_COST);
+        Mockito
+                .when(insuranceService.getSumInsuranceCostByCarId(CAR_ID))
+                .thenReturn(SERVICE_COST);
+        Mockito
+                .when(vignetteService.getSumVignetteCostByCarId(CAR_ID))
+                .thenReturn(SERVICE_COST);
 
         List<CarDashboardViewServiceModel> expected = new ArrayList<>(
                 List.of(
@@ -580,6 +590,15 @@ public class CarServiceTests {
         Mockito.
                 when(insuranceService.hasActiveInsurance(CAR_ID))
                 .thenReturn(false);
+        Mockito
+                .when(oilChangeRepository.getSumOilChangesCostByEngineId(ENGINE_ID))
+                .thenReturn(SERVICE_COST);
+        Mockito
+                .when(insuranceService.getSumInsuranceCostByCarId(CAR_ID))
+                .thenReturn(SERVICE_COST);
+        Mockito
+                .when(vignetteService.getSumVignetteCostByCarId(CAR_ID))
+                .thenReturn(SERVICE_COST);
 
         List<CarDashboardViewServiceModel> expected = new ArrayList<>(
                 List.of(
@@ -612,6 +631,15 @@ public class CarServiceTests {
         Mockito.
                 when(insuranceService.hasActiveInsurance(CAR_ID))
                 .thenReturn(false);
+        Mockito
+                .when(oilChangeRepository.getSumOilChangesCostByEngineId(ENGINE_ID))
+                .thenReturn(BigDecimal.ZERO);
+        Mockito
+                .when(insuranceService.getSumInsuranceCostByCarId(CAR_ID))
+                .thenReturn(BigDecimal.ZERO);
+        Mockito
+                .when(vignetteService.getSumVignetteCostByCarId(CAR_ID))
+                .thenReturn(BigDecimal.ZERO);
 
         List<CarDashboardViewServiceModel> expected = new ArrayList<>(
                 List.of(

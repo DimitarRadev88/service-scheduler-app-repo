@@ -84,4 +84,13 @@ public class InsuranceServiceImpl implements InsuranceService {
         insuranceRepository.saveAll(all);
     }
 
+    @Override
+    public BigDecimal getSumInsuranceCostByCarId(UUID carId) {
+        if (!carRepository.existsById(carId)) {
+            throw new CarNotFoundException("Car not found");
+        }
+
+        return insuranceRepository.getSumInsuranceCostByCarId(carId);
+    }
+
 }

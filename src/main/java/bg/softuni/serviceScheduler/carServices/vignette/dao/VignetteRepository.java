@@ -17,13 +17,23 @@ public interface VignetteRepository extends JpaRepository<Vignette, UUID> {
 
     @Query("""
             SELECT SUM(v.cost)
-                    FROM Vignette v
-                    JOIN v.car c
-                    JOIN c.user u
-                    WHERE u.id = :userId
-                    GROUP BY u
+            FROM Vignette v
+            JOIN v.car c
+            JOIN c.user u
+            WHERE u.id = :userId
+            GROUP BY u
             """)
     BigDecimal getSumVignetteCostByUserId(UUID userId);
 
     List<Vignette> findAllByIsValidIsTrueAndEndDateIsBefore(LocalDate now);
+
+    @Query("""
+            SELECT SUM(v.cost)
+            FROM Vignette v
+            JOIN v.car c
+            WHERE c.id = :carId
+            GROUP BY c
+            """)
+    BigDecimal getSumVignetteCostByCarId(UUID id);
+
 }

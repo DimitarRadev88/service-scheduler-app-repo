@@ -14,4 +14,5 @@ public interface VignetteService {
 
     void changeAllExpiredVignettesIsValidStatus();
 
+    BigDecimal getSumVignetteCostByCarId(UUID id);
 }

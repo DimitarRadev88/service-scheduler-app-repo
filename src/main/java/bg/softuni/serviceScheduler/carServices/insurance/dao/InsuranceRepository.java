@@ -15,17 +15,24 @@ public interface InsuranceRepository extends JpaRepository<Insurance, UUID> {
 
     Boolean existsByIsValidTrueAndCarId(UUID carId);
 
-    @Query(
-            """
-                    SELECT SUM(i.cost)
-                    FROM Insurance i
-                    JOIN i.car c
-                    JOIN c.user u
-                    WHERE u.id = :userId
-                    GROUP BY u
-                    """
-    )
+    @Query("""
+            SELECT SUM(i.cost)
+            FROM Insurance i
+            JOIN i.car c
+            JOIN c.user u
+            WHERE u.id = :userId
+            GROUP BY u
+            """)
     BigDecimal getSumInsuranceCostByUserId(UUID userId);
 
     List<Insurance> findAllByIsValidIsTrueAndEndDateIsBefore(LocalDate endDateBefore);
+
+    @Query("""
+            SELECT SUM(i.cost)
+            FROM Insurance i
+            JOIN i.car c
+            WHERE c.id = :carId
+            GROUP BY c
+            """)
+    BigDecimal getSumInsuranceCostByCarId(UUID carId);
 }
