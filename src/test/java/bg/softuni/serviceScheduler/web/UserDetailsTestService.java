@@ -43,7 +43,7 @@ public class UserDetailsTestService {
                 UUID.fromString("6a287caf-6962-4eca-a1c5-2a201734a0cb"),
                 "user",
                 "password",
-                "email",
+                "email@email",
                 LocalDateTime.now(),
                 "profile picture",
                 new ArrayList<>(),
@@ -52,4 +52,21 @@ public class UserDetailsTestService {
 
     }
 
+    public User getUserAdmin() {
+        User user = getUser();
+        user.setRoles(List.of(
+                new UserRole(UUID.randomUUID(), UserRoleEnumeration.USER),
+                new UserRole(UUID.randomUUID(), UserRoleEnumeration.ADMIN)
+        ));
+        return user;
+    }
+
+    public UserDetails getUserDetailsAdmin() {
+        User user = getUserAdmin();
+
+        Mockito.when(userRepository.findByUsername("user"))
+                .thenReturn(Optional.of(user));
+
+        return serviceSchedulerUserDetailsService.loadUserByUsername(user.getUsername());
+    }
 }

@@ -8,7 +8,11 @@ public class PasswordsValueMatchValidator implements ConstraintValidator<Passwor
 
     @Override
     public boolean isValid(UserRegisterBindingModel userRegister, ConstraintValidatorContext context) {
-        return userRegister.password().equals(userRegister.confirmPassword());
+        if (userRegister.password() != null && userRegister.confirmPassword() != null) {
+            return userRegister.password().equals(userRegister.confirmPassword());
+        }
+
+        return true;
     }
 
 }

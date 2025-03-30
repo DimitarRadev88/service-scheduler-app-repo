@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,8 +42,8 @@ public class UserController {
     }
 
     @GetMapping("/register")
-    public String getRegisterView(Model model, HttpSession session) {
-        if (session.getAttribute("user_id") != null) {
+    public String getRegisterView(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
             return "redirect:/";
         }
 
@@ -130,7 +131,7 @@ public class UserController {
         return "profile-edit";
     }
 
-    @PostMapping("/profile/{id}/edit")
+    @PutMapping("/profile/{id}/edit")
     public String editProfile(@PathVariable UUID id,
                               @Valid UserProfileEditBindingModel userProfileEditBindingModel,
                               BindingResult bindingResult,

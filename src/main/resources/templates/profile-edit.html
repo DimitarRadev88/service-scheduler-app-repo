@@ -29,7 +29,7 @@
                                 <p class="text-primary m-0 fw-bold">User Settings</p>
                             </div>
                             <div class="card-body">
-                                <form th:object="${userEdit}" th:method="post"
+                                <form th:object="${userEdit}" th:method="put"
                                       th:action="@{/profile/{id}/edit(id=${userId})}">
                                     <div class="row">
                                         <div class="col">
