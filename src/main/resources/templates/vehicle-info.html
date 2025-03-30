@@ -57,7 +57,7 @@
                                         <div class="mb-3">
                                                 <strong class="text-danger" th:errors="${engineMileageAdd}"></strong>
                                             <form th:action="@{/vehicles/{id}/add-mileage(id=${carInfo.id()})}"
-                                                  th:object="${engineMileageAdd}" method="post">
+                                                  th:object="${engineMileageAdd}" th:method="put">
                                                 <label for="newMileage"><strong>Mileage</strong></label>
                                                 <input id="newMileage" name="newMileage" type="text"
                                                        th:value="*{newMileage}"/>

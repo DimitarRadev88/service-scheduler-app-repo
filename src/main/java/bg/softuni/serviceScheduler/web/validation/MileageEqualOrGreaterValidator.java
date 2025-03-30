@@ -9,6 +9,9 @@ public class MileageEqualOrGreaterValidator implements ConstraintValidator<Milea
 
     @Override
     public boolean isValid(EngineMileageAddBindingModel mileageAdd, ConstraintValidatorContext context) {
+        if (mileageAdd.oldMileage() == null || mileageAdd.newMileage() == null) {
+            return false;
+        }
         return mileageAdd.newMileage() >= mileageAdd.oldMileage();
     }
 }
