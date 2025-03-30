@@ -12,7 +12,7 @@ import bg.softuni.serviceScheduler.carServices.vignette.service.dto.CarVignetteA
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
 import bg.softuni.serviceScheduler.user.model.User;
-import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
+import bg.softuni.serviceScheduler.user.service.dto.CarServiceAddSelectView;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
 import bg.softuni.serviceScheduler.vehicle.exception.CarNotFoundException;
@@ -159,15 +159,15 @@ public class CarServiceImpl implements CarService {
 
     @Override
     @Transactional
-    public List<CarInsuranceAddSelectView> getCarInsuranceAddSelectView(UUID id) {
+    public List<CarServiceAddSelectView> getCarInsuranceAddSelectView(UUID id) {
         return carRepository.findAllByUserId(id)
                 .stream()
                 .map(CarServiceImpl::maptoCarInsuranceAddSelectView)
                 .toList();
     }
 
-    private static CarInsuranceAddSelectView maptoCarInsuranceAddSelectView(Car car) {
-        return new CarInsuranceAddSelectView(
+    private static CarServiceAddSelectView maptoCarInsuranceAddSelectView(Car car) {
+        return new CarServiceAddSelectView(
                 car.getId(),
                 car.getModel().getBrandName() + " " + car.getModel().getModelName()
         );

@@ -14,7 +14,7 @@ import bg.softuni.serviceScheduler.carServices.vignette.service.dto.CarVignetteA
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
 import bg.softuni.serviceScheduler.user.model.User;
-import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
+import bg.softuni.serviceScheduler.user.service.dto.CarServiceAddSelectView;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
 import bg.softuni.serviceScheduler.vehicle.exception.CarNotFoundException;
@@ -660,15 +660,15 @@ public class CarServiceImplTest {
                 .when(carRepository.findAllByUserId(USER_ID))
                 .thenReturn(cars);
 
-        List<CarInsuranceAddSelectView> expected = cars
+        List<CarServiceAddSelectView> expected = cars
                 .stream()
-                .map(car -> new CarInsuranceAddSelectView(
+                .map(car -> new CarServiceAddSelectView(
                         car.getId(),
                         car.getModel().getBrandName() + " " + car.getModel().getModelName())
                 )
                 .toList();
 
-        List<CarInsuranceAddSelectView> actual = carService.getCarInsuranceAddSelectView(USER_ID);
+        List<CarServiceAddSelectView> actual = carService.getCarInsuranceAddSelectView(USER_ID);
 
         assertEquals(expected, actual);
     }

@@ -52,10 +52,6 @@ public class VignetteController {
 
     @GetMapping("/add/{id}")
     public String getVignetteAddWithVehicleInformation(@AuthenticationPrincipal UserDetails userDetails, Model model, @PathVariable UUID id) {
-        if (id.toString().isBlank()) {
-            return "redirect:/vignettes/add";
-        }
-
         if (!model.containsAttribute("vignetteAdd")) {
             model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
         }

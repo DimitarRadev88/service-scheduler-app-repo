@@ -2,15 +2,10 @@ package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.carServices.insurance.model.InsuranceValidity;
 import bg.softuni.serviceScheduler.carServices.insurance.service.InsuranceService;
-import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.User;
-import bg.softuni.serviceScheduler.user.model.UserRole;
-import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
 import bg.softuni.serviceScheduler.user.service.UserService;
-import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
+import bg.softuni.serviceScheduler.user.service.dto.CarServiceAddSelectView;
 import bg.softuni.serviceScheduler.user.service.dto.UserWithCarsInfoAddServiceView;
-import bg.softuni.serviceScheduler.user.service.impl.ServiceSchedulerUserDetailsService;
-import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.FuelType;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.vehicle.service.dto.CarInsuranceAddServiceView;
@@ -27,13 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,38 +36,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(InsuranceController.class)
 public class InsuranceControllerApiTest {
 
-    public static final UUID USER_ID = UUID.randomUUID();
     @MockitoBean
     private InsuranceService insuranceService;
-    @MockitoBean
-    private UserRepository userRepository;
     @MockitoBean
     private CarService carService;
     @MockitoBean
     private UserService userService;
-
-    ServiceSchedulerUserDetailsService serviceSchedulerUserDetailsService;
+    private UserDetailsTestService userDetailsService;
 
     @Autowired
     private MockMvc mockMvc;
 
     private User user;
     private CarInsuranceAddServiceView car;
-    UserDetails userDetails;
+    private UserDetails userDetails;
 
     @BeforeEach
     public void setup() throws Exception {
-        serviceSchedulerUserDetailsService = new ServiceSchedulerUserDetailsService(userRepository);
-        user = new User(
-                USER_ID,
-                "user",
-                "password",
-                "email",
-                LocalDateTime.now(),
-                "profile picture",
-                new ArrayList<>(),
-                List.of(new UserRole(UUID.randomUUID(), UserRoleEnumeration.USER))
-        );
+        userDetailsService = new UserDetailsTestService();
+        user = userDetailsService.getUser();
+        userDetails = userDetailsService.getUserDetailsUser();
 
         car = new CarInsuranceAddServiceView(
                 UUID.randomUUID(),
@@ -86,11 +66,6 @@ public class InsuranceControllerApiTest {
                 "CARREGNN"
         );
 
-        Mockito
-                .when(userRepository.findByUsername(user.getUsername()))
-                .thenReturn(Optional.of(user));
-
-        userDetails = serviceSchedulerUserDetailsService.loadUserByUsername("user");
     }
 
     @Test
@@ -114,8 +89,8 @@ public class InsuranceControllerApiTest {
     @Test
     public void testGetInsuranceAddViewWithVehicleInformationReturnsCorrectView() throws Exception {
         UserWithCarsInfoAddServiceView user = new UserWithCarsInfoAddServiceView(
-                USER_ID,
-                new ArrayList<>(List.of(new CarInsuranceAddSelectView(UUID.randomUUID(), "make and model")))
+                this.user.getId(),
+                new ArrayList<>(List.of(new CarServiceAddSelectView(UUID.randomUUID(), "make and model")))
         );
 
         Mockito
@@ -123,14 +98,14 @@ public class InsuranceControllerApiTest {
                 .thenReturn(user);
         Mockito
                 .when(carService.getCarInsuranceAddServiceView(car.id()))
-                        .thenReturn(car);
+                .thenReturn(car);
 
         mockMvc.perform(get("/insurances/add/" + car.id()).with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("insurance-add-with-selected-vehicle"))
                 .andExpect(model().attributeExists("insuranceAdd"))
                 .andExpect(model().attribute("user", user))
-                .andExpect(model().attribute("userId", USER_ID))
+                .andExpect(model().attribute("userId", this.user.getId()))
                 .andExpect(model().attribute("carInfo", car));
     }
 
@@ -145,30 +120,26 @@ public class InsuranceControllerApiTest {
         );
 
         String uriTemplate = String.format("/insurances/add/%s?companyName=%s&startDate=%s&insuranceValidityPeriod=%s&cost=%s",
-               car.id(), addBindingModel.companyName(), addBindingModel.startDate(), addBindingModel.insuranceValidityPeriod().name(), addBindingModel.cost());
+                car.id(), addBindingModel.companyName(), addBindingModel.startDate(), addBindingModel.insuranceValidityPeriod().name(), addBindingModel.cost());
 
         mockMvc.perform(post(uriTemplate)
-                        .with(user(userDetails)).with(csrf())
-                        .formField("companyName", addBindingModel.companyName())
-                        .formField("startDate", addBindingModel.startDate().toString())
-                        .formField("insuranceValidityPeriod", addBindingModel.insuranceValidityPeriod().name())
-                        .formField("cost", addBindingModel.cost().toString()))
-                .andExpect(status().is3xxRedirection());
+                        .with(user(userDetails)).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/vehicles/" + car.id()));
     }
 
     @Test
-    public void testSaveInsuranceAddShouldRedirectWithInvalidInsuranceAddModel() throws Exception {
+    public void testSaveInsuranceAddShouldRedirectWithErrorsWhenInsuranceAddModelIsInvalid() throws Exception {
 
         String uriTemplate = String.format("/insurances/add/%s",
                 car.id());
 
         mockMvc.perform(post(uriTemplate)
-                        .with(user(userDetails)).with(csrf())
-                        .formField("companyName", "")
-                        .formField("startDate", "")
-                        .formField("insuranceValidityPeriod", "")
-                        .formField("cost", ""))
+                        .with(user(userDetails)).with(csrf()))
                 .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("insuranceAdd"))
+                .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.insuranceAdd"))
+                .andExpect(flash().attributeCount(2))
                 .andExpect(redirectedUrl("/insurances/add/" + car.id()));
     }
 

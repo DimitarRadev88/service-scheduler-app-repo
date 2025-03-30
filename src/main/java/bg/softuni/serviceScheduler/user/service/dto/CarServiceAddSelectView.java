@@ -2,7 +2,7 @@ package bg.softuni.serviceScheduler.user.service.dto;
 
 import java.util.UUID;
 
-public record CarInsuranceAddSelectView(
+public record CarServiceAddSelectView(
         UUID id,
         String makeAndModel
 ) {

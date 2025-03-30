@@ -1,9 +1,7 @@
 package bg.softuni.serviceScheduler.vehicle.service;
 
 import bg.softuni.serviceScheduler.carServices.vignette.service.dto.CarVignetteAddServiceView;
-import bg.softuni.serviceScheduler.user.service.dto.CarInsuranceAddSelectView;
-import bg.softuni.serviceScheduler.vehicle.model.Car;
-import bg.softuni.serviceScheduler.vehicle.model.Engine;
+import bg.softuni.serviceScheduler.user.service.dto.CarServiceAddSelectView;
 import bg.softuni.serviceScheduler.vehicle.service.dto.*;
 import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.EngineMileageAddBindingModel;
@@ -36,5 +34,5 @@ public interface CarService {
 
     List<CarDashboardViewServiceModel> getAllCarDashboardServiceViewModelsByUser(UUID id);
 
-    List<CarInsuranceAddSelectView> getCarInsuranceAddSelectView(UUID id);
+    List<CarServiceAddSelectView> getCarInsuranceAddSelectView(UUID id);
 }

@@ -5,6 +5,6 @@ import java.util.UUID;
 
 public record UserWithCarsInfoAddServiceView(
         UUID id,
-        List<CarInsuranceAddSelectView> cars
+        List<CarServiceAddSelectView> cars
 ) {
 }

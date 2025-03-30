@@ -3,12 +3,10 @@ package bg.softuni.serviceScheduler.web;
 import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.user.model.User;
-import bg.softuni.serviceScheduler.user.model.UserRole;
-import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
-import bg.softuni.serviceScheduler.user.service.impl.ServiceSchedulerUserDetailsService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,10 +30,12 @@ public class HomeControllerApiTest {
     @Autowired
     private MockMvc mockMvc;
 
-    ServiceSchedulerUserDetailsService serviceSchedulerUserDetailsService;
+    private UserDetailsTestService userDetailsService;
 
-    @MockitoBean
-    private UserRepository userRepository;
+    @BeforeEach
+    void setUp() {
+        this.userDetailsService = new UserDetailsTestService();
+    }
 
     @Test
     public void testViewHomeReturnsIndexWhenUserNotLoggedIn() throws Exception {
@@ -56,27 +52,12 @@ public class HomeControllerApiTest {
 
     @Test
     public void testViewHomeReturnsHomeWhenUserLoggedIn() throws Exception {
-
-        serviceSchedulerUserDetailsService = new ServiceSchedulerUserDetailsService(userRepository);
-
-        User user = new User(
-                UUID.randomUUID(),
-                "user",
-                "password",
-                "email",
-                LocalDateTime.now(),
-                "profile picture",
-                new ArrayList<>(),
-                List.of(new UserRole(UUID.randomUUID(), UserRoleEnumeration.USER))
-        );
-        Mockito.when(userRepository.findByUsername("user"))
-                        .thenReturn(Optional.of(user));
-
-        UserDetails userDetails = serviceSchedulerUserDetailsService.loadUserByUsername("user");
+        UserDetails userDetails = userDetailsService.getUserDetailsUser();
+        User user = userDetailsService.getUser();
 
         Mockito.when(userService
-                .getUser(((ServiceSchedulerUserDetails) userDetails)
-                        .getId()))
+                        .getUser(((ServiceSchedulerUserDetails) userDetails)
+                                .getId()))
                 .thenReturn(new UserDashboardServiceModelView(
                         user.getRegistrationDate().toLocalDate(),
                         new ArrayList<>(),
