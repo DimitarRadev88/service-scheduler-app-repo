@@ -9,6 +9,7 @@ import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
 import bg.softuni.serviceScheduler.user.service.impl.ServiceSchedulerUserDetailsService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,6 @@ public class HomeControllerIT {
     @Autowired
     private ServiceSchedulerUserDetailsService userDetailsService;
     @Autowired
-    private UserService userService;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private MockMvc mockMvc;
@@ -47,6 +46,11 @@ public class HomeControllerIT {
         user = userRepository.save(new User(null, "user", "password", "eemai@asd", LocalDateTime.now(), "picture", new ArrayList<>(), new ArrayList<>(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER)))));
         userRepository.save(new User(null, "user1", "password", "eem1ai@asd", LocalDateTime.now(), "picture", new ArrayList<>(), new ArrayList<>(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER)))));
         userRepository.save(new User(null, "user2", "password", "eema2i@asd", LocalDateTime.now(), "picture", new ArrayList<>(), new ArrayList<>(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER)))));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        userRepository.deleteAll();
     }
 
     @Test
@@ -71,6 +75,5 @@ public class HomeControllerIT {
                 .andExpect(model().attribute("user", userView));
 
     }
-
 
 }
