@@ -12,7 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -34,10 +37,7 @@ public class CarModelController {
         if (!model.containsAttribute("carModelAdd")) {
             model.addAttribute("carModelAdd", new CarModelAddBindingModel(null, null));
         }
-
-        if (!model.containsAttribute("brands")) {
-            model.addAttribute("brands", carModelService.getAllBrands());
-        }
+        model.addAttribute("brands", carModelService.getAllBrands());
 
         return "add-car-model";
     }
@@ -45,31 +45,27 @@ public class CarModelController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/add/{brand}")
     public String getAddCarModelViewWithBrand(@AuthenticationPrincipal UserDetails userDetails,
-                                              Model model,
-                                              @PathVariable String brand) {
+                                              Model model, @PathVariable String brand) {
         addUserId(userDetails, model);
 
         if (!model.containsAttribute("carModelAdd")) {
             model.addAttribute("carModelAdd", new CarModelAddBindingModel(brand, null));
         }
-
-        if (!model.containsAttribute("brands")) {
-            model.addAttribute("brands", carModelService.getAllBrands());
-        }
+        model.addAttribute("brands", carModelService.getAllBrands());
 
         return "add-car-model-with-brand";
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add/{brand}")
-    public String addCarModel(@Valid CarModelAddBindingModel carModelAdd,
-                              BindingResult bindingResult,
-                              RedirectAttributes redirectAttributes,
-                              @PathVariable String brand) {
+    public String postAddCarModel(@Valid CarModelAddBindingModel carModelAdd, BindingResult bindingResult,
+                                  RedirectAttributes redirectAttributes, @PathVariable String brand) {
 
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("carModelAdd", carModelAdd);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.carModelAdd", bindingResult);
+            redirectAttributes
+                    .addFlashAttribute("carModelAdd", carModelAdd);
+            redirectAttributes
+                    .addFlashAttribute("org.springframework.validation.BindingResult.carModelAdd", bindingResult);
             return "redirect:/models/add/" + brand;
         }
 
@@ -92,13 +88,15 @@ public class CarModelController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/brands/add")
-    public String addCarBrand(@Valid CarBrandAddBindingModel carBrandAdd,
-                              BindingResult bindingResult,
-                              RedirectAttributes redirectAttributes) {
+    public String postAddCarBrand(@Valid CarBrandAddBindingModel carBrandAdd,
+                                  BindingResult bindingResult,
+                                  RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("carBrandAdd", carBrandAdd);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.carBrandAdd", bindingResult);
+            redirectAttributes
+                    .addFlashAttribute("carBrandAdd", carBrandAdd);
+            redirectAttributes
+                    .addFlashAttribute("org.springframework.validation.BindingResult.carBrandAdd", bindingResult);
             return "redirect:/models/brands/add";
         }
 

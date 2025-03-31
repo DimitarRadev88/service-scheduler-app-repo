@@ -117,12 +117,12 @@ public class CarServiceImplTest {
     private Insurance insurance;
     private Vignette vignette;
     @Captor
-    ArgumentCaptor<Car> carCaptor;
+    private ArgumentCaptor<Car> carCaptor;
     @Captor
-    ArgumentCaptor<Engine> engineCaptor;
+    private ArgumentCaptor<Engine> engineCaptor;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.carService = new CarServiceImpl(carRepository, userRepository, carModelRepository, oilChangeRepository, engineRepository, insuranceService, vignetteService);
         this.user = new User();
         this.user.setId(USER_ID);

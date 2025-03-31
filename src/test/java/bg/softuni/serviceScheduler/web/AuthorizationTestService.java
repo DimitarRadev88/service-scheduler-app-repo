@@ -17,15 +17,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class UserDetailsTestService {
+public class AuthorizationTestService {
 
 
+    static final UUID USER_ID = UUID.fromString("6a287caf-6962-4eca-a1c5-2a201734a0cb");
     private UserService userService = Mockito.mock(UserService.class);
     private UserRepository userRepository = Mockito.mock(UserRepository.class);
 
     private ServiceSchedulerUserDetailsService serviceSchedulerUserDetailsService;
 
-    public UserDetailsTestService() {
+    public AuthorizationTestService() {
         this.serviceSchedulerUserDetailsService = new ServiceSchedulerUserDetailsService(userRepository);
     }
 
@@ -40,7 +41,7 @@ public class UserDetailsTestService {
 
     public User getUser() {
         return new User(
-                UUID.fromString("6a287caf-6962-4eca-a1c5-2a201734a0cb"),
+                USER_ID,
                 "user",
                 "password",
                 "email@email",

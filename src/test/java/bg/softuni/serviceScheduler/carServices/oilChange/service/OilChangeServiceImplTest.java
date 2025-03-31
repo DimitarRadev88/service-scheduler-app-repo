@@ -65,7 +65,7 @@ public class OilChangeServiceImplTest {
     private Car car;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.oilChangeService = new OilChangeServiceImpl(oilChangeRepository, engineRepository);
         this.engine = new Engine(ENGINE_ID, ENGINE_DISPLACEMENT, ENGINE_FUEL_TYPE, ENGINE_OIL_CAPACITY,
                 ENGINE_MILEAGE, ENGINE_OIL_FILTER_NUMBER, null, new ArrayList<>());

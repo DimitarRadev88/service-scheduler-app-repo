@@ -1,6 +1,5 @@
 package bg.softuni.serviceScheduler.web;
 
-import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.model.ServiceSchedulerUserDetails;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.service.UserService;
@@ -30,11 +29,11 @@ public class HomeControllerApiTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private UserDetailsTestService userDetailsService;
+    private AuthorizationTestService userDetailsService;
 
     @BeforeEach
     void setUp() {
-        this.userDetailsService = new UserDetailsTestService();
+        this.userDetailsService = new AuthorizationTestService();
     }
 
     @Test

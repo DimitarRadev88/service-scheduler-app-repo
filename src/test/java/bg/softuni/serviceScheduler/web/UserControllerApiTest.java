@@ -4,12 +4,9 @@ import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.UserEditProfileServiceModel;
 import bg.softuni.serviceScheduler.user.service.dto.UserProfileViewServiceModel;
-import bg.softuni.serviceScheduler.web.dto.UserProfileEditBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -28,11 +25,11 @@ public class UserControllerApiTest {
     private UserService userService;
     @Autowired
     private MockMvc mockMvc;
-    private UserDetailsTestService userDetailsService;
+    private AuthorizationTestService userAuthorization;
 
     @BeforeEach
-    public void setup() {
-        userDetailsService = new UserDetailsTestService();
+    void setup() {
+        userAuthorization = new AuthorizationTestService();
     }
 
     @Test
@@ -43,7 +40,7 @@ public class UserControllerApiTest {
 
     @Test
     public void testGetRegisterViewWithLoggedInUserRedirectsHome() throws Exception {
-        mockMvc.perform(get("/register").with(user(userDetailsService.getUserDetailsUser())))
+        mockMvc.perform(get("/register").with(user(userAuthorization.getUserDetailsUser())))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
     }
@@ -89,7 +86,7 @@ public class UserControllerApiTest {
 
     @Test
     public void testGetUsersViewWithUserNotAdmin() throws Exception {
-        mockMvc.perform(get("/users").with(user(userDetailsService.getUserDetailsAdmin())))
+        mockMvc.perform(get("/users").with(user(userAuthorization.getUserDetailsAdmin())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("all-users"))
                 .andExpect(model().attributeExists("userId"))
@@ -98,9 +95,9 @@ public class UserControllerApiTest {
 
     @Test
     public void testRemoveAdminRoleRedirectsToUsersViewWhenUserIsAdmin() throws Exception {
-        User admin = userDetailsService.getUserAdmin();
+        User admin = userAuthorization.getUserAdmin();
         mockMvc.perform(put("/users/change-role/user/" + admin.getId())
-                        .with(user(userDetailsService.getUserDetailsAdmin()))
+                        .with(user(userAuthorization.getUserDetailsAdmin()))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/users"));
@@ -108,16 +105,16 @@ public class UserControllerApiTest {
 
     @Test
     public void testRemoveAdminRoleRedirectsWhenUserNotAdmin() throws Exception {
-        User admin = userDetailsService.getUserAdmin();
+        User admin = userAuthorization.getUserAdmin();
         mockMvc.perform(put("/users/change-role/user/" + admin.getId()).with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void testMakeAdminRoleRedirectsToUsersViewWhenUserIsAdmin() throws Exception {
-        User user = userDetailsService.getUser();
+        User user = userAuthorization.getUser();
         mockMvc.perform(put("/users/change-role/admin/" + user.getId())
-                        .with(user(userDetailsService.getUserDetailsAdmin()))
+                        .with(user(userAuthorization.getUserDetailsAdmin()))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/users"));
@@ -125,7 +122,7 @@ public class UserControllerApiTest {
 
     @Test
     public void testMakeAdminRoleRedirectsWhenUserNotAdmin() throws Exception {
-        User user = userDetailsService.getUser();
+        User user = userAuthorization.getUser();
 
         mockMvc.perform(put("/users/change-role/admin/" + user.getId()).with(csrf()))
                 .andExpect(status().isUnauthorized());
@@ -133,7 +130,7 @@ public class UserControllerApiTest {
 
     @Test
     public void testGetProfileViewReturnsCorrectProfileView() throws Exception {
-        User user = userDetailsService.getUser();
+        User user = userAuthorization.getUser();
         UserProfileViewServiceModel userView = new UserProfileViewServiceModel(
                 user.getUsername(),
                 user.getEmail(),
@@ -143,7 +140,7 @@ public class UserControllerApiTest {
         when(userService.getUserProfileView(user.getId()))
                 .thenReturn(userView);
 
-        mockMvc.perform(get("/profile").with(user(userDetailsService.getUserDetailsUser())))
+        mockMvc.perform(get("/profile").with(user(userAuthorization.getUserDetailsUser())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("profile"))
                 .andExpect(model().attribute("userId", user.getId()))
@@ -153,7 +150,7 @@ public class UserControllerApiTest {
     @Test
 
     public void testGetProfileEditViewReturnsCorrectProfileEditView() throws Exception {
-        User user = userDetailsService.getUser();
+        User user = userAuthorization.getUser();
 
         UserProfileViewServiceModel userView = new UserProfileViewServiceModel(
                 user.getUsername(),
@@ -172,7 +169,7 @@ public class UserControllerApiTest {
         when(userService.getUserProfileView(user.getId()))
                 .thenReturn(userView);
 
-        mockMvc.perform(get("/profile/edit").with(user(userDetailsService.getUserDetailsUser())))
+        mockMvc.perform(get("/profile/edit").with(user(userAuthorization.getUserDetailsUser())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("profile-edit"))
                 .andExpect(model().attributeExists("userEdit"))
@@ -183,13 +180,13 @@ public class UserControllerApiTest {
 
     @Test
     public void testEditProfileRedirectsBackWithErrorsWhenInvalidUserProfileEditBindingModel() throws Exception {
-        User user = userDetailsService.getUser();
+        User user = userAuthorization.getUser();
 
 
         String urlTemplate = String.format("/profile/%s/edit?username=%s&email=%s&profilePictureUrl=%s",
                 user.getId(), "", "", "");
 
-        mockMvc.perform(put(urlTemplate).with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(put(urlTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/profile/edit"))
                 .andExpect(flash().attributeCount(2))
@@ -199,13 +196,13 @@ public class UserControllerApiTest {
 
     @Test
     public void testEditProfileRedirectsToProfileViewWithValidUserProfileEditBindingModel() throws Exception {
-        User user = userDetailsService.getUser();
+        User user = userAuthorization.getUser();
 
 
         String urlTemplate = String.format("/profile/%s/edit?username=%s&email=%s&profilePictureUrl=%s",
                 user.getId(), user.getUsername(), user.getEmail(), user.getProfilePictureURL());
 
-        mockMvc.perform(put(urlTemplate).with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(put(urlTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/profile"))
                 .andExpect(flash().attributeCount(0));

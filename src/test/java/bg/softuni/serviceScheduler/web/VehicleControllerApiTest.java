@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(VehicleController.class)
 public class VehicleControllerApiTest {
 
-    private UserDetailsTestService userDetailsService;
+    private AuthorizationTestService userAuthorization;
     @MockitoBean
     private CarService carService;
     @MockitoBean
@@ -37,21 +37,21 @@ public class VehicleControllerApiTest {
     @MockitoBean
     private OilChangeService oilChangeService;
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        userDetailsService = new UserDetailsTestService();
+        userAuthorization = new AuthorizationTestService();
     }
 
     @Test
     public void testGetVehicleAddPageReturnsCorrectPageView() throws Exception {
 
-        mockMvc.perform(get("/vehicles/add").with(user(userDetailsService.getUserDetailsUser())))
+        mockMvc.perform(get("/vehicles/add").with(user(userAuthorization.getUserDetailsUser())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("vehicle-add"))
                 .andExpect(model().attributeExists("brands"))
-                .andExpect(model().attribute("userId", userDetailsService.getUser().getId()));
+                .andExpect(model().attribute("userId", userAuthorization.getUser().getId()));
     }
 
     @Test
@@ -59,13 +59,13 @@ public class VehicleControllerApiTest {
         String brand = "BMW";
         CarAddBindingModel vehicleAdd = new CarAddBindingModel(brand);
 
-        mockMvc.perform(get("/vehicles/add/" + brand).with(user(userDetailsService.getUserDetailsUser())))
+        mockMvc.perform(get("/vehicles/add/" + brand).with(user(userAuthorization.getUserDetailsUser())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("vehicle-add-with-brand"))
                 .andExpect(model().attributeExists("brands"))
                 .andExpect(model().attributeExists("models"))
                 .andExpect(model().attribute("vehicleAdd", vehicleAdd))
-                .andExpect(model().attribute("userId", userDetailsService.getUser().getId()));
+                .andExpect(model().attribute("userId", userAuthorization.getUser().getId()));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class VehicleControllerApiTest {
                 vehicleAdd.registration(), " ", " ",
                 vehicleAdd.displacement(), vehicleAdd.oilCapacity(), vehicleAdd.mileage(), vehicleAdd.oilFilterNumber());
 
-        mockMvc.perform(post(urlTemplate).with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(post(urlTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/add/" + vehicleAdd.brand()))
                 .andExpect(flash().attributeCount(2))
@@ -110,7 +110,7 @@ public class VehicleControllerApiTest {
                 vehicleAdd.vin(), vehicleAdd.registration(), vehicleAdd.category().name(), vehicleAdd.fuelType().name(),
                 vehicleAdd.displacement(), vehicleAdd.oilCapacity(), vehicleAdd.mileage(), vehicleAdd.oilFilterNumber());
 
-        mockMvc.perform(post(urlTemplate).with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(post(urlTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + carId))
                 .andExpect(flash().attributeCount(0));
@@ -136,10 +136,10 @@ public class VehicleControllerApiTest {
                 .thenReturn(car);
 
 
-        mockMvc.perform(get("/vehicles/" + car.id()).with(user(userDetailsService.getUserDetailsUser())))
+        mockMvc.perform(get("/vehicles/" + car.id()).with(user(userAuthorization.getUserDetailsUser())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("vehicle-info"))
-                .andExpect(model().attribute("userId", userDetailsService.getUser().getId()))
+                .andExpect(model().attribute("userId", userAuthorization.getUser().getId()))
                 .andExpect(model().attributeExists("carInfo"))
                 .andExpect(model().attributeExists("engineMileageAdd"));
     }
@@ -149,7 +149,7 @@ public class VehicleControllerApiTest {
         UUID carId = UUID.randomUUID();
 
         mockMvc.perform(put("/vehicles/" + carId + "/add-mileage")
-                        .with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + carId))
                 .andExpect(flash().attributeCount(2))
@@ -162,7 +162,7 @@ public class VehicleControllerApiTest {
         UUID carId = UUID.randomUUID();
 
         mockMvc.perform(put("/vehicles/" + carId + "/add-mileage?oldMileage=1000&newMileage=10001")
-                        .with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + carId))
                 .andExpect(flash().attributeCount(0));
@@ -189,10 +189,10 @@ public class VehicleControllerApiTest {
                 .thenReturn(engine);
 
         mockMvc.perform(get("/vehicles/engines/" + carView.id() + "/oil-changes/add")
-                        .with(user(userDetailsService.getUserDetailsUser())))
+                        .with(user(userAuthorization.getUserDetailsUser())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("vehicle-oil-change-add"))
-                .andExpect(model().attribute("userId", userDetailsService.getUser().getId()))
+                .andExpect(model().attribute("userId", userAuthorization.getUser().getId()))
                 .andExpect(model().attribute("engineView", engine))
                 .andExpect(model().attributeExists("oilChangeAdd"));
     }
@@ -202,7 +202,7 @@ public class VehicleControllerApiTest {
         UUID engineId = UUID.randomUUID();
 
         String uriTemplate = String.format("/vehicles/engines/%s/oil-changes/add", engineId);
-        mockMvc.perform(post(uriTemplate).with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(post(uriTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:" + uriTemplate))
                 .andExpect(flash().attributeCount(2))
@@ -227,7 +227,7 @@ public class VehicleControllerApiTest {
         when(oilChangeService.doAdd(Mockito.any(), Mockito.any()))
                 .thenReturn(carId);
 
-        mockMvc.perform(post(uriTemplate).with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(post(uriTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + carId))
                 .andExpect(flash().attributeCount(0));
@@ -238,17 +238,17 @@ public class VehicleControllerApiTest {
         UUID carId = UUID.randomUUID();
 
         mockMvc.perform(delete("/vehicles/" + carId)
-                        .with(user(userDetailsService.getUserDetailsUser())).with(csrf()))
+                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
     }
 
     @Test
     public void testGetAllServicesViewReturnsCorrectView() throws Exception {
-        when(carService.getAllServicesCostByUser(userDetailsService.getUser().getId()))
+        when(carService.getAllServicesCostByUser(userAuthorization.getUser().getId()))
                 .thenReturn(BigDecimal.TEN);
 
-        mockMvc.perform(get("/vehicles/services").with(user(userDetailsService.getUserDetailsUser())))
+        mockMvc.perform(get("/vehicles/services").with(user(userAuthorization.getUserDetailsUser())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("vehicle-all-services"))
                 .andExpect(model().attributeExists("services"))

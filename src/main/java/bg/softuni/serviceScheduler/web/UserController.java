@@ -117,15 +117,18 @@ public class UserController {
 
     @GetMapping("/profile/edit")
     public String getProfileEditView(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        UUID id = null;
         if (userDetails instanceof ServiceSchedulerUserDetails) {
-            UUID id = ((ServiceSchedulerUserDetails) userDetails).getId();
+            id = ((ServiceSchedulerUserDetails) userDetails).getId();
             model.addAttribute("userId", id);
-            if (!model.containsAttribute("userEdit")) {
-                model.addAttribute("user", userService.getUserProfileView(id));
-                UserEditProfileServiceModel user = userService.getUserEditProfileServiceModel(id);
-                model.addAttribute("profilePicture", user.profilePictureUrl());
-                model.addAttribute("userEdit", new UserProfileEditBindingModel(user.username(), user.email(), user.profilePictureUrl()));
-            }
+        }
+
+        UserEditProfileServiceModel user = userService.getUserEditProfileServiceModel(id);
+        model.addAttribute("user", userService.getUserProfileView(id));
+        model.addAttribute("profilePicture", user.profilePictureUrl());
+
+        if (!model.containsAttribute("userEdit")) {
+            model.addAttribute("userEdit", new UserProfileEditBindingModel(user.username(), user.email(), user.profilePictureUrl()));
         }
 
         return "profile-edit";

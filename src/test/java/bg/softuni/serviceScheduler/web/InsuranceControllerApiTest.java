@@ -42,7 +42,7 @@ public class InsuranceControllerApiTest {
     private CarService carService;
     @MockitoBean
     private UserService userService;
-    private UserDetailsTestService userDetailsService;
+    private AuthorizationTestService userAuthorization;
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,10 +52,10 @@ public class InsuranceControllerApiTest {
     private UserDetails userDetails;
 
     @BeforeEach
-    public void setup() throws Exception {
-        userDetailsService = new UserDetailsTestService();
-        user = userDetailsService.getUser();
-        userDetails = userDetailsService.getUserDetailsUser();
+    void setup() throws Exception {
+        userAuthorization = new AuthorizationTestService();
+        user = userAuthorization.getUser();
+        userDetails = userAuthorization.getUserDetailsUser();
 
         car = new CarInsuranceAddServiceView(
                 UUID.randomUUID(),

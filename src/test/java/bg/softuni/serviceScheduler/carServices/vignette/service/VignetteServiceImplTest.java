@@ -62,7 +62,7 @@ public class VignetteServiceImplTest {
     private ArgumentCaptor<List<Vignette>> vignetteListCaptor;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         car = new Car(CAR_ID, null, null, CAR_VIN, CAR_YEAR, CAR_CATEGORY, null, CAR_REGISTRATION, null, new ArrayList<>());
         vignetteService = new VignetteServiceImpl(vignetteRepository, carRepository, userRepository);
         vignetteAdd = new VignetteAddBindingModel(VIGNETTE_START_DATE, VIGNETTE_VALIDITY);

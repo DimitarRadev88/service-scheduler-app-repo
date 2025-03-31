@@ -39,22 +39,28 @@ public class VignetteController {
 
     @GetMapping("/add")
     public String getVignetteAddView(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        if (!model.containsAttribute("vignetteAdd")) {
-            model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
+        addVignetteAddModel(model);
+
+        UUID id = null;
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            id = ((ServiceSchedulerUserDetails) userDetails).getId();
         }
 
-        UUID id = ((ServiceSchedulerUserDetails) userDetails).getId();
         UserWithCarsInfoAddServiceView user = userService.getUserWithCarsInfoAddServiceView(id);
         model.addAttribute("user", user);
 
         return "vignette-add";
     }
 
-    @GetMapping("/add/{id}")
-    public String getVignetteAddWithVehicleInformation(@AuthenticationPrincipal UserDetails userDetails, Model model, @PathVariable UUID id) {
+    private static void addVignetteAddModel(Model model) {
         if (!model.containsAttribute("vignetteAdd")) {
             model.addAttribute("vignetteAdd", new VignetteAddBindingModel(null, null));
         }
+    }
+
+    @GetMapping("/add/{id}")
+    public String getVignetteAddWithVehicleInformation(@AuthenticationPrincipal UserDetails userDetails, Model model, @PathVariable UUID id) {
+        addVignetteAddModel(model);
 
         if (userDetails instanceof ServiceSchedulerUserDetails) {
             model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());

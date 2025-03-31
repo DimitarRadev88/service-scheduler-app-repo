@@ -39,16 +39,16 @@ public class VignetteControllerApiTest {
     private UserService userService;
     @Autowired
     private MockMvc mvc;
-    private UserDetailsTestService userDetailsService;
+    private AuthorizationTestService userAuthorization;
     private User user;
     private CarVignetteAddServiceView car;
     private UserDetails userDetails;
 
     @BeforeEach
-    public void setup() throws Exception {
-        userDetailsService = new UserDetailsTestService();
-        user = userDetailsService.getUser();
-        userDetails = userDetailsService.getUserDetailsUser();
+    void setup() throws Exception {
+        userAuthorization = new AuthorizationTestService();
+        user = userAuthorization.getUser();
+        userDetails = userAuthorization.getUserDetailsUser();
 
         car = new CarVignetteAddServiceView(
                 UUID.randomUUID(),

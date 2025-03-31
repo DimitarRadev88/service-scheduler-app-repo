@@ -59,7 +59,7 @@ public class InsuranceServiceImplTest {
     private ArgumentCaptor<List<Insurance>> insuranceCaptorList;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         insuranceService = new InsuranceServiceImpl(insuranceRepository, carRepository, userRepository);
         insuranceAdd = new InsuranceAddBindingModel(INSURANCE_COMPANY, INSURANCE_START_DATE, INSURANCE_VALIDITY, INSURANCE_COST);
         insurance = new Insurance(INSURANCE_ID, INSURANCE_ADD_DATE, INSURANCE_COST, INSURANCE_COMPANY, INSURANCE_START_DATE, INSURANCE_END_DATE, INSURANCE_VALIDITY, INSURANCE_IS_VALID, null);

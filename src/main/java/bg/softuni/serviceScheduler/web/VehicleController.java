@@ -40,9 +40,7 @@ public class VehicleController {
 
     @GetMapping("/add")
     public String getVehicleAddPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        if (userDetails instanceof ServiceSchedulerUserDetails) {
-            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
-        }
+        addUserId(userDetails, model);
 
         model.addAttribute("brands", carModelService.getAllBrands());
 
@@ -51,9 +49,7 @@ public class VehicleController {
 
     @GetMapping("/add/{brand}")
     public String getVehicleAddPageWithBrand(@AuthenticationPrincipal UserDetails userDetails, Model model, @PathVariable String brand) {
-        if (userDetails instanceof ServiceSchedulerUserDetails) {
-            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
-        }
+        addUserId(userDetails, model);
 
         if (!model.containsAttribute("vehicleAdd")) {
             CarAddBindingModel vehicleAdd = new CarAddBindingModel(brand);
@@ -89,9 +85,7 @@ public class VehicleController {
 
     @GetMapping("/{id}")
     public String getVehicleDetails(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id, Model model) {
-        if (userDetails instanceof ServiceSchedulerUserDetails) {
-            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
-        }
+        addUserId(userDetails, model);
 
         CarInfoServiceViewModel carInfo = carService.getCarInfoServiceViewModel(id);
 
@@ -122,9 +116,7 @@ public class VehicleController {
 
     @GetMapping("/engines/{id}/oil-changes/add")
     public String getAddOilChangeView(@AuthenticationPrincipal UserDetails userDetails, @PathVariable UUID id, Model model) {
-        if (userDetails instanceof ServiceSchedulerUserDetails) {
-            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
-        }
+        addUserId(userDetails, model);
 
         model.addAttribute("engineView", carService.getEngineOilChangeAddViewModel(id));
 
@@ -133,6 +125,12 @@ public class VehicleController {
         }
 
         return "vehicle-oil-change-add";
+    }
+
+    private static void addUserId(UserDetails userDetails, Model model) {
+        if (userDetails instanceof ServiceSchedulerUserDetails) {
+            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
+        }
     }
 
     @PostMapping("/engines/{id}/oil-changes/add")
