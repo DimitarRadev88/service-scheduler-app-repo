@@ -2,18 +2,12 @@ package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
-import bg.softuni.serviceScheduler.web.dto.CarBrandAddBindingModel;
-import bg.softuni.serviceScheduler.web.dto.CarModelAddBindingModel;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
@@ -24,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Slf4j
 @WebMvcTest(CarModelController.class)
 public class CarModelControllerApiTest {
 
