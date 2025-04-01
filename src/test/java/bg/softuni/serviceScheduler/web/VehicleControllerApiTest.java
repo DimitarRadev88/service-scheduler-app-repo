@@ -72,15 +72,20 @@ public class VehicleControllerApiTest {
     public void testAddNewVehicleWithBrandRedirectsBackWhenInvalidCarAddBingingModel() throws Exception {
         CarAddBindingModel vehicleAdd = new CarAddBindingModel("BMW");
 
-        String urlTemplate = String.format("""
-                        /vehicles/add/%s?brand=%s&model=%s&trim=%s&year=%s&vin=%s&registration=%s
-                        &category=%s&fuelType=%s&displacement=%s&oilCapacity=%s&mileage=%s&oilFilterNumber=%s
-                        """,
-                vehicleAdd.brand(), vehicleAdd.brand(), vehicleAdd.model(), vehicleAdd.trim(), " ", vehicleAdd.vin(),
-                vehicleAdd.registration(), " ", " ",
-                vehicleAdd.displacement(), vehicleAdd.oilCapacity(), vehicleAdd.mileage(), vehicleAdd.oilFilterNumber());
-
-        mockMvc.perform(post(urlTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(post("/vehicles/add/" + vehicleAdd.brand())
+                        .param("brand", vehicleAdd.brand())
+                        .param("model", vehicleAdd.model())
+                        .param("trim", vehicleAdd.trim())
+                        .param("year", vehicleAdd.year().toString())
+                        .param("vin", vehicleAdd.vin())
+                        .param("registration", vehicleAdd.registration())
+                        .param("category", vehicleAdd.category().name())
+                        .param("fuelType", vehicleAdd.fuelType().name())
+                        .param("displacement", vehicleAdd.displacement().toString())
+                        .param("oilCapacity", vehicleAdd.oilCapacity().toString())
+                        .param("mileage", vehicleAdd.mileage().toString())
+                        .param("oilFilterNumber", vehicleAdd.oilFilterNumber())
+                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/add/" + vehicleAdd.brand()))
                 .andExpect(flash().attributeCount(2))
@@ -102,15 +107,20 @@ public class VehicleControllerApiTest {
         when(carService.doAdd(Mockito.any(), Mockito.any()))
                 .thenReturn(carId);
 
-        String urlTemplate = String.format("""
-                        /vehicles/add/%s?brand=%s&model=%s&trim=%s&year=%s&vin=%s&registration=%s
-                        &category=%s&fuelType=%s&displacement=%s&oilCapacity=%s&mileage=%s&oilFilterNumber=%s
-                        """,
-                vehicleAdd.brand(), vehicleAdd.brand(), vehicleAdd.model(), vehicleAdd.trim(), vehicleAdd.year().toString(),
-                vehicleAdd.vin(), vehicleAdd.registration(), vehicleAdd.category().name(), vehicleAdd.fuelType().name(),
-                vehicleAdd.displacement(), vehicleAdd.oilCapacity(), vehicleAdd.mileage(), vehicleAdd.oilFilterNumber());
-
-        mockMvc.perform(post(urlTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(post("/vehicles/add/" + vehicleAdd.brand())
+                        .param("brand", vehicleAdd.brand())
+                        .param("model", vehicleAdd.model())
+                        .param("trim", vehicleAdd.trim())
+                        .param("year", vehicleAdd.year().toString())
+                        .param("vin", vehicleAdd.vin())
+                        .param("registration", vehicleAdd.registration())
+                        .param("category", vehicleAdd.category().name())
+                        .param("fuelType", vehicleAdd.fuelType().name())
+                        .param("displacement", vehicleAdd.displacement().toString())
+                        .param("oilCapacity", vehicleAdd.oilCapacity().toString())
+                        .param("mileage", vehicleAdd.mileage().toString())
+                        .param("oilFilterNumber", vehicleAdd.oilFilterNumber())
+                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + carId))
                 .andExpect(flash().attributeCount(0));
@@ -161,7 +171,9 @@ public class VehicleControllerApiTest {
     public void testChangeVehicleMileageRedirectsToVehicleDetailsWhenEngineMileageAddBindingModelValid() throws Exception {
         UUID carId = UUID.randomUUID();
 
-        mockMvc.perform(put("/vehicles/" + carId + "/add-mileage?oldMileage=1000&newMileage=10001")
+        mockMvc.perform(put("/vehicles/" + carId + "/add-mileage")
+                        .param("oldMileage", "1000")
+                        .param("newMileage", "1001")
                         .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + carId))
@@ -216,18 +228,15 @@ public class VehicleControllerApiTest {
 
         UUID carId = UUID.randomUUID();
 
-        String uriTemplate = String.format(
-                "/vehicles/engines/%s/oil-changes/add?changeDate=%s&changeMileage=%s&changeInterval=%s&cost=%s",
-                engineId,
-                LocalDate.now(),
-                "100000",
-                "10000",
-                "100");
-
         when(oilChangeService.doAdd(Mockito.any(), Mockito.any()))
                 .thenReturn(carId);
 
-        mockMvc.perform(post(uriTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(post("/vehicles/engines/" + engineId + "/oil-changes/add")
+                        .param("changeDate", LocalDate.now().toString())
+                        .param("changeMileage", "100000")
+                        .param("changeInterval", "10000")
+                        .param("cost", "100")
+                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + carId))
                 .andExpect(flash().attributeCount(0));

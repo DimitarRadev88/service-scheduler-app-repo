@@ -99,10 +99,8 @@ public class VignetteControllerApiTest {
 
     @Test
     public void testPostVignetteAddRedirectsWithErrorsWhenBindingModelIsInvalid() throws Exception {
-        String url = String.format("/vignettes/add/%s?startDate=%s&validity=%s",
-                car.id(), null, null);
-
-        mvc.perform(post(url).with(user(userDetails)).with(csrf()))
+        mvc.perform(post("/vignettes/add/" + car.id())
+                        .with(user(userDetails)).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vignettes/add/" + car.id()))
                 .andExpect(flash().attributeExists("vignetteAdd"))
@@ -113,10 +111,11 @@ public class VignetteControllerApiTest {
     @Test
     public void testPostVignetteAddRedirectsToVehiclesWhenBindingModelIsValid() throws Exception {
         VignetteAddBindingModel vignetteAdd = new VignetteAddBindingModel(LocalDate.now(), VignetteValidity.WEEKEND);
-        String url = String.format("/vignettes/add/%s?startDate=%s&validity=%s",
-                car.id(), vignetteAdd.startDate(), vignetteAdd.validity());
 
-        mvc.perform(post(url).with(user(userDetails)).with(csrf()))
+        mvc.perform(post("/vignettes/add/" + car.id())
+                        .param("startDate", vignetteAdd.startDate().toString())
+                        .param("validity", vignetteAdd.validity().name())
+                        .with(user(userDetails)).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + car.id()))
                 .andExpect(flash().attributeCount(0));

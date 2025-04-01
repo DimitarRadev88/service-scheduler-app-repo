@@ -5,7 +5,6 @@ import bg.softuni.serviceScheduler.user.dao.UserRepository;
 import bg.softuni.serviceScheduler.user.dao.UserRoleRepository;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
-import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
 import bg.softuni.serviceScheduler.user.service.impl.ServiceSchedulerUserDetailsService;

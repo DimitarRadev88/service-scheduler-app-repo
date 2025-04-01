@@ -119,10 +119,11 @@ public class InsuranceControllerApiTest {
                 new BigDecimal("0.5")
         );
 
-        String uriTemplate = String.format("/insurances/add/%s?companyName=%s&startDate=%s&insuranceValidityPeriod=%s&cost=%s",
-                car.id(), addBindingModel.companyName(), addBindingModel.startDate(), addBindingModel.insuranceValidityPeriod().name(), addBindingModel.cost());
-
-        mockMvc.perform(post(uriTemplate)
+        mockMvc.perform(post("/insurances/add/" + car.id())
+                        .param("companyName", addBindingModel.companyName())
+                        .param("startDate", addBindingModel.startDate().toString())
+                        .param("insuranceValidityPeriod", addBindingModel.insuranceValidityPeriod().name())
+                        .param("cost", addBindingModel.cost().toString())
                         .with(user(userDetails)).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/vehicles/" + car.id()));

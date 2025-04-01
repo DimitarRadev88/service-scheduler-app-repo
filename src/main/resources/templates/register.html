@@ -20,7 +20,8 @@
                             </label>
                             <label for="username" th:unless="(${#fields.hasErrors('username')})" class="form-label">
                                 <strong th:unless="${usernameException}">Username</strong>
-                                <strong th:if="${usernameException}" th:text="${usernameException}" class="text-danger mb-4"></strong>
+                                <strong th:if="${usernameException}" th:text="${usernameException}"
+                                        class="text-danger mb-4"></strong>
                             </label>
                             <input class="form-control form-control-user" type="text" id="username"
                                    placeholder="Username" name="Username" th:field="*{username}">
@@ -31,7 +32,8 @@
                             </label>
                             <label for="email" th:unless="${#fields.hasErrors('email')}" class="form-label">
                                 <strong th:unless="${emailException}">Email</strong>
-                                <strong th:if="${emailException}" th:text="${emailException}" class="text-danger mb-4"></strong>
+                                <strong th:if="${emailException}" th:text="${emailException}"
+                                        class="text-danger mb-4"></strong>
                             </label>
                             <input class="form-control form-control-user" type="email" id="email"
                                    aria-describedby="emailHelp" placeholder="Email Address" name="email"
@@ -50,8 +52,8 @@
                         <div class="mb-3 row">
                             <label for="confirmPassword" th:if="${#fields.hasErrors('confirmPassword')}"
                                    class="form-label text-danger">
-                                    <strong th:text="${#fields.errors('confirmPassword').getFirst()}"></strong>
-                                </label>
+                                <strong th:text="${#fields.errors('confirmPassword').getFirst()}"></strong>
+                            </label>
                             <label for="confirmPassword" th:unless="${#fields.hasErrors('confirmPassword')}"
                                    class="form-label">
                                 <strong>Confirm password</strong>

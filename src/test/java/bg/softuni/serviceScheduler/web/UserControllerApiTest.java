@@ -70,14 +70,16 @@ public class UserControllerApiTest {
         UserRegisterBindingModel userRegisterBindingModel = new UserRegisterBindingModel(
                 "username", "email@email", "password", "password"
         );
-        String urlTemplate = String.format("/register?username=%s&email=%s&password=%s&confirmPassword=%s",
-                userRegisterBindingModel.username(), userRegisterBindingModel.email(),
-                userRegisterBindingModel.password(), userRegisterBindingModel.confirmPassword());
 
         when(userService.doRegister(userRegisterBindingModel))
                 .thenReturn("username");
 
-        mockMvc.perform(post(urlTemplate).with(user("guest")).with(csrf()))
+        mockMvc.perform(post("/register")
+                        .param("username", userRegisterBindingModel.username())
+                        .param("email", userRegisterBindingModel.email())
+                        .param("password", userRegisterBindingModel.password())
+                        .param("confirmPassword", userRegisterBindingModel.confirmPassword())
+                        .with(user("guest")).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/login"))
                 .andExpect(flash().attribute("username", "username"))
@@ -182,11 +184,11 @@ public class UserControllerApiTest {
     public void testEditProfileRedirectsBackWithErrorsWhenInvalidUserProfileEditBindingModel() throws Exception {
         User user = userAuthorization.getUser();
 
-
-        String urlTemplate = String.format("/profile/%s/edit?username=%s&email=%s&profilePictureUrl=%s",
-                user.getId(), "", "", "");
-
-        mockMvc.perform(put(urlTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(put("/profile/" + user.getId() + "/edit")
+                        .param("username", "")
+                        .param("email", "")
+                        .param("profilePictureUrl", "")
+                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/profile/edit"))
                 .andExpect(flash().attributeCount(2))
@@ -198,11 +200,11 @@ public class UserControllerApiTest {
     public void testEditProfileRedirectsToProfileViewWithValidUserProfileEditBindingModel() throws Exception {
         User user = userAuthorization.getUser();
 
-
-        String urlTemplate = String.format("/profile/%s/edit?username=%s&email=%s&profilePictureUrl=%s",
-                user.getId(), user.getUsername(), user.getEmail(), user.getProfilePictureURL());
-
-        mockMvc.perform(put(urlTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
+        mockMvc.perform(put("/profile/" + user.getId() + "/edit")
+                        .param("username", user.getUsername())
+                        .param("email", user.getEmail())
+                        .param("profilePictureUrl", user.getProfilePictureURL())
+                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/profile"))
                 .andExpect(flash().attributeCount(0));

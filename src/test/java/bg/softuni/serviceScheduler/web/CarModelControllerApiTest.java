@@ -63,8 +63,9 @@ public class CarModelControllerApiTest {
     public void testGetAddCarModelViewWithBrandReturnsCorrectViewWhenUserIsAuthorized() throws Exception {
         when(carModelService.getAllBrands())
                 .thenReturn(BRANDS);
+        CarBrandNameDto brand = BRANDS.getFirst();
 
-        mockMvc.perform(get("/models/add/" + BRANDS.getFirst()).with(user(userAuthorization.getUserDetailsAdmin())))
+        mockMvc.perform(get("/models/add/" + brand).with(user(userAuthorization.getUserDetailsAdmin())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("add-car-model-with-brand"))
                 .andExpect(model().attribute("userId", AuthorizationTestService.USER_ID))
@@ -90,11 +91,12 @@ public class CarModelControllerApiTest {
     public void testPostAddCarModelRedirectsHomeWhenCarModelAddBindingModelIsValid() throws Exception {
         String brand = BRANDS.getFirst().name();
 
-        mockMvc.perform(post("/models/add/" + brand + "?brand=" + brand + "&" + "model=model")
+        mockMvc.perform(post("/models/add/" + brand)
                         .with(user(userAuthorization.getUserDetailsAdmin()))
+                        .param("model", "model")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"))
+                .andExpect(redirectedUrl("/"))
                 .andExpect(flash().attributeCount(0));
     }
 
@@ -116,7 +118,8 @@ public class CarModelControllerApiTest {
 
     @Test
     public void testPostAddCarBrandRedirectsWithErrorsWhenCarBrandAddBindingModelIsInvalid() throws Exception {
-        mockMvc.perform(post("/models/brands/add?name=")
+        mockMvc.perform(post("/models/brands/add")
+                        .param("name", "")
                         .with(user(userAuthorization.getUserDetailsAdmin()))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -129,7 +132,8 @@ public class CarModelControllerApiTest {
     @Test
     public void testPostAddCarBrandRedirectsToAddModelWithNewBrandWhenCarBrandAddBindingModelIsValid() throws Exception {
         String brand = BRANDS.getFirst().name();
-        mockMvc.perform(post("/models/brands/add?name=" + brand)
+        mockMvc.perform(post("/models/brands/add")
+                        .param("name", brand)
                         .with(user(userAuthorization.getUserDetailsAdmin()))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
