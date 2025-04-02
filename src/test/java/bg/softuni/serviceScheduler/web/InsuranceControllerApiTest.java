@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.web;
 
+import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.carServices.insurance.model.InsuranceValidity;
 import bg.softuni.serviceScheduler.carServices.insurance.service.InsuranceService;
 import bg.softuni.serviceScheduler.user.model.User;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,6 +44,7 @@ public class InsuranceControllerApiTest {
     private CarService carService;
     @MockitoBean
     private UserService userService;
+
     private AuthorizationTestService userAuthorization;
 
     @Autowired

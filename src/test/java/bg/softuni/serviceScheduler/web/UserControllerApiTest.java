@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.web;
 
+import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.user.model.User;
 import bg.softuni.serviceScheduler.user.service.UserService;
 import bg.softuni.serviceScheduler.user.service.dto.UserEditProfileServiceModel;
@@ -23,6 +24,8 @@ public class UserControllerApiTest {
 
     @MockitoBean
     private UserService userService;
+    @MockitoBean
+    private CarModelService carService;
     @Autowired
     private MockMvc mockMvc;
     private AuthorizationTestService userAuthorization;

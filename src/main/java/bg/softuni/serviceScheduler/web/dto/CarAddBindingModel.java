@@ -2,15 +2,11 @@ package bg.softuni.serviceScheduler.web.dto;
 
 import bg.softuni.serviceScheduler.vehicle.model.FuelType;
 import bg.softuni.serviceScheduler.vehicle.model.VehicleCategory;
-import bg.softuni.serviceScheduler.web.validation.UniqueRegistration;
-import bg.softuni.serviceScheduler.web.validation.UniqueVin;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.Year;
 
-@UniqueVin
-@UniqueRegistration
 public record CarAddBindingModel(
         @NotBlank(message = "You must select vehicle brand")
         String brand,

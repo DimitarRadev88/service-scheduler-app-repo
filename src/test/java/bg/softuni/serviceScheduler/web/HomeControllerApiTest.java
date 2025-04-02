@@ -25,7 +25,6 @@ public class HomeControllerApiTest {
 
     @MockitoBean
     private UserService userService;
-
     @Autowired
     private MockMvc mockMvc;
 

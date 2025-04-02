@@ -17,6 +17,8 @@ import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.dao.EngineRepository;
 import bg.softuni.serviceScheduler.vehicle.exception.CarNotFoundException;
 import bg.softuni.serviceScheduler.vehicle.exception.EngineNotFoundException;
+import bg.softuni.serviceScheduler.vehicle.exception.VehicleRegistrationAlreadyExistsException;
+import bg.softuni.serviceScheduler.vehicle.exception.VinNumberAlreadyExistsException;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
@@ -73,6 +75,14 @@ public class CarServiceImpl implements CarService {
     @Transactional
     public UUID doAdd(CarAddBindingModel vehicleAdd, UUID userId) {
         User user = getUser(userId);
+
+        if (carRepository.existsByVin(vehicleAdd.vin())) {
+            throw new VinNumberAlreadyExistsException("Car with vin " + vehicleAdd.vin() + " already exists");
+        }
+
+        if (carRepository.existsByRegistration(vehicleAdd.registration())) {
+            throw new VehicleRegistrationAlreadyExistsException("Vehicle with registration " + vehicleAdd.registration() + " already exists");
+        }
 
         Car car = map(vehicleAdd);
 
