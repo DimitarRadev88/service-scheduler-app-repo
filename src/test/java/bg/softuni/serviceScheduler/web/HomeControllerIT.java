@@ -65,7 +65,7 @@ public class HomeControllerIT {
 
     @Test
     public void testViewHomeReturnsHomeWhenUserIsLoggedIn() throws Exception {
-        UserDashboardServiceModelView userView = new UserDashboardServiceModelView(user.getRegistrationDate().toLocalDate(), new ArrayList<>(), new ArrayList<>());
+        UserDashboardServiceModelView userView = new UserDashboardServiceModelView(user.getUsername(), user.getRegistrationDate().toLocalDate(), new ArrayList<>(), new ArrayList<>());
 
         mockMvc.perform(get("/").with(user(userDetailsService.loadUserByUsername(user.getUsername()))))
                 .andExpect(status().isOk())

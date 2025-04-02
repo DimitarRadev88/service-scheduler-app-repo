@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
         List<CarDashboardViewServiceModel> cars = carService.getAllCarDashboardServiceViewModelsByUser(user.getId());
         List<CarDashboardServicesDoneViewServiceModel> services = carService.getAllServicesByUser(user.getId());
 
-        return new UserDashboardServiceModelView(user.getRegistrationDate().toLocalDate(), cars, services);
+        return new UserDashboardServiceModelView(user.getUsername(), user.getRegistrationDate().toLocalDate(), cars, services);
     }
 
     @Override
@@ -113,8 +113,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public List<AllUsersServiceModelView> getAllUsers() {
-        return userRepository.findAllByOrderByRegistrationDateAsc()
+    public List<AllUsersServiceModelView> getAllUsersWithout(UUID id) {
+        return userRepository.findAllByIdNotOrderByRegistrationDateDesc((id))
                 .stream()
                 .map(UserServiceImpl::mapToAllUsersServiceModelView)
                 .toList();

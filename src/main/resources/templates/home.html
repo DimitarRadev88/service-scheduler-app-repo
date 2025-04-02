@@ -1,14 +1,8 @@
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - Brand</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
-    <link rel="stylesheet" href="/fonts/fontawesome-all.min.css">
+<head th:replace="~{common/fragments.html :: header(title=${'Welcome, ' + user.username()})}">
+    <title th:text="Welcome, ${user.username()}">Service Scheduler</title>
 </head>
 
 <body id="page-top">
@@ -19,9 +13,7 @@
             <nav th:object="${user}" th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
             <div class="container-fluid">
                 <div class="text-center d-sm-flex justify-content-between align-items-center mb-4">
-                    <h3 class="text-dark mb-0">Dashboard</h3><a class="btn btn-primary btn-sm d-none d-sm-inline-block"
-                                                                role="button" href="#"><i
-                        class="fas fa-download fa-sm text-white-50"></i>&nbsp;Generate Report</a>
+                    <h3 class="text-dark mb-0">Dashboard</h3>
                 </div>
                 <div class="row">
                     <div class="col-md-6 col-xl-3 mb-4">
@@ -50,7 +42,8 @@
                                                 th:text="*{services().size()}"></span>
                                         </div>
                                     </div>
-                                    <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>

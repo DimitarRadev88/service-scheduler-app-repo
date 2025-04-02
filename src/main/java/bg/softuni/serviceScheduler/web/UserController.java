@@ -8,11 +8,9 @@ import bg.softuni.serviceScheduler.user.service.dto.AllUsersServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserEditProfileServiceModel;
 import bg.softuni.serviceScheduler.web.dto.UserProfileEditBindingModel;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -77,13 +75,12 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/users")
     public String getUsersView(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        if (userDetails instanceof ServiceSchedulerUserDetails) {
-            model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
-        }
+        UUID id = ((ServiceSchedulerUserDetails) userDetails).getId();
 
-        List<AllUsersServiceModelView> users = userService.getAllUsers();
-
+        model.addAttribute("userId", id);
+        List<AllUsersServiceModelView> users = userService.getAllUsersWithout(id);
         model.addAttribute("users", users);
+
 
         return "all-users";
     }

@@ -2,10 +2,15 @@ package bg.softuni.serviceScheduler.web.dto;
 
 import bg.softuni.serviceScheduler.vehicle.model.FuelType;
 import bg.softuni.serviceScheduler.vehicle.model.VehicleCategory;
+import bg.softuni.serviceScheduler.web.validation.UniqueRegistration;
+import bg.softuni.serviceScheduler.web.validation.UniqueVin;
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.Year;
 
+@UniqueVin
+@UniqueRegistration
 public record CarAddBindingModel(
         @NotBlank(message = "You must select vehicle brand")
         String brand,
@@ -16,8 +21,8 @@ public record CarAddBindingModel(
         @NotNull(message = "Please select model year")
         @PastOrPresent(message = "Please enter valid year")
         Year year,
-        @NotNull(message = "Please enter Vehicle VIN")
-        @Size(min = 17, max = 17, message = "VIN must be 17 characters long")
+        @NotNull(message = "Vin cannot be empty")
+        @Length(min = 17, max = 17, message = "Vin length must be exactly 17 characters long")
         String vin,
         @Size(min = 7, max = 8, message = "Vehicle registration number is between 7 and 8 characters long")
         String registration,

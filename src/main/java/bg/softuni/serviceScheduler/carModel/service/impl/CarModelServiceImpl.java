@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.carModel.service.impl;
 
+import bg.softuni.serviceScheduler.carModel.exception.CarModelAddException;
 import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarModelNameDto;
@@ -79,6 +80,7 @@ public class CarModelServiceImpl implements CarModelService {
                     .toBodilessEntity();
         } catch (HttpClientErrorException e) {
             log.error(e.getResponseBodyAsString());
+            throw new CarModelAddException(e.getMessage());
         }
 
     }

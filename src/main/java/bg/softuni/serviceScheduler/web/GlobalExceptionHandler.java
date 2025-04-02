@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.web;
 
+import bg.softuni.serviceScheduler.carModel.exception.CarModelAddException;
 import bg.softuni.serviceScheduler.user.exception.EmailAlreadyExistsException;
 import bg.softuni.serviceScheduler.user.exception.UsernameAlreadyExistsException;
 import bg.softuni.serviceScheduler.web.dto.UserRegisterBindingModel;
@@ -22,6 +23,13 @@ public class GlobalExceptionHandler {
         model.addAttribute("emailException", ex.getMessage());
         model.addAttribute("userRegister", new UserRegisterBindingModel());
         return "register";
+    }
+
+    @ExceptionHandler(CarModelAddException.class)
+    public String handeCarModelAddException(Exception ex, Model model) {
+        model.addAttribute("message", ex.getMessage());
+
+        return "car-model-add-error";
     }
 
 }

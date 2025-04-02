@@ -14,4 +14,7 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
 
     List<Car> findAllByUserId(UUID userId);
 
+    boolean existsByVin(String vin);
+
+    boolean existsByRegistration(String registration);
 }

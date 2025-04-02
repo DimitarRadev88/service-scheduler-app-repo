@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
-<head th:replace="~{common/fragments.html :: header}"><title>Vehicle information</title></head>
+<head th:replace="~{common/fragments.html :: header(title=${carInfo.makeAndModel()})}">
+    <title th:text="${carInfo.makeAndModel()}">Vehicle Information</title>
+</head>
 
 <body id="page-top">
 <div id="wrapper">

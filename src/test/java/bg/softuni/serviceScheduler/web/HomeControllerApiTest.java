@@ -58,6 +58,7 @@ public class HomeControllerApiTest {
                         .getUser(((ServiceSchedulerUserDetails) userDetails)
                                 .getId()))
                 .thenReturn(new UserDashboardServiceModelView(
+                        user.getUsername(),
                         user.getRegistrationDate().toLocalDate(),
                         new ArrayList<>(),
                         new ArrayList<>()

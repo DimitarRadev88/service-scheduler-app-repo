@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
-<head th:replace="~{common/fragments.html :: header}"><title>Welcome</title></head>
+<head th:replace="~{common/fragments.html :: header(title=${'Add ' + brand})}">
+    <title th:text="${brand}">Add Vehicle</title></head>
 
 <body id="page-top">
 <div id="wrapper">
@@ -21,7 +22,11 @@
                                         <p class="text-primary m-0 fw-bold">Vehicle Info</p>
                                     </div>
                                     <div class="card-body">
-                                        <form th:action="@{/vehicles/add/{brand}(brand=${vehicleAdd.brand})}" th:object="${vehicleAdd}" method="post">
+                                        <form th:action="@{/vehicles/add/{brand}(brand=${vehicleAdd.brand})}"
+                                              th:object="${vehicleAdd}" method="post">
+                                            <div class="mb-3">
+                                                <p th:errors="${vehicleAdd}" class="errors alert alert-danger"></p>
+                                            </div>
                                             <div class="row">
                                                 <div class="col">
                                                     <div class="mb-3">
@@ -36,7 +41,8 @@
                                                             <option th:value="${null}" selected="">Select vehicle brand
                                                             </option>
                                                             <option th:each="brand : ${brands}"
-                                                                    th:value="${brand.name()}" th:text="${brand.name()}"></option>
+                                                                    th:value="${brand.name()}"
+                                                                    th:text="${brand.name()}"></option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -50,9 +56,12 @@
                                                         </label>
                                                         <select id="model" class="form-select" th:field="*{model}"
                                                                 name="model">
-                                                            <option th:value="${null}" selected="">Select vehicle model</option>
+                                                            <option th:value="${null}" selected="">Select vehicle
+                                                                model
+                                                            </option>
                                                             <option th:each="model : ${models}"
-                                                                    th:value="${model.name()}" th:text="${model.name()}">A3
+                                                                    th:value="${model.name()}"
+                                                                    th:text="${model.name()}">A3
                                                             </option>
                                                         </select>
                                                     </div>
@@ -110,7 +119,8 @@
                                                                     th:errors="*{registration}"></strong>
                                                             <strong th:unless="${#fields.hasErrors('registration')}">Registration*</strong>
                                                         </label>
-                                                        <input class="form-control" th:field="*{registration}" type="text"
+                                                        <input class="form-control" th:field="*{registration}"
+                                                               type="text"
                                                                id="registration"
                                                                placeholder="CB0123**" name="registration">
                                                     </div>
@@ -125,9 +135,13 @@
                                                                     th:errors="*{category}"></strong>
                                                             <strong th:unless="${#fields.hasErrors('category')}">Category*</strong>
                                                         </label>
-                                                        <select class="form-select" th:field="*{category}" id="category" name="category">
-                                                            <option th:value="${null}" selected=selected>Select vehicle category class</option>
-                                                            <option th:each="cat : ${T (bg.softuni.serviceScheduler.vehicle.model.VehicleCategory).values()}" th:text="${cat}" th:value="${cat}"></option>
+                                                        <select class="form-select" th:field="*{category}" id="category"
+                                                                name="category">
+                                                            <option th:value="${null}" selected=selected>Select vehicle
+                                                                category class
+                                                            </option>
+                                                            <option th:each="cat : ${T (bg.softuni.serviceScheduler.vehicle.model.VehicleCategory).values()}"
+                                                                    th:text="${cat}" th:value="${cat}"></option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -136,11 +150,16 @@
                                                         <strong class="text-danger"
                                                                 th:if="${#fields.hasErrors('fuelType')}"
                                                                 th:errors="*{fuelType}"></strong>
-                                                        <strong th:unless="${#fields.hasErrors('fuelType')}">Fuel Type*</strong>
+                                                        <strong th:unless="${#fields.hasErrors('fuelType')}">Fuel
+                                                            Type*</strong>
                                                     </label>
-                                                        <select th:field="*{fuelType}" class="form-select" id="fuelType" name="fuelType">
-                                                            <option th:value="${null}" selected="">Select engine fuel type</option>
-                                                            <option th:each="type : ${T (bg.softuni.serviceScheduler.vehicle.model.FuelType).values()}" th:value="${type}" th:text="${type}"></option>
+                                                        <select th:field="*{fuelType}" class="form-select" id="fuelType"
+                                                                name="fuelType">
+                                                            <option th:value="${null}" selected="">Select engine fuel
+                                                                type
+                                                            </option>
+                                                            <option th:each="type : ${T (bg.softuni.serviceScheduler.vehicle.model.FuelType).values()}"
+                                                                    th:value="${type}" th:text="${type}"></option>
                                                         </select></div>
                                                 </div>
                                                 <div class="col">
@@ -152,7 +171,8 @@
                                                             <strong th:unless="${#fields.hasErrors('displacement')}">Displacement*</strong>
                                                         </label>
                                                         <input class="form-control" type="number" id="displacement"
-                                                               name="displacement" min="600" max="8000" step="50" placeholder="2000"
+                                                               name="displacement" min="600" max="8000" step="50"
+                                                               placeholder="2000"
                                                                th:value="${null}" th:field="*{displacement}">
                                                     </div>
                                                 </div>
@@ -164,11 +184,13 @@
                                                             <strong class="text-danger"
                                                                     th:if="${#fields.hasErrors('oilCapacity')}"
                                                                     th:errors="*{oilCapacity}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('oilCapacity')}">Oil capacity*</strong>
+                                                            <strong th:unless="${#fields.hasErrors('oilCapacity')}">Oil
+                                                                capacity*</strong>
                                                         </label>
                                                         <input class="form-control"
                                                                type="number" id="oilCapacity"
-                                                               name="oilCapacity" placeholder="4.3"  min="1" max="20" step="0.1"
+                                                               name="oilCapacity" placeholder="4.3" min="1" max="20"
+                                                               step="0.1"
                                                                th:value="${null}" th:field="*{oilCapacity}">
 
                                                     </div>
@@ -192,10 +214,12 @@
                                                             <strong class="text-danger"
                                                                     th:if="${#fields.hasErrors('oilFilterNumber')}"
                                                                     th:errors="*{oilFilterNumber}"></strong>
-                                                            <strong th:unless="${#fields.hasErrors('oilFilterNumber')}">Oil filter number</strong>
+                                                            <strong th:unless="${#fields.hasErrors('oilFilterNumber')}">Oil
+                                                                filter number</strong>
                                                         </label>
                                                         <input class="form-control" id="oilFilterNumber" type="text"
-                                                               name="oilFilterNumber" th:value="${null}" th:field="*{oilFilterNumber}">
+                                                               name="oilFilterNumber" th:value="${null}"
+                                                               th:field="*{oilFilterNumber}">
                                                     </div>
                                                 </div>
                                             </div>

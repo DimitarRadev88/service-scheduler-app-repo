@@ -353,7 +353,7 @@ public class UserServiceImplTest {
                 )
         ).toList();
 
-        List<AllUsersServiceModelView> actual = userService.getAllUsers();
+        List<AllUsersServiceModelView> actual = userService.getAllUsersWithout(UUID.randomUUID());
 
         assertEquals(expected, actual);
     }
@@ -424,6 +424,7 @@ public class UserServiceImplTest {
 
         UserDashboardServiceModelView actual = userService.getUser(USER_ID);
 
+        assertEquals(user.getUsername(), actual.username());
         assertEquals(USER_REGISTRATION_DATE.toLocalDate(), actual.registrationDate());
         assertTrue(actual.services().isEmpty());
         assertTrue(actual.cars().isEmpty());

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record UserDashboardServiceModelView(
+        String username,
         LocalDate registrationDate,
         List<CarDashboardViewServiceModel> cars,
         List<CarDashboardServicesDoneViewServiceModel> services
