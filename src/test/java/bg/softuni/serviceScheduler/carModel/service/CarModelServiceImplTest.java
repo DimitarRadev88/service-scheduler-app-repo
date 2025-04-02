@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.carModel.service;
 
+import bg.softuni.serviceScheduler.carModel.exception.CarModelAddException;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarModelNameDto;
 import bg.softuni.serviceScheduler.config.BrandsApiConfig;
@@ -7,6 +8,7 @@ import bg.softuni.serviceScheduler.web.dto.CarBrandAddBindingModel;
 import bg.softuni.serviceScheduler.web.dto.CarModelAddBindingModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
@@ -99,13 +101,13 @@ public class CarModelServiceImplTest {
     }
 
     @Test
-    public void testDoAddWithCarModelHandlesConflict() {
+    public void testDoAddWithCarModelThrowsWhenModelExists() {
         server.expect(requestTo("http://localhost:8081/models/add")).andExpect(method(HttpMethod.POST))
                 .andRespond(withRequestConflict());
 
         CarModelAddBindingModel existingModel = new CarModelAddBindingModel("Audi", "A4");
 
-        carModelService.doAdd(existingModel);
+        Assertions.assertThrows(CarModelAddException.class, () -> carModelService.doAdd(existingModel));
     }
 
     @Test

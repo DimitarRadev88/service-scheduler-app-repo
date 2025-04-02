@@ -31,7 +31,6 @@ public class CarModelServiceImpl implements CarModelService {
                 .baseUrl(brandsApiConfig.getBaseUrl())
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .build();
-        ;
     }
 
     @Override

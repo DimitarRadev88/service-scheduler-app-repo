@@ -2,6 +2,7 @@ package bg.softuni.serviceScheduler.web;
 
 import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.carServices.oilChange.service.OilChangeService;
+import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.model.FuelType;
 import bg.softuni.serviceScheduler.vehicle.model.VehicleCategory;
 import bg.softuni.serviceScheduler.vehicle.service.CarService;
@@ -36,6 +37,8 @@ public class VehicleControllerApiTest {
     private CarModelService carModelService;
     @MockitoBean
     private OilChangeService oilChangeService;
+    @MockitoBean
+    private CarRepository carRepository;
     @Autowired
     private MockMvc mockMvc;
 
@@ -76,14 +79,14 @@ public class VehicleControllerApiTest {
                         .param("brand", vehicleAdd.brand())
                         .param("model", vehicleAdd.model())
                         .param("trim", vehicleAdd.trim())
-                        .param("year", vehicleAdd.year().toString())
+                        .param("year", "")
                         .param("vin", vehicleAdd.vin())
-                        .param("registration", vehicleAdd.registration())
-                        .param("category", vehicleAdd.category().name())
-                        .param("fuelType", vehicleAdd.fuelType().name())
-                        .param("displacement", vehicleAdd.displacement().toString())
-                        .param("oilCapacity", vehicleAdd.oilCapacity().toString())
-                        .param("mileage", vehicleAdd.mileage().toString())
+                        .param("registration", "")
+                        .param("category", "")
+                        .param("fuelType", "")
+                        .param("displacement", "")
+                        .param("oilCapacity", "")
+                        .param("mileage", "")
                         .param("oilFilterNumber", vehicleAdd.oilFilterNumber())
                         .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())

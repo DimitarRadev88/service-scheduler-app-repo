@@ -322,14 +322,14 @@ public class UserServiceImplTest {
         UUID firstUserId = UUID.randomUUID();
         UUID secondUserId = UUID.randomUUID();
         UUID thirdUserId = UUID.randomUUID();
-        String firstUsername = "first user";
+        String firstUsername = "currentUser user";
         String secondUsername = "second user";
         String thirdUsername = "third user";
 
-        User first = new User();
-        first.setId(firstUserId);
-        first.setUsername(firstUsername);
-        first.setRoles(List.of(USER_ROLE_USER, USER_ROLE_ADMIN));
+        User currentUser = new User();
+        currentUser.setId(firstUserId);
+        currentUser.setUsername(firstUsername);
+        currentUser.setRoles(List.of(USER_ROLE_USER, USER_ROLE_ADMIN));
 
         User second = new User();
         second.setId(secondUserId);
@@ -341,9 +341,10 @@ public class UserServiceImplTest {
         third.setUsername(thirdUsername);
         third.setRoles(List.of(USER_ROLE_USER));
 
-        List<User> users = List.of(first, second, third);
+        List<User> users = List.of(second, third);
+
         Mockito
-                .when(userRepository.findAllByOrderByRegistrationDateAsc())
+                .when(userRepository.findAllByIdNotOrderByRegistrationDateDesc(currentUser.getId()))
                 .thenReturn(users);
 
         List<AllUsersServiceModelView> expected = users.stream().map(user -> new AllUsersServiceModelView(
@@ -353,7 +354,7 @@ public class UserServiceImplTest {
                 )
         ).toList();
 
-        List<AllUsersServiceModelView> actual = userService.getAllUsersWithout(UUID.randomUUID());
+        List<AllUsersServiceModelView> actual = userService.getAllUsersWithout(currentUser.getId());
 
         assertEquals(expected, actual);
     }
