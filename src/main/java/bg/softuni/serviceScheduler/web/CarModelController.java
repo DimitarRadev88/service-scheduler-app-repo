@@ -69,8 +69,9 @@ public class CarModelController {
             return "redirect:/models/add/" + brand;
         }
 
-        carModelService.doAdd(carModelAdd);
+        String carModel = carModelService.doAdd(carModelAdd);
 
+        redirectAttributes.addFlashAttribute("message",  carModel + " added");
         return "redirect:/";
     }
 

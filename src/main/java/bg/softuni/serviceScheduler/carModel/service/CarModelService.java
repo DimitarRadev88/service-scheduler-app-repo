@@ -12,7 +12,7 @@ public interface CarModelService {
 
     List<CarModelNameDto> getAllModelsByBrand(String brand);
 
-    void doAdd(CarModelAddBindingModel carModelAdd);
+    String doAdd(CarModelAddBindingModel carModelAdd);
 
     void doAdd(CarBrandAddBindingModel carBrandAdd);
 }

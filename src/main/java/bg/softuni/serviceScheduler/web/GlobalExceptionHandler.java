@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,7 +35,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handeCarModelAddException(Exception ex, Model model) {
         model.addAttribute("message", ex.getMessage());
-        return "car-model-add-error";
+        return "add-car-model-error";
     }
 
     @ExceptionHandler({VinNumberAlreadyExistsException.class, VehicleRegistrationAlreadyExistsException.class})

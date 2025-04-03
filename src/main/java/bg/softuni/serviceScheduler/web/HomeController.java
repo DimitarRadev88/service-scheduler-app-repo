@@ -24,6 +24,9 @@ public class HomeController {
         if (userDetails instanceof ServiceSchedulerUserDetails) {
             model.addAttribute("user", userService.getUser(((ServiceSchedulerUserDetails) userDetails).getId()));
             model.addAttribute("userId", ((ServiceSchedulerUserDetails) userDetails).getId());
+            if (model.containsAttribute("message")) {
+                model.addAttribute("message", model.getAttribute("message"));
+            }
             return "home";
         } else {
             model.addAttribute("statistics", userService.getStatistics());

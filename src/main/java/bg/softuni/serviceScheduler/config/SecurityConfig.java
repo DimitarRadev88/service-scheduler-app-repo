@@ -20,8 +20,8 @@ public class SecurityConfig {
 
 
         return http
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
+//                .cors(AbstractHttpConfigurer::disable)
+//                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers( "/register", "/", "/error").permitAll()
                             .requestMatchers("/css/**", "/fonts/**", "/img/**", "/js/**").permitAll()

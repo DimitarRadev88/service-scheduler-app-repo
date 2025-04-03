@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.carModel.service.impl;
 
+import bg.softuni.serviceScheduler.carModel.dto.SavedCarModel;
 import bg.softuni.serviceScheduler.carModel.exception.CarModelAddException;
 import bg.softuni.serviceScheduler.carModel.service.CarModelService;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
@@ -67,16 +68,18 @@ public class CarModelServiceImpl implements CarModelService {
     }
 
     @Override
-    public void doAdd(CarModelAddBindingModel carModelAdd) {
+    public String doAdd(CarModelAddBindingModel carModelAdd) {
         log.info("Creating car model: {}", carModelAdd);
 
         try {
-            restClient.post()
+            SavedCarModel savedCarModel = restClient.post()
                     .uri("/models/add")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(carModelAdd)
                     .retrieve()
-                    .toBodilessEntity();
+                    .body(SavedCarModel.class);
+
+            return savedCarModel.brandName()+ " " + savedCarModel.modelName();
         } catch (HttpClientErrorException e) {
             log.error(e.getResponseBodyAsString());
             throw new CarModelAddException(e.getMessage());
