@@ -163,7 +163,8 @@ public class GlobalExceptionHandlerIT {
                 .param("username", username)
                 .param("email", email)
                 .param("password", "validpassword")
-                .param("confirmPassword", "validpassword");
+                .param("confirmPassword", "validpassword")
+                .with(csrf());
     }
 
 }

@@ -1,5 +1,6 @@
 package bg.softuni.serviceScheduler.carModel.service;
 
+import bg.softuni.serviceScheduler.carModel.dto.SavedCarModel;
 import bg.softuni.serviceScheduler.carModel.exception.CarModelAddException;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarBrandNameDto;
 import bg.softuni.serviceScheduler.carModel.service.dto.CarModelNameDto;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.web.savedrequest.SavedCookie;
 import org.springframework.test.web.client.MockRestServiceServer;
 
 import java.util.ArrayList;
@@ -111,9 +113,15 @@ public class CarModelServiceImplTest {
     }
 
     @Test
-    public void testDoAddWithCarModelPosts() {
+    public void testDoAddWithCarModelPosts() throws JsonProcessingException {
         server.expect(requestTo("http://localhost:8081/models/add")).andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(objectMapper.writeValueAsString(
+                                        new SavedCarModel("Audi", "B101")
+                                )
+                        )
+                );
 
         carModelService.doAdd(new CarModelAddBindingModel("Audi", "B101"));
     }

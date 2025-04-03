@@ -8,6 +8,7 @@ import bg.softuni.serviceScheduler.user.model.UserRoleEnumeration;
 import bg.softuni.serviceScheduler.user.service.dto.SiteStatisticsServiceModelView;
 import bg.softuni.serviceScheduler.user.service.dto.UserDashboardServiceModelView;
 import bg.softuni.serviceScheduler.user.service.impl.ServiceSchedulerUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,8 @@ public class HomeControllerIT {
     @Autowired
     private OilChangeRepository oilChangeRepository;
     private User user;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setUp() {
@@ -60,7 +63,6 @@ public class HomeControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
                 .andExpect(model().attribute("statistics", statistics));
-
     }
 
     @Test
@@ -72,7 +74,7 @@ public class HomeControllerIT {
                 .andExpect(view().name("home"))
                 .andExpect(model().attribute("userId", user.getId()))
                 .andExpect(model().attribute("user", userView));
-
     }
+
 
 }

@@ -97,7 +97,8 @@ public class CarModelControllerApiTest {
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"))
-                .andExpect(flash().attributeCount(0));
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(flash().attributeCount(1));
     }
 
     @Test
