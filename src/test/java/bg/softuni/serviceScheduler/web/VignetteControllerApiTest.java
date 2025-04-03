@@ -109,7 +109,7 @@ public class VignetteControllerApiTest {
     }
 
     @Test
-    public void testPostVignetteAddRedirectsToVehiclesWhenBindingModelIsValid() throws Exception {
+    public void testPostVignetteAddRedirectsToVehiclesWithSuccessMessageWhenBindingModelIsValid() throws Exception {
         VignetteAddBindingModel vignetteAdd = new VignetteAddBindingModel(LocalDate.now(), VignetteValidity.WEEKEND);
 
         mvc.perform(post("/vignettes/add/" + car.id())
@@ -117,8 +117,8 @@ public class VignetteControllerApiTest {
                         .param("validity", vignetteAdd.validity().name())
                         .with(user(userDetails)).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/vehicles/" + car.id()))
-                .andExpect(flash().attributeCount(0));
+                .andExpect(redirectedUrl("/vehicles/" + car.id()))
+                .andExpect(flash().attributeCount(1));
     }
 
 }

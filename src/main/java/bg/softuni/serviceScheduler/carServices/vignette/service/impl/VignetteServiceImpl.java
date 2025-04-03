@@ -10,7 +10,6 @@ import bg.softuni.serviceScheduler.user.exception.UserNotFoundException;
 import bg.softuni.serviceScheduler.vehicle.dao.CarRepository;
 import bg.softuni.serviceScheduler.vehicle.exception.CarNotFoundException;
 import bg.softuni.serviceScheduler.vehicle.model.Car;
-import bg.softuni.serviceScheduler.vehicle.service.CarService;
 import bg.softuni.serviceScheduler.web.dto.VignetteAddBindingModel;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,7 @@ public class VignetteServiceImpl implements VignetteService {
 
     @Override
     @Transactional
-    public void doAdd(VignetteAddBindingModel vignetteAdd, UUID carId) {
+    public String doAdd(VignetteAddBindingModel vignetteAdd, UUID carId) {
         Car car = carRepository
                 .findById(carId)
                 .orElseThrow(() -> new CarNotFoundException("Car not found"));
@@ -53,24 +52,32 @@ public class VignetteServiceImpl implements VignetteService {
                 vignetteAdd.startDate(),
                 endDate,
                 vignetteAdd.validity(),
-                endDate.isAfter(LocalDate.now()),
+                isValid(vignetteAdd, endDate),
                 car
         );
 
         Vignette saved = vignetteRepository.save(vignette);
+        car.getVignettes().add(saved);
+        carRepository.save(car);
 
         log.info("Vignette with id {} expiring on {} added for car with id {}",
                 saved.getId(),
                 saved.getEndDate(),
                 car.getId()
         );
+
+        return String.format("Vignette starting on %s and ending on %s added", saved.getStartDate(), saved.getEndDate());
+
+    }
+
+    private static boolean isValid(VignetteAddBindingModel vignetteAdd, LocalDate endDate) {
+        return (vignetteAdd.startDate().isBefore(LocalDate.now()) || vignetteAdd.startDate().isEqual(LocalDate.now()))
+               && endDate.isAfter(LocalDate.now());
     }
 
     @Override
     public boolean hasActiveVignette(UUID id) {
-        if (!carRepository.existsById(id)) {
-            throw new CarNotFoundException("Car not found");
-        }
+        checkCar(id);
 
         return vignetteRepository.existsByCarIdAndIsValidTrue(id);
     }
@@ -87,6 +94,18 @@ public class VignetteServiceImpl implements VignetteService {
 
     @Override
     @Scheduled(cron = "0 0 0 * * *")
+    public void validateAllStartingVignettes() {
+        List<Vignette> all = vignetteRepository.findAllByIsValidIsFalseAndStartDateIsLessThanEqual((LocalDate.now()));
+
+        all.forEach(vignette -> vignette.setIsValid(true));
+
+        vignetteRepository.saveAll(all);
+
+        log.info("All active vignettes: {}", all);
+    }
+
+    @Override
+    @Scheduled(cron = "0 0 0 * * *")
     public void invalidateAllExpiredVignettes() {
         List<Vignette> all = vignetteRepository.findAllByIsValidIsTrueAndEndDateIsBefore(LocalDate.now());
 
@@ -99,12 +118,17 @@ public class VignetteServiceImpl implements VignetteService {
 
     @Override
     public BigDecimal getSumVignetteCostByCarId(UUID id) {
+        checkCar(id);
+
+        BigDecimal sum = vignetteRepository.getSumVignetteCostByCarId(id);
+
+        return sum == null ? BigDecimal.ZERO : sum;
+    }
+
+    private void checkCar(UUID id) {
         if (!carRepository.existsById(id)) {
             throw new CarNotFoundException("Car not found");
         }
-
-        BigDecimal sum = vignetteRepository.getSumVignetteCostByCarId(id);
-        return sum == null ? BigDecimal.ZERO : sum;
     }
 
 }

@@ -11,6 +11,10 @@
     <div class="d-flex flex-column justify-content-between" id="content-wrapper">
         <div id="content">
             <nav th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
+            <div th:if="${message}" class="text-center alert alert-success alert-dismissible fade show">
+                <strong>Success!</strong> <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
             <div th:object="${carInfo}" class="container-fluid">
                 <div class="row justify-content-center">
                     <div class="col-lg-8 mb-4">
@@ -162,18 +166,27 @@
                                                 class="text-xs"
                                                 th:text="*{lastServices().insurance().date()}">12:30 AM</span>
                                         </div>
-                                        <div th:unless="*{lastServices().insurance().isInsuranceCloseToExpiring() || lastServices().insurance().isInsuranceExpired()}"
+                                        <div th:unless="*{lastServices().insurance().isInsuranceCloseToExpiring() || lastServices().insurance().isInsuranceExpired() || lastServices().insurance().isInsuranceInactive()}"
                                              class="col-auto col-lg-3 text-end flex-shrink-1">
                                             <a class="text-nowrap text-decoration-none link-light text-bg-success border rounded p-2"
-                                               th:href="@{/insurances/add/{id}(id=${carInfo.id()})}">New insurance</a>
+                                               th:href="@{/insurances/add/{id}(id=${carInfo.id()})}">
+                                                New insurance
+                                            </a>
+                                        </div>
+                                        <div th:if="*{lastServices().insurance().isInsuranceInactive() && !lastServices().insurance().isInsuranceExpired()}"
+                                             class="col-auto col-lg-3 text-end flex-shrink-1">
+                                            <a class="text-nowrap text-decoration-none link-light text-bg-success bg-warning border rounded p-2"
+                                               th:href="@{/insurances/add/{id}(id=${carInfo.id()})}">
+                                                Your insurance is not active yet
+                                            </a>
                                         </div>
                                         <div th:if="*{lastServices().insurance().isInsuranceCloseToExpiring() && !lastServices().insurance().isInsuranceExpired()}"
                                              class="col-auto col-lg-3 text-end flex-shrink-1">
                                             <a class="text-nowrap text-decoration-none link-light text-bg-success bg-warning border rounded p-2"
-                                               th:href="@{/insurances/add/{id}(id=${carInfo.id()})}">Insurance
-                                                expiration
-                                                date
-                                                is close</a></div>
+                                               th:href="@{/insurances/add/{id}(id=${carInfo.id()})}">
+                                                Insurance expiration date is close
+                                            </a>
+                                        </div>
                                         <div th:if="*{lastServices().insurance().isInsuranceExpired()}"
                                              class="col-auto col-lg-3 text-end flex-shrink-1">
                                             <a class="text-nowrap text-decoration-none link-light text-bg-success bg-danger border rounded p-2"
@@ -190,11 +203,18 @@
                                                 class="text-xs"
                                                 th:text="*{lastServices().vignette().date()}">12:30 AM</span>
                                         </div>
-                                        <div th:unless="*{lastServices().vignette().isVignetteCloseToExpiring() || lastServices().vignette().isVignetteExpired()}"
+                                        <div th:unless="*{lastServices().vignette().isVignetteCloseToExpiring() || lastServices().vignette().isVignetteExpired() || lastServices().vignette().isVignetteInactive()}"
                                              class="col-lg-6 text-end flex-shrink-1">
                                             <a class="text-nowrap text-decoration-none link-light text-bg-success border rounded p-2"
                                                th:href="@{/vignettes/add/{id}(id=${carInfo.id()})}">
                                                 New vignette
+                                            </a>
+                                        </div>
+                                        <div th:if="*{lastServices().vignette().isVignetteInactive() && !lastServices().vignette().isVignetteExpired()}"
+                                             class="col-auto col-lg-6 text-end flex-shrink-1">
+                                            <a class="text-nowrap text-decoration-none link-light text-bg-success bg-warning border rounded p-2"
+                                               th:href="@{/vignettes/add/{id}(id=${carInfo.id()})}">
+                                                Your vignette is not active yet
                                             </a>
                                         </div>
                                         <div th:if="*{lastServices().vignette().isVignetteCloseToExpiring() && !lastServices().vignette().isVignetteExpired()}"

@@ -89,6 +89,26 @@ public class InsuranceServiceImplTest {
     }
 
     @Test
+    public void testValidateExpiredInsurancesIsValidStatusChanges() {
+        Insurance expiredInsuranceOne = new Insurance(null, null, null, null, LocalDate.now(), LocalDate.now().minusDays(1), null, false, null);
+        Insurance expiredInsuranceTwo = new Insurance(null, null, null, null, LocalDate.now().minusDays(1), LocalDate.now().plusDays(5), null, false, null);
+        Insurance expiredInsuranceThree = new Insurance(null, null, null, null, LocalDate.now().minusDays(2), LocalDate.now().plusDays(10), null, false, null);
+
+        List<Insurance> insurances = List.of(expiredInsuranceOne, expiredInsuranceTwo, expiredInsuranceThree);
+        Mockito
+                .when(insuranceRepository.findAllByIsValidIsFalseAndStartDateIsLessThanEqual(Mockito.any(LocalDate.class)))
+                .thenReturn(insurances);
+
+        insuranceService.validateAllStartingInsurances();
+
+        verify(insuranceRepository).saveAll(insuranceCaptorList.capture());
+
+        List<Insurance> saved = insuranceCaptorList.getValue();
+
+        saved.forEach(insurance -> assertTrue(insurance.getIsValid()));
+    }
+
+    @Test
     public void testGetSumInsuranceCostByUserIdReturnsSumWhenUserHasInsuranceWhenUserHasNoInsurances() {
         Mockito
                 .when(userRepository.existsById(Mockito.any()))

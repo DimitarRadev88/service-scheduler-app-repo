@@ -30,7 +30,7 @@
                         </div>
                         <div class="mb-3 row">
                             <label for="email" th:if="${#fields.hasErrors('email')}" class="form-label text-danger">
-                                <strong th:text="${#fields.errors('username').getFirst()}"></strong>
+                                <strong th:text="${#fields.errors('email').getFirst()}"></strong>
                             </label>
                             <label for="email" th:unless="${#fields.hasErrors('email')}" class="form-label">
                                 <strong th:unless="${emailException}">Email</strong>

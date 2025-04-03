@@ -30,5 +30,5 @@ public interface UserService {
 
     UserEditProfileServiceModel getUserEditProfileServiceModel(UUID id);
 
-    void doEdit(@Valid UserProfileEditBindingModel userProfileEditBindingModel, UUID id) throws UsernameAlreadyExistsException, EmailAlreadyExistsException;
+    String doEdit(UserProfileEditBindingModel userProfileEditBindingModel, UUID id);
 }

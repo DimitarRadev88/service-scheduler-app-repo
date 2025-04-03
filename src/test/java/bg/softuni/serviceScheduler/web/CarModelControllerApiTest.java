@@ -81,7 +81,7 @@ public class CarModelControllerApiTest {
                         .with(user(userAuthorization.getUserDetailsAdmin()))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/models/add/" + brand))
+                .andExpect(redirectedUrl("/models/add/" + brand))
                 .andExpect(flash().attributeCount(2))
                 .andExpect(flash().attributeExists("carModelAdd"))
                 .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.carModelAdd"));
@@ -124,22 +124,22 @@ public class CarModelControllerApiTest {
                         .with(user(userAuthorization.getUserDetailsAdmin()))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/models/brands/add"))
+                .andExpect(redirectedUrl("/models/brands/add"))
                 .andExpect(flash().attributeCount(2))
                 .andExpect(flash().attributeExists("carBrandAdd"))
                 .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.carBrandAdd"));
     }
 
     @Test
-    public void testPostAddCarBrandRedirectsToAddModelWithNewBrandWhenCarBrandAddBindingModelIsValid() throws Exception {
+    public void testPostAddCarBrandRedirectsToAddModelWithNewBrandAndSuccessMessageWhenCarBrandAddBindingModelIsValid() throws Exception {
         String brand = BRANDS.getFirst().name();
         mockMvc.perform(post("/models/brands/add")
                         .param("name", brand)
                         .with(user(userAuthorization.getUserDetailsAdmin()))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/models/add/" + brand))
-                .andExpect(flash().attributeCount(0));
+                .andExpect(redirectedUrl("/models/add/" + brand))
+                .andExpect(flash().attributeCount(1));
     }
 
 }

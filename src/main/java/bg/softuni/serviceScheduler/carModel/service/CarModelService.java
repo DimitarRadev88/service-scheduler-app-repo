@@ -14,5 +14,5 @@ public interface CarModelService {
 
     String doAdd(CarModelAddBindingModel carModelAdd);
 
-    void doAdd(CarBrandAddBindingModel carBrandAdd);
+    String doAdd(CarBrandAddBindingModel carBrandAdd);
 }

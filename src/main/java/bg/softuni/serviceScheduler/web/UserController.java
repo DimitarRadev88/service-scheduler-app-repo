@@ -125,7 +125,7 @@ public class UserController {
         model.addAttribute("profilePicture", user.profilePictureUrl());
 
         if (!model.containsAttribute("userEdit")) {
-            model.addAttribute("userEdit", new UserProfileEditBindingModel(user.username(), user.email(), user.profilePictureUrl()));
+            model.addAttribute("userEdit", new UserProfileEditBindingModel(user.profilePictureUrl()));
         }
 
         return "profile-edit";
@@ -135,7 +135,7 @@ public class UserController {
     public String editProfile(@PathVariable UUID id,
                               @Valid UserProfileEditBindingModel userProfileEditBindingModel,
                               BindingResult bindingResult,
-                              RedirectAttributes redirectAttributes) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+                              RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userEdit", bindingResult);
@@ -143,7 +143,9 @@ public class UserController {
             return "redirect:/profile/edit";
         }
 
-        userService.doEdit(userProfileEditBindingModel, id);
+        String message = userService.doEdit(userProfileEditBindingModel, id);
+
+        redirectAttributes.addFlashAttribute("message", message);
 
         return "redirect:/profile";
     }

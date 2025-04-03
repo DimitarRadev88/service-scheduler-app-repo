@@ -1,6 +1,8 @@
 package bg.softuni.serviceScheduler.carServices.oilChange.model;
 
+import bg.softuni.serviceScheduler.carServices.model.CarService;
 import bg.softuni.serviceScheduler.vehicle.model.Engine;
+import bg.softuni.serviceScheduler.web.dto.CarAddBindingModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,20 +17,11 @@ import java.util.UUID;
 @Table
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class OilChange {
+public class OilChange extends CarService {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
     @ManyToOne
     @JoinColumn(nullable = false)
     private Engine engine;
-    @Column(nullable = false)
-    private BigDecimal cost;
-    @Column(nullable = false)
-    private LocalDate addedAt;
     @Column(nullable = false)
     private Integer mileage;
     @Column(nullable = false)
@@ -36,4 +29,15 @@ public class OilChange {
     @Column(nullable = false)
     private LocalDate changeDate;
 
+    public OilChange(UUID id, LocalDate addedAt, BigDecimal cost, Engine engine, Integer mileage, Integer changeInterval, LocalDate changeDate) {
+        super(id, addedAt, cost);
+        this.engine = engine;
+        this.mileage = mileage;
+        this.changeInterval = changeInterval;
+        this.changeDate = changeDate;
+    }
+
+    public OilChange() {
+        super(null, null, null);
+    }
 }

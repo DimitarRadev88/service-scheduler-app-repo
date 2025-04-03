@@ -36,4 +36,5 @@ public interface VignetteRepository extends JpaRepository<Vignette, UUID> {
             """)
     BigDecimal getSumVignetteCostByCarId(UUID id);
 
+    List<Vignette> findAllByIsValidIsFalseAndStartDateIsLessThanEqual(LocalDate startDateIsLessThan);
 }

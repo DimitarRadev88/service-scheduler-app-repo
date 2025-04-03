@@ -146,6 +146,7 @@ public class VehicleController {
             return "redirect:/vehicles/engines/" + id + "/oil-changes/add";
         } else {
             UUID carId = oilChangeService.doAdd(oilChangeAdd, id);
+            redirectAttributes.addFlashAttribute("message", "Oil change added");
             return "redirect:/vehicles/" + carId;
         }
     }

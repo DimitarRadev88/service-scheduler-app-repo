@@ -32,7 +32,9 @@ public interface InsuranceRepository extends JpaRepository<Insurance, UUID> {
             FROM Insurance i
             JOIN i.car c
             WHERE c.id = :carId
-            GROUP BY c
+            GROUP BY c.id
             """)
     BigDecimal getSumInsuranceCostByCarId(UUID carId);
+
+    List<Insurance> findAllByIsValidIsFalseAndStartDateIsLessThanEqual(LocalDate startDateIsLessThan);
 }

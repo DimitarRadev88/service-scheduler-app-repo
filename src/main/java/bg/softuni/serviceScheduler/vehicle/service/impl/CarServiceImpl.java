@@ -164,7 +164,11 @@ public class CarServiceImpl implements CarService {
     public List<CarDashboardViewServiceModel> getAllCarDashboardServiceViewModelsByUser(UUID id) {
         checkUser(id);
 
-        return carRepository.findAllByUserId(id).stream().map(this::mapToCarDashboardViewServiceModel).toList();
+        return carRepository
+                .findAllByUserId(id)
+                .stream()
+                .map(this::mapToCarDashboardViewServiceModel)
+                .toList();
     }
 
     @Override
@@ -185,18 +189,26 @@ public class CarServiceImpl implements CarService {
 
 
     private CarDashboardViewServiceModel mapToCarDashboardViewServiceModel(Car car) {
-        BigDecimal oilChangesSum = oilChangeRepository.getSumOilChangesCostByEngineId(car.getEngine().getId());
+        BigDecimal oilChangesSum = getSumOilChangesCostByEngineId(car.getEngine().getId());
+
         return new CarDashboardViewServiceModel(car.getId(),
                 car.getModel().getBrandName(),
                 car.getModel().getModelName(),
                 car.getVin(),
-                oilChangesSum == null ? BigDecimal.ZERO : oilChangesSum
+                oilChangesSum
                         .add(insuranceService.getSumInsuranceCostByCarId(car.getId()))
                         .add(vignetteService.getSumVignetteCostByCarId(car.getId())),
                 !insuranceService.hasActiveInsurance(car.getId())
                 || needsOilChange(car.getEngine())
                 || !vignetteService.hasActiveVignette(car.getId())
         );
+    }
+
+    private BigDecimal getSumOilChangesCostByEngineId(UUID engineId) {
+        BigDecimal sum = oilChangeRepository
+                .getSumOilChangesCostByEngineId(engineId);
+
+        return sum == null ? BigDecimal.ZERO : sum;
     }
 
     private BigDecimal getSumOilChangesCostByUser(UUID userId) {
@@ -287,14 +299,21 @@ public class CarServiceImpl implements CarService {
 
     private static VignetteDateAndIdServiceViewModel getLastVignetteDateAndIdServiceViewModel(Car car) {
         if (car.getVignettes().isEmpty()) {
-            return new VignetteDateAndIdServiceViewModel(null, null, true, true);
+            return new VignetteDateAndIdServiceViewModel(null, null, false, true, true);
         }
 
-        Vignette vignette = car.getVignettes().getLast();
+        Vignette vignette = car
+                .getVignettes()
+                .stream()
+                .filter(Vignette::getIsValid)
+                .findFirst()
+                .orElse(car.getVignettes()
+                        .getLast());
 
         return new VignetteDateAndIdServiceViewModel(
                 vignette.getId(),
                 vignette.getAddedAt(),
+                vignette.getStartDate().isAfter(LocalDate.now()),
                 vignette.getEndDate().isBefore(LocalDate.now().plusDays(1)),
                 vignette.getEndDate().isBefore(LocalDate.now())
         );
@@ -302,14 +321,15 @@ public class CarServiceImpl implements CarService {
 
     private static InsurancePaymentDateAndIdServiceViewModel getLastInsurancePaymentDateAndIdServiceVieModel(Car car) {
         if (car.getInsurances().isEmpty()) {
-            return new InsurancePaymentDateAndIdServiceViewModel(null, null, true, true);
+            return new InsurancePaymentDateAndIdServiceViewModel(null, null, true, true, true);
         }
 
-        Insurance insurance = car.getInsurances().getLast();
+        Insurance insurance = car.getInsurances().stream().filter(Insurance::getIsValid).findFirst().orElse(car.getInsurances().getLast());
 
         return new InsurancePaymentDateAndIdServiceViewModel(
                 insurance.getId(),
                 insurance.getAddedAt(),
+                insurance.getStartDate().isAfter(LocalDate.now()),
                 insurance.getEndDate().isBefore(LocalDate.now().plusWeeks(1)),
                 insurance.getEndDate().isBefore(LocalDate.now())
         );

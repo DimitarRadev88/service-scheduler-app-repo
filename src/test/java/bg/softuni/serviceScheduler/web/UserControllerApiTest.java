@@ -184,23 +184,7 @@ public class UserControllerApiTest {
     }
 
     @Test
-    public void testEditProfileRedirectsBackWithErrorsWhenInvalidUserProfileEditBindingModel() throws Exception {
-        User user = userAuthorization.getUser();
-
-        mockMvc.perform(put("/profile/" + user.getId() + "/edit")
-                        .param("username", "")
-                        .param("email", "")
-                        .param("profilePictureUrl", "")
-                        .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/profile/edit"))
-                .andExpect(flash().attributeCount(2))
-                .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.userEdit"))
-                .andExpect(flash().attributeExists("userEdit"));
-    }
-
-    @Test
-    public void testEditProfileRedirectsToProfileViewWithValidUserProfileEditBindingModel() throws Exception {
+    public void testEditProfileRedirectsToProfileViewWithSuccessMessageWithValidUserProfileEditBindingModel() throws Exception {
         User user = userAuthorization.getUser();
 
         mockMvc.perform(put("/profile/" + user.getId() + "/edit")
@@ -210,7 +194,7 @@ public class UserControllerApiTest {
                         .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/profile"))
-                .andExpect(flash().attributeCount(0));
+                .andExpect(flash().attributeCount(1));
     }
 
 }

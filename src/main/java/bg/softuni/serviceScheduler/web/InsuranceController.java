@@ -82,7 +82,9 @@ public class InsuranceController {
             return "redirect:/insurances/add/" + carId;
         }
 
-        insuranceService.doAdd(insuranceAdd, carId);
+        String message = insuranceService.doAdd(insuranceAdd, carId);
+
+        redirectAttributes.addFlashAttribute("message", message);
 
         return "redirect:/vehicles/" + carId;
     }

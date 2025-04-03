@@ -87,8 +87,9 @@ public class VignetteController {
             return "redirect:/vignettes/add/" + carId;
         }
 
-        vignetteService.doAdd(vignetteAdd, carId);
+        String message = vignetteService.doAdd(vignetteAdd, carId);
 
+        redirectAttributes.addFlashAttribute("message", message);
 
         return "redirect:/vehicles/" + carId;
     }

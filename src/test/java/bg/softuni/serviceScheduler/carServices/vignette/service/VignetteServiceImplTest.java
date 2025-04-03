@@ -72,6 +72,46 @@ public class VignetteServiceImplTest {
     }
 
     @Test
+    public void testInvalidateAllExpiredVignettesIsValidReturnsFalseOnExpiredVignette() {
+        Vignette expiredVignette = new Vignette(null, null, null, null, LocalDate.now().minusDays(1), null, true, null);
+        Vignette expiredVignette2 = new Vignette(null, null, null, null, LocalDate.now().minusDays(5), null, true, null);
+        Vignette expiredVignette3 = new Vignette(null, null, null, null, LocalDate.now().minusDays(100), null, true, null);
+        Mockito
+                .when(vignetteRepository.findAllByIsValidIsTrueAndEndDateIsBefore(Mockito.any(LocalDate.class)))
+                .thenReturn(List.of(expiredVignette, expiredVignette2, expiredVignette3));
+
+        vignetteService.invalidateAllExpiredVignettes();
+
+        verify(vignetteRepository).saveAll(vignetteListCaptor.capture());
+
+        List<Vignette> saved = vignetteListCaptor.getValue();
+
+        saved.forEach(vignette -> {
+            assertFalse(vignette.getIsValid());
+        });
+    }
+
+    @Test
+    public void testValidateAllExpiredVignettesIsValidReturnsFalseOnExpiredVignette() {
+        Vignette expiredVignette = new Vignette(null, null, null, LocalDate.now(), LocalDate.now().plusDays(1), null, false, null);
+        Vignette expiredVignette2 = new Vignette(null, null, null, LocalDate.now().minusDays(1), LocalDate.now().plusDays(5), null, false, null);
+        Vignette expiredVignette3 = new Vignette(null, null, null, LocalDate.now().minusDays(2), LocalDate.now().plusDays(100), null, false, null);
+        Mockito
+                .when(vignetteRepository.findAllByIsValidIsFalseAndStartDateIsLessThanEqual(Mockito.any(LocalDate.class)))
+                .thenReturn(List.of(expiredVignette, expiredVignette2, expiredVignette3));
+
+        vignetteService.validateAllStartingVignettes();
+
+        verify(vignetteRepository).saveAll(vignetteListCaptor.capture());
+
+        List<Vignette> saved = vignetteListCaptor.getValue();
+
+        saved.forEach(vignette -> {
+            assertTrue(vignette.getIsValid());
+        });
+    }
+
+    @Test
     public void testChangeAllExpiredVignettesIsValidReturnsFalseOnExpiredVignette() {
         Vignette expiredVignette = new Vignette(null, null, null, null, LocalDate.now().minusDays(1), null, true, null);
         Vignette expiredVignette2 = new Vignette(null, null, null, null, LocalDate.now().minusDays(5), null, true, null);

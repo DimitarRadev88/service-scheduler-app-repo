@@ -37,12 +37,16 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Override
     @Transactional
-    public void doAdd(InsuranceAddBindingModel insuranceAdd, UUID carId) {
+    public String doAdd(InsuranceAddBindingModel insuranceAdd, UUID carId) {
         Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException("Car not found"));
 
         Insurance saved = insuranceRepository.save(map(insuranceAdd, car));
+        car.getInsurances().add(saved);
+        carRepository.save(car);
 
         log.info("Insurance with id {} expiring on {} for car with id {} added", saved.getId(), saved.getEndDate(), car.getId());
+
+        return String.format("Insurance starting on %s and ending on %s added", saved.getStartDate(), saved.getEndDate());
     }
 
     @Override
@@ -62,6 +66,16 @@ public class InsuranceServiceImpl implements InsuranceService {
         return sum == null ? BigDecimal.ZERO : sum;
     }
 
+    @Scheduled(cron = "0 0 0 * * *")
+    @Override
+    public void validateAllStartingInsurances() {
+        List<Insurance> all = insuranceRepository.findAllByIsValidIsFalseAndStartDateIsLessThanEqual((LocalDate.now()));
+
+        all.forEach(insurance -> insurance.setIsValid(true));
+
+        insuranceRepository.saveAll(all);
+    }
+
     @Override
     @Scheduled(cron = "0 0 0 * * *")
     public void invalidateAllExpiredInsurances() {
@@ -76,9 +90,9 @@ public class InsuranceServiceImpl implements InsuranceService {
     public BigDecimal getSumInsuranceCostByCarId(UUID carId) {
         checkCar(carId);
 
-        BigDecimal sumInsuranceCostByCarId = insuranceRepository.getSumInsuranceCostByCarId(carId);
+        BigDecimal sum = insuranceRepository.getSumInsuranceCostByCarId(carId);
 
-        return sumInsuranceCostByCarId == null ? BigDecimal.ZERO : sumInsuranceCostByCarId;
+        return sum == null ? BigDecimal.ZERO : sum;
     }
 
     private void checkCar(UUID carId) {
@@ -96,9 +110,15 @@ public class InsuranceServiceImpl implements InsuranceService {
                 insuranceAdd.startDate(),
                 insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()),
                 insuranceAdd.insuranceValidityPeriod(),
-                insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()).isAfter(LocalDate.now()),
+                isValid(insuranceAdd),
                 car
         );
+    }
+
+    private static boolean isValid(InsuranceAddBindingModel insuranceAdd) {
+        return (insuranceAdd.startDate().isBefore(LocalDate.now()) || insuranceAdd.startDate().isEqual(LocalDate.now()))
+               &&
+               insuranceAdd.startDate().plusDays(insuranceAdd.insuranceValidityPeriod().getDays()).isAfter(LocalDate.now());
     }
 
 

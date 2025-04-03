@@ -36,34 +36,12 @@
                                     <div class="row">
                                         <div class="col">
                                             <div class="mb-3">
-                                                <label for="username" th:if="${#fields.hasErrors('username')}" class="form-label text-danger">
-                                                    <strong th:errors="*{username}"></strong>
+                                                <label class="form-label" for="profilePictureURL">
+                                                    <strong>Profile Picture</strong>
                                                 </label>
-                                                <label for="username" th:unless="${#fields.hasErrors('username')}" class="form-label">
-                                                    Username<strong>Username</strong>
-                                                </label>
-                                                <input class="form-control" type="text" id="username"
-                                                       th:field="*{username}" name="username">
+                                                <input class="form-control" type="text" id="profilePictureURL"
+                                                       th:field="*{profilePictureUrl}" name="profilePictureURL">
                                             </div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="mb-3"><label for="email" th:if="${#fields.hasErrors('email')}" class="form-label text-danger">
-                                                <strong th:errors="*{email}"></strong>
-                                            </label>
-                                                <label for="username" th:unless="${#fields.hasErrors('email')}" class="form-label">
-                                                    <strong>Email</strong>
-                                                </label><input class="form-control" type="email"
-                                                                               id="email" th:field="*{email}"
-                                                                               name="email"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="mb-3"><label class="form-label" for="profilePictureURL"><strong>Profile
-                                                Picture</strong></label><input class="form-control" type="text"
-                                                                               id="profilePictureURL"
-                                                                               th:field="*{profilePictureUrl}"
-                                                                               name="profilePictureURL"></div>
                                         </div>
                                     </div>
                                     <div class="mb-3">

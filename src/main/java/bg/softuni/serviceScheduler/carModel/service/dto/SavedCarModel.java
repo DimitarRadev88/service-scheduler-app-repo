@@ -1,4 +1,4 @@
-package bg.softuni.serviceScheduler.carModel.dto;
+package bg.softuni.serviceScheduler.carModel.service.dto;
 
 public record SavedCarModel(
         String brandName,

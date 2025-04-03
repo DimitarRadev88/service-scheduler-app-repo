@@ -90,7 +90,7 @@ public class VehicleControllerApiTest {
                         .param("oilFilterNumber", vehicleAdd.oilFilterNumber())
                         .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/vehicles/add/" + vehicleAdd.brand()))
+                .andExpect(redirectedUrl("/vehicles/add/" + vehicleAdd.brand()))
                 .andExpect(flash().attributeCount(2))
                 .andExpect(flash().attributeExists("vehicleAdd"))
                 .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.vehicleAdd"));
@@ -137,8 +137,8 @@ public class VehicleControllerApiTest {
                 "17charactervinnum",
                 "12345678",
                 new LastServicesServiceViewModel(new CarOilChangeDateAndIdServiceViewModel(UUID.randomUUID(), LocalDate.now()),
-                        new InsurancePaymentDateAndIdServiceViewModel(UUID.randomUUID(), LocalDate.now(), false, false),
-                        new VignetteDateAndIdServiceViewModel(UUID.randomUUID(), LocalDate.now(), false, false)),
+                        new InsurancePaymentDateAndIdServiceViewModel(UUID.randomUUID(), LocalDate.now(), false,false, false),
+                        new VignetteDateAndIdServiceViewModel(UUID.randomUUID(), LocalDate.now(), false,false, false)),
                 new CarInfoEngineViewModel(
                         UUID.randomUUID(), FuelType.PETROL, 2000, 10000,
                         100, 10000, 10000
@@ -164,7 +164,7 @@ public class VehicleControllerApiTest {
         mockMvc.perform(put("/vehicles/" + carId + "/add-mileage")
                         .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/vehicles/" + carId))
+                .andExpect(redirectedUrl("/vehicles/" + carId))
                 .andExpect(flash().attributeCount(2))
                 .andExpect(flash().attributeExists("engineMileageAdd"))
                 .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.engineMileageAdd"));
@@ -179,7 +179,7 @@ public class VehicleControllerApiTest {
                         .param("newMileage", "1001")
                         .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/vehicles/" + carId))
+                .andExpect(redirectedUrl("/vehicles/" + carId))
                 .andExpect(flash().attributeCount(0));
     }
 
@@ -219,14 +219,14 @@ public class VehicleControllerApiTest {
         String uriTemplate = String.format("/vehicles/engines/%s/oil-changes/add", engineId);
         mockMvc.perform(post(uriTemplate).with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:" + uriTemplate))
+                .andExpect(redirectedUrl(uriTemplate))
                 .andExpect(flash().attributeCount(2))
                 .andExpect(flash().attributeExists("oilChangeAdd"))
                 .andExpect(flash().attributeExists("org.springframework.validation.BindingResult.oilChangeAdd"));
     }
 
     @Test
-    public void testAddOilChangePostToVehicleViewWhenOilChangeAddBindingModelValid() throws Exception {
+    public void testAddOilChangePostRedirectsWithSucessMessageToVehicleViewWhenOilChangeAddBindingModelValid() throws Exception {
         UUID engineId = UUID.randomUUID();
 
         UUID carId = UUID.randomUUID();
@@ -241,8 +241,8 @@ public class VehicleControllerApiTest {
                         .param("cost", "100")
                         .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/vehicles/" + carId))
-                .andExpect(flash().attributeCount(0));
+                .andExpect(redirectedUrl("/vehicles/" + carId))
+                .andExpect(flash().attributeCount(1));
     }
 
     @Test
@@ -252,7 +252,7 @@ public class VehicleControllerApiTest {
         mockMvc.perform(delete("/vehicles/" + carId)
                         .with(user(userAuthorization.getUserDetailsUser())).with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
+                .andExpect(redirectedUrl("/"));
     }
 
     @Test

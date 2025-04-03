@@ -179,19 +179,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void doEdit(UserProfileEditBindingModel userProfileEditBindingModel, UUID id) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+    public String doEdit(UserProfileEditBindingModel userProfileEditBindingModel, UUID id) {
         User user = findUser(id);
 
-        if (!user.getUsername().equals(userProfileEditBindingModel.username()) && userRepository.existsByUsername(userProfileEditBindingModel.username())) {
-            throw new UsernameAlreadyExistsException("Username already exists");
-        }
-
-        if (!user.getEmail().equals(userProfileEditBindingModel.email()) && userRepository.existsByEmail(userProfileEditBindingModel.email())) {
-            throw new EmailAlreadyExistsException("Email already exists");
-        }
-
-        user.setUsername(userProfileEditBindingModel.username());
-        user.setEmail(userProfileEditBindingModel.email());
         user.setProfilePictureURL(userProfileEditBindingModel.profilePictureUrl());
 
         if (user.getProfilePictureURL().isBlank()) {
@@ -200,6 +190,8 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
         log.info("User {} profile edited", user.getUsername());
+
+        return user.getUsername() + " profile edited";
     }
 
     private static UserEditProfileServiceModel mapToUserEditProfileServiceViewModel(User u) {

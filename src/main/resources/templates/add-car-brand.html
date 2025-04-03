@@ -25,7 +25,7 @@
                                         <div class="row">
                                             <div class="col">
                                                 <div class="mb-3">
-                                                    <form th:object="${carBrandAdd}" th:method="post">
+                                                    <form th:object="${carBrandAdd}" th:method="post" th:action="@{/models/brands/add}">
                                                         <label th:unless="${#fields.hasErrors('name')}"
                                                                class="form-label" for="name">
                                                             <strong>Brand*</strong>

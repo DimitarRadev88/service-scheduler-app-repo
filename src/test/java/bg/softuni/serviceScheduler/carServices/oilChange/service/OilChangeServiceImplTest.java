@@ -69,7 +69,7 @@ public class OilChangeServiceImplTest {
         this.oilChangeService = new OilChangeServiceImpl(oilChangeRepository, engineRepository);
         this.engine = new Engine(ENGINE_ID, ENGINE_DISPLACEMENT, ENGINE_FUEL_TYPE, ENGINE_OIL_CAPACITY,
                 ENGINE_MILEAGE, ENGINE_OIL_FILTER_NUMBER, null, new ArrayList<>());
-        this.oilChange = new OilChange(OIL_CHANGE_ID, this.engine, OIL_CHANGE_COST, OIL_CHANGE_ADDED_AT, OIL_CHANGE_MILEAGE, OIL_CHANGE_INTERVAL, OIL_CHANGE_DATE);
+        this.oilChange = new OilChange(OIL_CHANGE_ID, OIL_CHANGE_ADDED_AT, OIL_CHANGE_COST, this.engine, OIL_CHANGE_MILEAGE, OIL_CHANGE_INTERVAL, OIL_CHANGE_DATE);
         this.oilChangeAdd = new OilChangeAddBindingModel(OIL_CHANGE_DATE, OIL_CHANGE_MILEAGE, OIL_CHANGE_INTERVAL, OIL_CHANGE_COST);
         this.car = new Car(CAR_ID, null, this.engine, CAR_VIN, CAR_YEAR, CAR_CATEGORY, null, CAR_REGISTRATION, null, null);
         this.engine.setCar(car);

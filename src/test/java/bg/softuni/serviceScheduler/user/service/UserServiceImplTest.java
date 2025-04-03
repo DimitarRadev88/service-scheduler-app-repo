@@ -88,9 +88,7 @@ public class UserServiceImplTest {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
-                USER_USERNAME, USER_EMAIL, BLANK_URL
-        );
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(BLANK_URL);
 
         userService.doEdit(editBindingModel, USER_ID);
 
@@ -107,9 +105,7 @@ public class UserServiceImplTest {
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.of(user));
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
-                USER_USERNAME, USER_EMAIL, NEW_URL
-        );
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(NEW_URL);
 
         userService.doEdit(editBindingModel, USER_ID);
 
@@ -121,86 +117,12 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testDoEditChangesEmail() throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
-        Mockito
-                .when(userRepository.findById(USER_ID))
-                .thenReturn(Optional.of(user));
-
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
-                USER_USERNAME, NEW_EMAIL, USER_PROFILE_PICTURE_URL
-        );
-
-        userService.doEdit(editBindingModel, USER_ID);
-
-        verify(userRepository).save(userCaptor.capture());
-
-        User saved = userCaptor.getValue();
-
-        assertEquals(NEW_EMAIL, saved.getEmail());
-    }
-
-    @Test
-    public void testDoEditChangesUsername() throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
-        Mockito
-                .when(userRepository.findById(USER_ID))
-                .thenReturn(Optional.of(user));
-
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
-                NEW_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL
-        );
-
-        userService.doEdit(editBindingModel, USER_ID);
-
-        verify(userRepository).save(userCaptor.capture());
-
-        User saved = userCaptor.getValue();
-
-        assertEquals(NEW_USERNAME, saved.getUsername());
-    }
-
-    @Test
-    public void testDoEditThrowsWhenEmailIsChangedAndNewEmailExists() {
-        Mockito
-                .when(userRepository.findById(USER_ID))
-                .thenReturn(Optional.of(user));
-
-        Mockito
-                .when(userRepository.existsByEmail(NEW_EMAIL))
-                .thenReturn(true);
-
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
-                USER_USERNAME, NEW_EMAIL, USER_PROFILE_PICTURE_URL
-        );
-
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.doEdit(editBindingModel, USER_ID));
-    }
-
-    @Test
-    public void testDoEditThrowsWhenUsernameIsChangedAndNewUsernameExists() {
-        Mockito
-                .when(userRepository.findById(USER_ID))
-                .thenReturn(Optional.of(user));
-
-        Mockito
-                .when(userRepository.existsByUsername(NEW_USERNAME))
-                .thenReturn(true);
-
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
-                NEW_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL
-        );
-
-        assertThrows(UsernameAlreadyExistsException.class, () -> userService.doEdit(editBindingModel, USER_ID));
-    }
-
-    @Test
     public void testDoEditThrowsWhenUserDoesNotExist() throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
         Mockito
                 .when(userRepository.findById(USER_ID))
                 .thenReturn(Optional.empty());
 
-        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(
-                USER_USERNAME, USER_EMAIL, USER_PROFILE_PICTURE_URL
-        );
+        UserProfileEditBindingModel editBindingModel = new UserProfileEditBindingModel(USER_PROFILE_PICTURE_URL);
 
         assertThrows(UserNotFoundException.class, () -> userService.doEdit(editBindingModel, USER_ID));
     }

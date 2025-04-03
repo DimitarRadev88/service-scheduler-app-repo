@@ -43,8 +43,10 @@ public class Car {
     @Column(nullable = false, unique = true)
     private String registration;
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    @OrderColumn
     private List<Insurance> insurances;
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    @OrderColumn
     private List<Vignette> vignettes;
 
 }

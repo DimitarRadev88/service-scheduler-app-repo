@@ -12,6 +12,10 @@
         <div id="content">
             <nav th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
             <div class="container-fluid">
+                <div th:if="${message}" class="text-center alert alert-success alert-dismissible fade show">
+                    <strong>Success!</strong> <span th:text="${message}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
                 <h3 class="text-center text-dark mb-4">Profile</h3>
                 <div class="row">
                     <div class="col-12">

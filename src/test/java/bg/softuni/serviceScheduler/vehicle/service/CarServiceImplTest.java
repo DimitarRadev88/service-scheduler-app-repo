@@ -128,7 +128,7 @@ public class CarServiceImplTest {
         this.user.setId(USER_ID);
         this.engine = new Engine(ENGINE_ID, ENGINE_DISPLACEMENT, ENGINE_FUEL_TYPE, ENGINE_OIL_CAPACITY,
                 ENGINE_MILEAGE, ENGINE_OIL_FILTER_NUMBER, this.car, new ArrayList<>());
-        this.oilChange = new OilChange(OIL_CHANGE_ID, this.engine, SERVICE_COST, OIL_CHANGE_ADD_DATE, OIL_CHANGE_MILEAGE, OIL_CHANGE_INTERVAL, OIL_CHANGE_DATE);
+        this.oilChange = new OilChange(OIL_CHANGE_ID, OIL_CHANGE_ADD_DATE, SERVICE_COST, this.engine, OIL_CHANGE_MILEAGE, OIL_CHANGE_INTERVAL, OIL_CHANGE_DATE);
         this.engine.getOilChanges().add(oilChange);
         this.carModel = new CarModel(CAR_MODEL_ID, CAR_BRAND, CAR_MODEL, new ArrayList<>());
         this.insurance = new Insurance(INSURANCE_ID, INSURANCE_ADD_DATE, SERVICE_COST, INSURANCE_COMPANY, INSURANCE_START_DATE, INSURANCE_END_DATE, INSURANCE_VALIDITY, INSURANCE_IS_VALID, this.car);
@@ -319,12 +319,14 @@ public class CarServiceImplTest {
                         new InsurancePaymentDateAndIdServiceViewModel(
                                 INSURANCE_ID,
                                 INSURANCE_ADD_DATE,
+                                INSURANCE_START_DATE.isAfter(LocalDate.now()),
                                 INSURANCE_END_DATE.isBefore(LocalDate.now().plusWeeks(1)),
                                 INSURANCE_END_DATE.isBefore(LocalDate.now())
                         ),
                         new VignetteDateAndIdServiceViewModel(
                                 VIGNETTE_ID,
                                 VIGNETTE_ADD_DATE,
+                                VIGNETTE_START_DATE.isAfter(LocalDate.now()),
                                 VIGNETTE_END_DATE.isBefore(LocalDate.now().plusDays(1)),
                                 VIGNETTE_END_DATE.isBefore(LocalDate.now())
                         )
@@ -479,8 +481,8 @@ public class CarServiceImplTest {
                 CAR_REGISTRATION,
                 new LastServicesServiceViewModel(
                         new CarOilChangeDateAndIdServiceViewModel(null, null),
-                        new InsurancePaymentDateAndIdServiceViewModel(null, null, true, true),
-                        new VignetteDateAndIdServiceViewModel(null, null, true, true)
+                        new InsurancePaymentDateAndIdServiceViewModel(null, null, true, true, true),
+                        new VignetteDateAndIdServiceViewModel(null, null, false, true, true)
                 ),
                 new CarInfoEngineViewModel(
                         ENGINE_ID,

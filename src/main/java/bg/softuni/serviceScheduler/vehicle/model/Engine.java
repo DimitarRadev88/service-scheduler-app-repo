@@ -35,6 +35,7 @@ public class Engine {
     @OneToOne
     private Car car;
     @OneToMany(mappedBy = "engine", cascade = CascadeType.ALL)
+    @OrderColumn
     private List<OilChange> oilChanges;
 
 }

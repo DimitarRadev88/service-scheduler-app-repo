@@ -6,6 +6,7 @@ import java.util.UUID;
 public record VignetteDateAndIdServiceViewModel(
         UUID id,
         LocalDate date,
+        Boolean isVignetteInactive,
         Boolean isVignetteCloseToExpiring,
         Boolean isVignetteExpired
 ) {

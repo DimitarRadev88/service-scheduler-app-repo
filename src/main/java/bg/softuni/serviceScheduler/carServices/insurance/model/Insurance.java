@@ -29,10 +29,6 @@ public class Insurance extends CarService {
     @ManyToOne
     private Car car;
 
-    protected Insurance(UUID id, LocalDate addedAt, BigDecimal cost) {
-        super(id, addedAt, cost);
-    }
-
     public Insurance() {
         super(null, null, null);
     }

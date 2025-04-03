@@ -97,14 +97,35 @@ public class GlobalExceptionHandlerIT {
     public void testHandeAddCarException() throws Exception {
         saveTestUser(List.of(userRoleRepository.findByRole(UserRoleEnumeration.USER)));
 
+
+        MockHttpServletRequestBuilder post = getCarAddPost("17charactervinnum", "11111111");
+
+        mockMvc.perform(post)
+                .andExpect(status().is3xxRedirection());
+
+        MockHttpServletRequestBuilder postWithSameVin = getCarAddPost("17charactervinnum", "diffregn");
+
+
+        mockMvc.perform(postWithSameVin).andExpect(status().isConflict())
+                .andExpect(model().attributeExists("message"))
+                .andExpect(view().name("vehicle-add-error"));
+
+        MockHttpServletRequestBuilder postWithSameRegistration = getCarAddPost("differentvinnum11", "11111111");
+
+        mockMvc.perform(postWithSameVin).andExpect(status().isConflict())
+                .andExpect(model().attributeExists("message"))
+                .andExpect(view().name("vehicle-add-error"));
+    }
+
+    private MockHttpServletRequestBuilder getCarAddPost(String vin, String registration) {
         UserDetails userDetails = userDetailsService.loadUserByUsername("username");
 
-        MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post("/vehicles/add/Audi")
+        return MockMvcRequestBuilders.post("/vehicles/add/Audi")
                 .param("brand", "Audi")
                 .param("model", "A4")
                 .param("year", "2002")
-                .param("vin", "17charactervinnum")
-                .param("registration", "12341234")
+                .param("vin", vin)
+                .param("registration", registration)
                 .param("category", VehicleCategory.B.name())
                 .param("fuelType", FuelType.PETROL.name())
                 .param("displacement", "2000")
@@ -112,12 +133,6 @@ public class GlobalExceptionHandlerIT {
                 .param("mileage", "220000")
                 .with(user(userDetails))
                 .with(csrf());
-
-        mockMvc.perform(post).andExpect(status().is3xxRedirection());
-
-        mockMvc.perform(post).andExpect(status().isConflict())
-                .andExpect(model().attributeExists("message"))
-                .andExpect(view().name("vehicle-add-error"));
     }
 
     @Test

@@ -35,7 +35,9 @@ public class OilChangeServiceImpl implements OilChangeService {
 
         OilChange oilChange = map(oilChangeAdd, engine);
 
-        oilChangeRepository.save(oilChange);
+        OilChange saved = oilChangeRepository.save(oilChange);
+        engine.getOilChanges().add(saved);
+        engineRepository.save(engine);
 
         log.info("Added oil change {} for engine {}", oilChange, engine);
 
@@ -51,9 +53,9 @@ public class OilChangeServiceImpl implements OilChangeService {
     private static OilChange map(OilChangeAddBindingModel oilChangeAdd, Engine engine) {
         return new OilChange(
                 null,
-                engine,
-                oilChangeAdd.cost(),
                 LocalDate.now(),
+                oilChangeAdd.cost(),
+                engine,
                 oilChangeAdd.changeMileage(),
                 oilChangeAdd.changeInterval(),
                 oilChangeAdd.changeDate()
