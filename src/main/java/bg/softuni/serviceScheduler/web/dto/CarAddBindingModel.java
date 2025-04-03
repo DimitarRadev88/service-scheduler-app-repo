@@ -40,10 +40,6 @@ public record CarAddBindingModel(
         String oilFilterNumber
 ) {
 
-    public CarAddBindingModel() {
-        this(null, null, null, null, null, null, null, null, null, null, null, null);
-    }
-
     public CarAddBindingModel(String brand) {
         this(brand, null, null, null, null, null, null, null, null, null, null, null);
     }

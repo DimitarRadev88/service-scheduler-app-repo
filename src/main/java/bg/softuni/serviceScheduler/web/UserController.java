@@ -87,16 +87,20 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/users/change-role/user/{id}")
-    public String removeAdminRole(@PathVariable UUID id) {
+    public String removeAdminRole(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
         userService.removeAdmin(id);
+
+        redirectAttributes.addFlashAttribute("message",  id + " has been demoted to user");
 
         return "redirect:/users";
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/users/change-role/admin/{id}")
-    public String makeAdmin(@PathVariable UUID id) {
+    public String makeAdmin(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
         userService.makeAdmin(id);
+
+        redirectAttributes.addFlashAttribute("message",  id + " has been promoted to admin");
 
         return "redirect:/users";
     }

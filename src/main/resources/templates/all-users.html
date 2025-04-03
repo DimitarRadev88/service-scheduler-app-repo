@@ -11,6 +11,10 @@
     <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
             <nav th:replace="~{common/fragments.html :: navigation(userId=${userId})}"></nav>
+            <div th:if="${message}" class="text-center alert alert-success alert-dismissible fade show">
+                <strong>Success!</strong> <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
             <div class="container-fluid">
                 <div class="card shadow">
                     <div class="card-header py-3">
